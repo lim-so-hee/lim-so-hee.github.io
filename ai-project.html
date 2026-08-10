@@ -1503,6 +1503,13 @@
       margin-block-start: clamp(2.5rem, 5vw, 3.5rem);
     }
 
+    /* AI 인용 카드의 관련 수치와 한정 문장을 하나의 읽기 묶음으로 만든다.
+       좁은 화면에서는 기존 문서 흐름을 유지하고, 2단 카드에서만 실제 상자로
+       전환해 왼쪽 내용을 위에서부터 촘촘히 쌓는다. */
+    .citation-copy {
+      display: contents;
+    }
+
     /* 결론을 아랫줄로 내린다. 같은 줄에 두면 앞 덩이와 폭을 나눠 써야 해서
        숫자를 키울 여지가 없었다. 줄을 통째로 쓰면 왼쪽 칸 499px이 전부
        이 숫자 것이 된다(실측 1536×639). 옆으로 벌리던 여백은 필요 없어져
@@ -2251,6 +2258,29 @@
          그림이 가로세로 함께 커진다. */
       .js-stack .perf-stack__view:has(#ai-search-results) .block {
         grid-template-columns: minmax(0, .62fr) minmax(0, 1fr);
+      }
+
+      .js-stack .perf-stack__view #ai-search-results > .citation-copy {
+        display: grid;
+        grid-column: 1;
+        grid-row: 2 / span 3;
+        align-self: stretch;
+        align-content: start;
+        gap: clamp(1.25rem, 2.4vh, 1.75rem);
+        margin-block-start: clamp(1rem, 4vh, 3rem);
+      }
+
+      .js-stack .perf-stack__view #ai-search-results > .citation-copy > :is(.growth-row, .ai-metrics, .metric-note) {
+        margin-block-start: 0;
+      }
+
+      .js-stack .perf-stack__view #ai-search-results > .citation-copy > .ai-metrics {
+        align-self: start;
+      }
+
+      .js-stack .perf-stack__view #ai-search-results > .citation-copy > .metric-note {
+        align-self: start;
+        translate: none;
       }
 
       /* 알약 줄은 자기 행을 통째로 쓰되 폭만 첫 칸에 맞춘다.
@@ -3456,6 +3486,7 @@
               <p class="section-name" lang="en">AI CITATIONS</p>
               <h3 id="ai-search-results-title">검색 노출에 그치지 않고, AI 답변의 출처로도 인용됐습니다.</h3>
             </div>
+            <div class="citation-copy">
             <div class="growth-row" aria-label="AI 브리핑 월간 인용수 변화">
               <div><span>2026년 5월</span><strong>351</strong><small>월간 인용</small></div>
               <i aria-hidden="true">→</i>
@@ -3490,6 +3521,8 @@
                    됩니다"라고 적혀 있어 매일 바뀌는 값이다. -->
               <div><dt>7.9K</dt><dd>AI 브리핑 누적 인용</dd></div>
             </dl>
+            <p class="metric-note"><em>네이버 자체 집계 기준.</em> 5월과 7월의 인용수 변화를 관찰한 값이며 자동화만의 영향으로 단정하지 않습니다. 누적 인용수에는 자동화 도입 이전에 발행한 콘텐츠가 포함되어 있습니다.</p>
+            </div>
             <!-- 2026.08.10 재캡처. 검색창의 'amr agv 차이', AI 브리핑 답변,
                  출처 6건 패널과 더프라임그룹 글 2건이 한 화면에 함께 보인다. -->
             <figure class="evidence-stage">
@@ -3504,7 +3537,6 @@
                  1줄로 줄면 그만큼이 그림 높이로 간다.
                  "자동화 도입 이전 콘텐츠 포함"은 6.7K가 자동화 성과로 읽히지
                  않게 하는 한정이라 남긴다. -->
-            <p class="metric-note"><em>네이버 자체 집계 기준.</em> 5월과 7월의 인용수 변화를 관찰한 값이며 자동화만의 영향으로 단정하지 않습니다. 누적 인용수에는 자동화 도입 이전에 발행한 콘텐츠가 포함되어 있습니다.</p>
           </div>
           </article>
 
