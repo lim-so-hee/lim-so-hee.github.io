@@ -171,12 +171,13 @@
        본문 흐름(INBOUND부터)은 기존 번호를 그대로 유지한다. */
     .case-summary {
       padding-block: clamp(2.25rem, 3.8vw, 3.75rem);
-      background: var(--color-paper);
+      background: var(--color-accent);
+      color: var(--color-on-ink);
     }
 
     .case-summary__label {
       margin-block-end: clamp(1.25rem, 2vw, 2rem);
-      color: var(--color-accent);
+      color: var(--color-on-ink);
       font-family: var(--font-accent-en);
       font-size: clamp(1.125rem, 1.6vw, 1.5rem);
       font-style: italic;
@@ -186,7 +187,7 @@
     .case-summary__facts {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      border-block: 1px solid var(--color-rule-strong);
+      border-block: 1px solid rgb(255 255 255 / .42);
     }
 
     .case-summary__facts > div {
@@ -195,18 +196,18 @@
     }
 
     .case-summary__facts > div + div {
-      border-inline-start: 1px solid var(--color-rule-strong);
+      border-inline-start: 1px solid rgb(255 255 255 / .3);
     }
 
     .case-summary__facts dt {
       margin-block-end: .6rem;
-      color: var(--color-accent);
+      color: var(--color-on-ink);
       font-size: var(--text-sm);
       font-weight: 700;
     }
 
     .case-summary__facts dd {
-      color: var(--color-ink);
+      color: var(--color-on-ink);
       line-height: 1.65;
     }
 
@@ -1301,11 +1302,11 @@
       }
 
       .case-summary__facts > div:nth-child(2n) {
-        border-inline-start: 1px solid var(--color-rule-strong);
+        border-inline-start: 1px solid rgb(255 255 255 / .3);
       }
 
       .case-summary__facts > div:nth-child(n + 3) {
-        border-block-start: 1px solid var(--color-rule-strong);
+        border-block-start: 1px solid rgb(255 255 255 / .3);
       }
 
       .role-group {
@@ -1381,7 +1382,7 @@
       .case-summary__facts > div + div,
       .case-summary__facts > div:nth-child(2n) {
         border-inline-start: 0;
-        border-block-start: 1px solid var(--color-rule-strong);
+        border-block-start: 1px solid rgb(255 255 255 / .3);
       }
 
       .section-heading,
