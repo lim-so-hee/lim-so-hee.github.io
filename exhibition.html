@@ -264,39 +264,42 @@
     /* 첫 화면에서 역할과 결과를 바로 훑을 수 있는 사례 요약.
        별도 카드 대신 선으로 나눈 정보 표로 기존 페이지 문법을 유지한다. */
     .case-summary {
-      padding-block: clamp(3rem, 5vw, 5rem);
-      background: var(--color-paper);
+      padding-block: clamp(2.25rem, 3.8vw, 3.75rem);
+      background: var(--color-accent);
+      color: var(--color-on-ink);
     }
 
     .case-summary__label {
-      margin-block-end: 1.25rem;
-      color: var(--color-accent);
-      font-family: var(--font-en);
-      font-size: var(--text-xs);
-      font-weight: 700;
-      letter-spacing: .08em;
+      margin-block-end: clamp(1.25rem, 2vw, 2rem);
+      color: var(--color-on-ink);
+      font-family: var(--font-accent-en);
+      font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: 0;
+      line-height: 1;
     }
 
     .case-summary__grid {
       display: grid;
-      border-block-end: 1px solid var(--color-rule-strong);
+      border-block-end: 1px solid rgb(255 255 255 / .42);
     }
 
     .case-summary__item {
       min-width: 0;
       padding: clamp(1.5rem, 2.6vw, 2.5rem) clamp(1rem, 2vw, 2rem);
-      border-block-start: 1px solid var(--color-rule-strong);
+      border-block-start: 1px solid rgb(255 255 255 / .42);
     }
 
     .case-summary__item dt {
       margin-block-end: .75rem;
-      color: var(--color-accent);
+      color: var(--color-on-ink);
       font-size: var(--text-sm);
       font-weight: 700;
     }
 
     .case-summary__item dd {
-      color: var(--color-ink-2);
+      color: var(--color-on-ink);
       font-size: clamp(.95rem, 1.2vw, 1.05rem);
       line-height: 1.65;
     }
@@ -850,7 +853,7 @@
       }
 
       .case-summary__item:nth-child(2n) {
-        border-inline-start: 1px solid var(--color-rule-strong);
+        border-inline-start: 1px solid rgb(255 255 255 / .3);
       }
     }
 
@@ -864,7 +867,7 @@
       }
 
       .case-summary__item + .case-summary__item {
-        border-inline-start: 1px solid var(--color-rule-strong);
+        border-inline-start: 1px solid rgb(255 255 255 / .3);
       }
     }
 
