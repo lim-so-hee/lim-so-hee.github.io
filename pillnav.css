@@ -25,7 +25,6 @@
 .brand {
   font-family: var(--font-en);
   font-size: var(--text-sm);
-  letter-spacing: 0.04em;
   white-space: nowrap;
   transition: opacity 200ms ease, visibility 200ms ease;
 }
@@ -40,12 +39,14 @@
   justify-self: start;
   font-family: var(--font-accent-en), serif;
   font-style: italic;
+  letter-spacing: -.08em;
   color: var(--color-ink-2);
 }
 
 .brand {
   justify-self: end;
   font-weight: 600;
+  letter-spacing: -.02em;
 }
 
 /* 알약 자체가 파란 면이라 파란 섹션 위에 오면 배경에 묻힌다.
