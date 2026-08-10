@@ -167,6 +167,77 @@
       margin-block-start: 1.25rem;
     }
 
+    /* 첫 화면 다음에 역할과 결과를 먼저 확인하는 사례 요약을 둔다.
+       본문 흐름(INBOUND부터)은 기존 번호를 그대로 유지한다. */
+    .case-summary {
+      padding-block: clamp(3.5rem, 6vw, 6rem);
+      background: var(--color-paper);
+    }
+
+    .case-summary__header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: clamp(1.5rem, 3vw, 2.5rem);
+      align-items: end;
+      padding-block-start: clamp(2rem, 3.5vw, 3.5rem);
+      border-block-start: 2px solid var(--color-ink);
+    }
+
+    .case-summary__label {
+      color: var(--color-accent);
+      font-family: var(--font-accent-en);
+      font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+      font-style: italic;
+      line-height: 1;
+    }
+
+    .case-summary h2 {
+      max-inline-size: 24ch;
+      margin-block-start: clamp(.75rem, 1.4vw, 1.25rem);
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 1.08;
+      letter-spacing: -.035em;
+    }
+
+    .case-summary h2 strong {
+      color: var(--color-accent);
+      font-weight: 800;
+    }
+
+    .case-summary__header > p:last-child {
+      max-inline-size: 54ch;
+      color: var(--color-ink-2);
+      line-height: 1.75;
+    }
+
+    .case-summary__facts {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-block-start: clamp(2.5rem, 5vw, 4rem);
+      border-block: 1px solid var(--color-rule-strong);
+    }
+
+    .case-summary__facts > div {
+      min-width: 0;
+      padding: clamp(1.25rem, 2.4vw, 2rem) clamp(1rem, 1.6vw, 1.5rem);
+    }
+
+    .case-summary__facts > div + div {
+      border-inline-start: 1px solid var(--color-rule-strong);
+    }
+
+    .case-summary__facts dt {
+      margin-block-end: .6rem;
+      color: var(--color-accent);
+      font-size: var(--text-sm);
+      font-weight: 700;
+    }
+
+    .case-summary__facts dd {
+      color: var(--color-ink);
+      line-height: 1.65;
+    }
+
     /* Hero — 전시회·경주와 같은 구성(풀블리드 배경 + 좌하단 카피 + SCROLL).
        두 장은 현장 사진을 쓰지만 이 사례에는 현장 사진 자산이 없다.
        공식 배너는 글자와 발표자 얼굴이 가득해 제목과 충돌한다. 그래서 직접
@@ -1223,6 +1294,10 @@
     }
 
     @media (min-width: 62rem) {
+      .case-summary__header {
+        grid-template-columns: minmax(0, .6fr) minmax(0, .4fr);
+      }
+
       /* 제목 칸이 696px인데 가장 긴 줄 "생산 현장의 과제부터"가 722px이라
          <br>로 잡은 3줄이 4줄로 접혔다(실측). 제목 칸을 756px로 넓힌다. */
       .structure-intro {
@@ -1249,6 +1324,22 @@
     }
 
     @media (max-width: 61.99rem) {
+      .case-summary__facts {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .case-summary__facts > div + div {
+        border-inline-start: 0;
+      }
+
+      .case-summary__facts > div:nth-child(2n) {
+        border-inline-start: 1px solid var(--color-rule-strong);
+      }
+
+      .case-summary__facts > div:nth-child(n + 3) {
+        border-block-start: 1px solid var(--color-rule-strong);
+      }
+
       .role-group {
         grid-template-columns: 1fr;
         gap: .75rem;
@@ -1315,6 +1406,17 @@
     }
 
     @media (max-width: 47.99rem) {
+      .case-summary__header,
+      .case-summary__facts {
+        grid-template-columns: 1fr;
+      }
+
+      .case-summary__facts > div + div,
+      .case-summary__facts > div:nth-child(2n) {
+        border-inline-start: 0;
+        border-block-start: 1px solid var(--color-rule-strong);
+      }
+
       .section-heading,
       .closing h2 {
         letter-spacing: -.025em;
@@ -1419,6 +1521,24 @@
               <path d="M4 11l8 7 8-7"/>
             </svg>
           </span>
+        </div>
+      </section>
+
+      <section class="case-summary" aria-labelledby="case-summary-title">
+        <div class="section-shell">
+          <div class="case-summary__header">
+            <div>
+              <p class="case-summary__label" lang="en">CASE SUMMARY</p>
+              <h2 id="case-summary-title"><strong>역할과 결과</strong>를 먼저 요약했습니다.</h2>
+            </div>
+            <p>회사 유튜브 콘텐츠를 계기로 시작된 공동 웨비나에서 더프라임그룹 발표 섹션의 흐름을 구성하고 슬라이드를 디자인했습니다.</p>
+          </div>
+          <dl class="case-summary__facts">
+            <div><dt>기간</dt><dd>2025.10</dd></div>
+            <div><dt>직접 수행</dt><dd>사업 추진 체계·사업 전략 구성, 발표 슬라이드 디자인, 발표자 노트 작성</dd></div>
+            <div><dt>협업 범위</dt><dd>HP·더프라임그룹·AM Korea 공동 웨비나, 발표는 웨비나 발표자가 진행</dd></div>
+            <div><dt>결과</dt><dd>등록 230명, 실시간 참석 약 170명, 후속 신청 37건</dd></div>
+          </dl>
         </div>
       </section>
 

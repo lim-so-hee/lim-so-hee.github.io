@@ -189,6 +189,52 @@
       max-width: 760px;
     }
 
+    /* 다른 상세 페이지와 같은 첫 화면 안내. 프로필은 히어로가 스크롤 동안
+       고정되므로, 이동을 시작하면 안내만 먼저 사라지게 한다. */
+    .scroll-cue {
+      position: absolute;
+      z-index: 6;
+      inset-inline: 0;
+      bottom: 2rem;
+      inline-size: fit-content;
+      margin-inline: auto;
+      display: grid;
+      justify-items: center;
+      gap: .5rem;
+      color: var(--muted);
+      opacity: clamp(0, calc(1 - var(--p, 0) * 5), 1);
+    }
+
+    .scroll-cue__label {
+      font-family: var(--font-en);
+      font-size: var(--t-caption);
+      letter-spacing: .16em;
+    }
+
+    .scroll-cue__chevrons {
+      inline-size: 1.5rem;
+      block-size: 1.375rem;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .scroll-cue__chevrons path {
+      animation: cue-drop 1.9s cubic-bezier(.4, 0, .2, 1) infinite;
+    }
+
+    .scroll-cue__chevrons path:nth-child(2) {
+      animation-delay: .18s;
+    }
+
+    @keyframes cue-drop {
+      0%        { transform: translateY(-2px); opacity: 0; }
+      22%       { opacity: 1; }
+      58%       { transform: translateY(4px); opacity: 1; }
+      82%, 100% { transform: translateY(7px); opacity: 0; }
+    }
+
     /* ─ 히어로를 덮는 직무 키워드 칩 ─────────────────────────────────
        jeton.com HeroIntroduction 컴포넌트 원본(`BkA5Dvhd.js`, 2026-07-29 확보):
 
@@ -328,6 +374,10 @@
 
       .hero-stage {
         position: static;
+      }
+
+      .scroll-cue {
+        display: none;
       }
 
       /* --p가 안 도니 제목·사진이 줄거나 사라지면 안 된다. */
@@ -1073,6 +1123,10 @@
       .experience-layout {
         grid-template-columns: minmax(0, 1fr);
       }
+
+      .scroll-cue {
+        display: none;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1095,6 +1149,12 @@
 
       .hero-covers {
         display: none;
+      }
+
+      .scroll-cue__chevrons path {
+        animation: none;
+        opacity: 1;
+        transform: none;
       }
 
       /* 모바일과 같은 이유 — 덮개가 없으면 무대는 빈 스크롤일 뿐이다. */
@@ -1156,6 +1216,13 @@
           <p class="career-path" lang="en">Service Operations → Web Design → Content Strategy &amp; Operations</p>
           <p class="introduction"><span class="intro-line">SNS·SEO 콘텐츠와 사업계획서·제안서를 만들고,</span><span class="intro-line">영상 편집과 전시 콘텐츠 기획도 담당했습니다.</span></p>
         </div>
+        <span class="scroll-cue" aria-hidden="true">
+          <span class="scroll-cue__label">SCROLL</span>
+          <svg class="scroll-cue__chevrons" viewBox="0 0 24 22" fill="none">
+            <path d="M4 4l8 7 8-7"/>
+            <path d="M4 11l8 7 8-7"/>
+          </svg>
+        </span>
         <!-- 작업물 사진 5장이었다. 160×120 박스에 4:3으로 맞추느라 세로 이미지는
              47%, 가로 이미지도 25~28%가 잘려 무엇인지 알아볼 수 없었다(실측).
              jeton.com이 모으는 것도 사진이 아니라 글자가 읽히는 UI 카드다.
