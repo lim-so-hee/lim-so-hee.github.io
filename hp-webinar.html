@@ -684,16 +684,11 @@
       border-block-start: 2px solid var(--color-ink);
     }
 
-    /* 왼쪽 여백이 0이라 숫자가 칸을 나누는 세로선에 붙어 있었다(실측:
-       선 x=640, "약" x=645). 좌우를 같게 줘서 칸 안에 들어앉게 한다. */
+    /* 세 칸은 아이콘과 정렬만으로 충분히 구분된다. 숫자 사이의 세로선은
+       흐름을 끊어 보여 제거하고 좌우 여백만 유지한다. */
     .outcome-stats > div {
       position: relative;
       padding: 1.75rem 1.5rem 2rem;
-      border-inline-end: 1px solid var(--color-rule-strong);
-    }
-
-    .outcome-stats > div:last-child {
-      border-inline-end: 0;
     }
 
     .outcome-stats dt {
@@ -756,7 +751,7 @@
       padding-block-start: clamp(.75rem, 1.5vh, 1rem);
       border-block-start: 1px solid var(--color-rule-strong);
       color: var(--color-accent);
-      font-size: var(--text-xs);
+      font-size: clamp(.9rem, 1.1vw, 1rem);
       font-weight: 700;
     }
 
@@ -876,8 +871,7 @@
       flex: 1 1 0;
     }
 
-    /* 길어진 칸 안에서 숫자를 세로 가운데에 세운다. 그러면 칸을 나누는
-       세로선이 카드 높이만큼 길어지고 아래 빈자리가 사라진다. */
+    /* 줄인 표 안에서 아이콘·수치·설명을 세로 가운데에 모은다. */
     .js-stack .perf-stack__view .outcome-stats > div {
       display: flex;
       flex-direction: column;
@@ -888,7 +882,15 @@
        .study-row는 여기 넣지 않는다 — 3번 카드에서는 그게 첫 요소라
        위 여백이 남아 내용이 가운데보다 20px 아래로 내려갔다(실측). */
     .js-stack .perf-stack__view .outcome-stats {
+      flex: 0 0 auto;
+      min-block-size: clamp(17rem, 34vh, 19rem);
       margin-block-start: clamp(1.5rem, 3vw, 2.5rem);
+    }
+
+    /* 표 높이를 줄인 뒤 제목부터 표까지의 시각 중심이 카드 중앙보다 약
+       18px 위에 남는다. 첫 RESULTS 카드의 내용 묶음만 한 단위 내려 맞춘다. */
+    .js-stack .outcome .perf-stack__view:first-child > div {
+      translate: 0 clamp(.75rem, 2vh, 1.125rem);
     }
 
     /* 원본 비율은 그대로 두고 높이만 화면에 맞춘다 — 폭은 브라우저가
