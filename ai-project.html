@@ -1385,10 +1385,45 @@
       line-height: 1.6;
     }
 
+    .rank-grid__summary {
+      display: block;
+    }
+
+    .rank-grid__summary dt {
+      color: rgb(255 255 255 / .58);
+      font-family: var(--font-ko);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      letter-spacing: 0;
+      line-height: 1.4;
+    }
+
+    .rank-grid__summary dd {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: .4rem .65rem;
+      margin-block-start: .65rem;
+    }
+
+    .rank-grid__summary dd strong {
+      color: var(--color-on-ink);
+      font-size: clamp(1.1rem, 1.7vw, 1.4rem);
+      line-height: 1.35;
+    }
+
     .rank-grid__keywords dt {
       display: grid;
       gap: .4rem;
       line-height: 1.3;
+    }
+
+    /* 모바일에서도 집합 이름을 먼저 읽는다. 데스크톱 규칙에만 order가 있어
+       좁은 화면에서는 알약 뒤에 '메인 키워드 순위'가 붙던 문제를 막는다. */
+    .rank-grid__keywords dd {
+      order: -1;
+      margin-block-start: 0;
+      margin-block-end: .7rem;
     }
 
     /* 메인 키워드 알약 — 도입부 롱테일과 형태를 맞추되(같은 radius),
@@ -2255,6 +2290,24 @@
         grid-row: 1 / span 2;
       }
 
+      /* 두 개의 큰 분수형 수치를 한 줄 요약으로 묶는다. 제목의 10개 노출과
+         같은 무게로 경쟁하지 않고, 메인 키워드 순위의 보조 결과로 읽힌다. */
+      .js-stack .perf-stack__view #search-results .rank-grid__summary {
+        grid-column: 2;
+        grid-row: 1;
+        align-self: center;
+        justify-self: start;
+        text-align: start;
+      }
+
+      .js-stack .perf-stack__view #search-results .rank-grid__summary dt {
+        font-size: var(--text-xs);
+      }
+
+      .js-stack .perf-stack__view #search-results .rank-grid__summary dd {
+        justify-content: flex-start;
+      }
+
       /* 오른쪽 두 칸은 내용 높이만 쓴다. 알약 칸(215px)에 맞춰 늘어나면
          두 요약 수치가 183px 떨어져 한 묶음으로 안 읽혔다(실측).
          칸 안에서는 가운데에 놓는다. 왼쪽에 붙이면 알약과 44px밖에 안 떨어져
@@ -2396,6 +2449,16 @@
         max-inline-size: 30rem;
       }
 
+      /* 운영 설명은 WORKFLOW에서 이미 다룬다. RANKINGS에서는 추적한 검색어만
+         남기고 왼쪽 칸 전체를 써 키워드가 불필요하게 세로로 길어지지 않게 한다. */
+      .js-stack .perf-stack__view #search-results > .longtail {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .js-stack .perf-stack__view #search-results > .longtail .keyword-list {
+        max-inline-size: none;
+      }
+
       /* 제목 바로 아래 4px에 붙어 답답했다. */
       .js-stack .perf-stack__view .longtail .eyebrow {
         margin-block-start: .35rem;
@@ -2482,12 +2545,17 @@
        96rem 미만에서는 제목과 세부 키워드가 길어져 좌우 높이를 함께 맞출 수
        없으므로 기존 배치를 유지한다. */
     @media (min-width: 96rem) {
+      .js-stack .perf-stack__view #search-results {
+        grid-template-rows: auto auto auto;
+        align-content: center;
+      }
+
       .js-stack .perf-stack__view #search-results > .block__head {
         grid-column: 1;
       }
 
       .js-stack .perf-stack__view #search-results > .evidence-stage {
-        grid-row: 1 / span 4;
+        grid-row: 1 / span 3;
         justify-content: flex-start;
       }
 
@@ -3320,10 +3388,8 @@
                    "메인 키워드로 설정하고"라고 쓰기 때문이다 — 다른 집합으로
                    읽히면 안 된다. 순위 숫자는 2026.07.31 KPI 측정값이다. -->
               <div class="rank-grid__keywords"><dt><span class="rank-kw"><b>AMR</b><i>4<em>위</em></i></span><span class="rank-kw"><b>무인지게차</b><i>1<em>위</em></i></span><span class="rank-kw"><b>AGV</b><i>2<em>위</em></i></span></dt><dd>메인 키워드 순위</dd></div>
-              <div><dt>9/10</dt><dd>추적 키워드 9개가 검색 5위 이내</dd></div>
-              <div><dt>5/10</dt><dd>추적 키워드 5개가 검색 1위</dd></div>
+              <div class="rank-grid__summary"><dt>순위 요약</dt><dd><strong>5위 이내 9개</strong><span aria-hidden="true">·</span><strong>1위 5개</strong></dd></div>
             </dl>
-            <p class="metric-note">매주 금요일 추적하도록 구성한 10개 키워드의 2026.07.31 네이버 블로그탭 측정 결과입니다.</p>
 
             <!-- 세부 키워드 카드를 여기로 합치고 없앴다. 두 장이 겹쳤다:
                    (1) 위 요약 수치의 "추적 키워드"는 10개이고 메인 3개와
@@ -3338,9 +3404,6 @@
             <div class="longtail">
               <p class="eyebrow" lang="en">OTHER TRACKED KEYWORDS</p>
               <ul class="keyword-list"><li>AMR 뜻</li><li>AMR·AGV 비교</li><li>무인지게차 도입 비용</li><li>도입 체크리스트</li><li>안전 기준</li><li>5톤 무인지게차</li><li>더프라임그룹</li></ul>
-              <!-- 알약 아래가 아니라 옆에 둔다. 이 문장은 롱테일 키워드가
-                   무엇을 데려왔는지 설명하므로 알약 묶음과 한 줄로 읽혀야 한다. -->
-              <p class="result-note">4위 이하 키워드는 다음 콘텐츠에서 보강하고,<br>1~3위 키워드는 중복 발행을 줄이도록<br>다음 주제 선정에 반영했습니다.</p>
             </div>
 
             <figure class="evidence-stage">
