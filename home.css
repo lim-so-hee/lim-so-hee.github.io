@@ -46,6 +46,16 @@
   border-bottom: 0;
 }
 
+/* 홈만 헤더가 페이지 래퍼 밖에 있어 양끝 글자가 화면 가장자리까지 벌어졌다.
+   다른 네 페이지와 같은 75rem 폭 안에 직무·네비·이름을 정렬한다. */
+@media (min-width: 47.01rem) {
+  body > .site-header {
+    width: min(100%, 75rem);
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 3vw, 2.25rem);
+  }
+}
+
 .shell {
   width: min(100%, var(--content-max));
   margin-inline: auto;
