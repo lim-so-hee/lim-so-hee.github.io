@@ -2118,6 +2118,18 @@
         min-block-size: 0;
       }
 
+      /* RANKINGS는 왼쪽의 순위·각주·세부 키워드를 위에서부터 이어서 읽는다.
+         공용 1fr 두 행을 그대로 쓰면 짧은 각주가 두 번째 가변 행의 바닥에
+         붙으면서 가운데가 크게 비고, 세부 키워드까지 카드 하단으로 밀린다. */
+      .js-stack .perf-stack__view #search-results {
+        grid-template-rows: auto auto auto minmax(0, 1fr);
+      }
+
+      .js-stack .perf-stack__view #search-results > .longtail {
+        align-self: start;
+        margin-block-start: clamp(1.5rem, 3vh, 2.5rem);
+      }
+
       /* 머리말은 카드 폭을 다 쓴다. */
       .js-stack .perf-stack__view .block > .block__head {
         grid-column: 1 / -1;
