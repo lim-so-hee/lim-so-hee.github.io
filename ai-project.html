@@ -949,6 +949,15 @@
       margin-inline-start: auto;
       color: var(--color-accent);
       font-style: normal;
+      opacity: 0;
+      transform: translate(-.2rem, .2rem);
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .channel-grid a:hover .link-arrow,
+    .channel-grid a:focus-visible .link-arrow {
+      opacity: 1;
+      transform: translate(0, 0);
     }
 
     /* 본문은 왼쪽 60%만 쓰는데 이 박스만 100%라 오른쪽 445px이 비어 보였다
