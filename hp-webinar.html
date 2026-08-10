@@ -1,0 +1,1678 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="회사 유튜브의 3D 프린팅 콘텐츠가 HP의 협업 제안으로 이어져, 공동 웨비나의 더프라임그룹 발표 섹션을 구성하고 디자인한 사례입니다.">
+  <title>HP Co-hosted Webinar | Lim Sohee</title>
+  <link rel="stylesheet" href="tokens.css?v=2">
+  <link rel="stylesheet" href="pillnav.css?v=6">
+  <style>
+    /* 전시회·경주와 같은 어휘를 쓴다. 클래스 이름과 값은 exhibition.html의
+       인라인 스타일에서 가져왔고, 이 장에만 있는 구간(story-steps·study-grid)만
+       그 문법에 맞춰 새로 얹었다. case.css는 더 이상 쓰지 않는다. */
+    :root {
+      --stage-x: clamp(1.25rem, 5vw, 4.75rem);
+      --section-y: clamp(5rem, 9vw, 9rem);
+      --content-wide: 100rem;
+      --content-copy: 75rem;
+      --ease-jeton: cubic-bezier(.16, 1, .3, 1);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      overflow-x: clip;
+    }
+
+    body {
+      margin: 0;
+      background: var(--color-paper);
+      color: var(--color-ink);
+    }
+
+    body :where(h1, h2, h3, p, dl, dd, ol, figure) {
+      margin: 0;
+    }
+
+    body :where(h1, h2, h3) {
+      overflow-wrap: normal;
+      word-break: keep-all;
+      line-break: strict;
+      text-wrap: balance;
+    }
+
+    body :where(p, li, dt, dd) {
+      word-break: keep-all;
+      line-break: strict;
+      text-wrap: pretty;
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--color-ink);
+      outline-offset: 5px;
+    }
+
+    /* 100vw는 세로 스크롤막대 폭까지 세는데 가운데 정렬은 막대를 뺀 폭을
+       기준으로 잡는다. 1200px보다 좁은 화면에서 머리말이 막대 폭의 절반만큼
+       (실측 8px) 왼쪽으로 밀려 있었다. 부모가 여백 없는 .page라 100%가 곧
+       화면 폭이다 — 100%로 잡고 가운데 정렬한다. */
+    .site-header {
+      width: min(100%, 75rem);
+      margin-inline: auto;
+      padding-inline: clamp(1.25rem, 3vw, 2.25rem);
+    }
+
+    .header-role {
+      letter-spacing: -.08em;
+    }
+
+    .brand {
+      letter-spacing: -.02em;
+    }
+
+    .site-header:not(.is-scrolled) .header-role,
+    .site-header:not(.is-scrolled) .brand {
+      color: var(--color-on-ink);
+      text-shadow: 0 1px 10px rgb(0 0 0 / .35);
+    }
+
+    .page {
+      min-width: 0;
+    }
+
+    .section-shell {
+      width: min(100%, var(--content-wide));
+      margin-inline: auto;
+      padding-inline: var(--stage-x);
+    }
+
+    /* 구간 번호 — ai-project.html과 같은 방식. 본문 4구간만 번호를 받고
+       마감(closing)은 받지 않는다. 번호가 없는 게 "본문 끝" 신호다.
+       숫자는 라벨보다 1.5배 커서, Structure 안의 발표 단계 번호(작은 파란
+       01/02/03)와 같은 것으로 읽히지 않는다. */
+    main {
+      counter-reset: band;
+    }
+
+    .inbound,
+    .role,
+    .structure,
+    .outcome {
+      counter-increment: band;
+    }
+
+    .section-name {
+      display: flex;
+      gap: .5em;
+      align-items: baseline;
+      color: currentColor;
+      font-family: var(--font-accent-en);
+      font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+      font-style: italic;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .section-name::before {
+      color: var(--color-accent);
+      font-family: var(--font-en);
+      font-size: 1.5em;
+      font-style: normal;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      line-height: 1;
+      content: counter(band, decimal-leading-zero);
+    }
+
+    /* 파란 면 위에서는 파란 숫자가 안 보인다. 흰 글자로 돌린다. */
+    .inbound .section-name::before {
+      color: currentColor;
+    }
+
+    /* 검은 면 위에서는 같은 밴드의 다른 강조색과 맞춘다(.role-group dt와 동일). */
+    .role .section-name::before {
+      color: #83a1ff;
+    }
+
+    .section-heading {
+      max-inline-size: 19ch;
+      margin-block-start: clamp(1.5rem, 3vw, 2.75rem);
+      font-size: clamp(2.5rem, 6.1vw, 5.75rem);
+      font-weight: 400;
+      line-height: 1.08;
+      letter-spacing: -.035em;
+    }
+
+    .section-heading strong {
+      color: var(--color-accent);
+      font-weight: 800;
+    }
+
+    .section-lede {
+      max-inline-size: 60ch;
+      margin-block-start: clamp(1.5rem, 3vw, 2.5rem);
+      color: var(--color-ink-2);
+      font-size: clamp(1rem, 1.45vw, 1.25rem);
+      line-height: 1.75;
+    }
+
+    .section-lede + .section-lede {
+      margin-block-start: 1.25rem;
+    }
+
+    /* Hero — 전시회·경주와 같은 구성(풀블리드 배경 + 좌하단 카피 + SCROLL).
+       두 장은 현장 사진을 쓰지만 이 사례에는 현장 사진 자산이 없다.
+       공식 배너는 글자와 발표자 얼굴이 가득해 제목과 충돌한다. 그래서 직접
+       디자인한 발표 타이틀 슬라이드를 흐리게 깔아 파란 면으로만 쓴다.
+       같은 슬라이드는 아래 Role 구간에 선명하게 다시 나온다. */
+    .webinar-hero {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100svh;
+      margin-block-start: calc(-1 * var(--header-height));
+      background: var(--color-media);
+      color: var(--color-on-ink);
+      border-block-end: 1px solid var(--color-ink);
+      overflow: hidden;
+    }
+
+    .webinar-hero::before {
+      position: absolute;
+      inset: 0;
+      background: url("assets/hp/hp-company-sign.png") center / cover no-repeat;
+      content: "";
+    }
+
+    /* 왼쪽 간판이 밝은 흰색이라 전시 페이지 값(.72)으로는 흰 제목이 묻힌다.
+       왼쪽만 더 눌러 글자가 서는 자리를 만든다. */
+    .webinar-hero::after {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgb(5 11 28 / .84) 0%, rgb(5 11 28 / .6) 48%, rgb(5 11 28 / .3) 100%),
+        linear-gradient(180deg, rgb(0 0 0 / .12), transparent 42%, rgb(0 0 0 / .3));
+      content: "";
+    }
+
+    .hero-stage {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      align-items: end;
+      min-height: 100vh;
+      min-height: 100svh;
+      /* 위 여백을 4rem → 1.5rem으로 줄여 카피 덩어리를 위로 올린다.
+         제목이 네 줄이라 화면이 낮으면 마지막 줄이 아래 끝에 닿아 있었다
+         (실측: 히어로 737px vs 화면 639px). 아래 여백은 그대로 둔다 —
+         화면이 높을 때 카피가 아래에 붙는데, 여기를 줄이면 가운데 아래
+         SCROLL 표시와 부딪힌다(표시는 바닥에서 23~72px 자리). */
+      padding: calc(var(--header-height) + 1.5rem) var(--stage-x) clamp(3.5rem, 7vw, 6.5rem);
+      overflow: hidden;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      /* 오른쪽 칸이 351px이라 역할 줄(410px 필요)이 두 줄로 접히고 요약도
+         한 번 더 접혔다(실측). 칸을 559px로 넓히면 왼쪽 끝도 그만큼 당겨진다. */
+      grid-template-columns: minmax(0, 2.15fr) minmax(0, 1fr);
+      /* 가로·세로 간격이 한 값으로 묶여 있어서, 두 칸을 벌리려고 준 112px이
+         라벨과 제목 사이에도 그대로 들어가 있었다(실측 116px). 가로는 그대로
+         두고 세로만 좁힌다 — 붙이지는 않고 한 줄 정도 띄운다. */
+      /* 두 칸 사이 112px을 46px로 줄여, 제목 칸은 그대로 두고 오른쪽 글덩어리만
+         왼쪽으로 당긴다. 오른쪽 끝에 붙어 있던 요약에 여유가 생긴다. */
+      column-gap: clamp(1.5rem, 3vw, 3rem);
+      row-gap: clamp(1.25rem, 2vw, 2rem);
+      align-items: end;
+      width: min(100%, var(--content-wide));
+      margin-inline: auto;
+    }
+
+    .hero-kicker {
+      grid-column: 1 / -1;
+      color: rgb(255 255 255 / .78);
+      font-family: var(--font-accent-en);
+      font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+      font-style: italic;
+      line-height: 1;
+    }
+
+    .hero-copy h1 {
+      max-inline-size: 12ch;
+      margin: 0;
+      font-size: clamp(3rem, 5.7vw, 5.5rem);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -.04em;
+    }
+
+    .hero-copy h1 strong {
+      display: block;
+      font-weight: 800;
+    }
+
+    .hero-detail {
+      align-self: end;
+      padding-block-end: .5rem;
+    }
+
+    .hero-meta {
+      margin-block-end: 1rem;
+      color: #b8c7ff;
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .hero-summary {
+      /* 줄바꿈을 <br>로 직접 잡았으므로 38자 상한(434px)을 푼다. */
+      max-inline-size: none;
+      margin: 0;
+      color: rgb(255 255 255 / .84);
+      font-size: clamp(1rem, 1.45vw, 1.2rem);
+      line-height: 1.7;
+    }
+
+    /* 기간과 기여 범위는 경주의 hero-credit과 같은 자리에 둔다.
+       읽는 사람이 언제 한 일인지, 어디까지가 본인 몫인지 첫 화면에서 본다. */
+    .hero-scope {
+      max-inline-size: 38ch;
+      margin-block-start: 1.25rem;
+      padding-block-start: 1rem;
+      border-block-start: 1px solid rgb(255 255 255 / .3);
+      color: rgb(255 255 255 / .66);
+      font-size: var(--text-sm);
+      line-height: 1.6;
+    }
+
+    /* ai-project.html과 같은 표시. 오른쪽 끝 세로쓰기였는데, 화면 구석에
+       세워두면 읽히기 전에 지나쳐 안내 구실을 못 했다. 가운데 아래로 옮기고
+       이중 꺾쇠를 붙여 위아래로 움직인다 — 움직이는 것이 '내려가라'는 신호다.
+       .hero-stage의 좌우 패딩이 대칭이라 AI 페이지의 -stage-x 보정은
+       가져오지 않는다(그쪽은 sticky 기준 상자가 비대칭이라 필요했다). */
+    /* AI 페이지는 bottom: 2rem으로 히어로 바닥에 붙인다. 이 장은 제목이 네
+       줄이라 히어로가 첫 화면보다 길어질 수 있고(실측 737px vs 화면 639px),
+       그러면 표시가 화면 밖 65px 아래로 밀려 안 보였다. 히어로 바닥이 아니라
+       첫 화면 바닥을 기준으로 잡는다 — 보이는 자리는 같다. */
+    .scroll-cue {
+      position: absolute;
+      z-index: 3;
+      inset-inline: 0;
+      top: calc(100svh - 4.5rem);
+      inline-size: fit-content;
+      margin-inline: auto;
+      display: grid;
+      justify-items: center;
+      gap: .5rem;
+      color: rgb(255 255 255 / .78);
+    }
+
+    .scroll-cue__label {
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      letter-spacing: .16em;
+    }
+
+    .scroll-cue__chevrons {
+      inline-size: 1.5rem;
+      block-size: 1.375rem;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* 두 꺾쇠가 시간차를 두고 같은 길을 내려간다. 하나가 아직 내려가는
+       중에 다음 것이 출발해 "계속 아래로"라는 방향이 끊기지 않는다. */
+    .scroll-cue__chevrons path {
+      animation: cue-drop 1.9s cubic-bezier(.4, 0, .2, 1) infinite;
+    }
+
+    .scroll-cue__chevrons path:nth-child(2) {
+      animation-delay: .18s;
+    }
+
+    @keyframes cue-drop {
+      0%        { transform: translateY(-2px); opacity: 0; }
+      22%       { opacity: 1; }
+      58%       { transform: translateY(4px); opacity: 1; }
+      82%, 100% { transform: translateY(7px); opacity: 0; }
+    }
+
+    /* Inbound — 파란 면. 전시회의 challenge-plan과 같은 자리, 같은 역할. */
+    .inbound {
+      padding-block: var(--section-y);
+      background: var(--color-accent);
+      color: var(--color-on-ink);
+    }
+
+    .inbound .section-heading {
+      max-inline-size: 17ch;
+      margin-block-start: 1.75rem;
+      font-size: clamp(3rem, 7.4vw, 6rem);
+    }
+
+    .inbound .section-heading strong {
+      color: currentColor;
+    }
+
+    .inbound .section-lede {
+      margin: 0;
+      color: rgb(255 255 255 / .82);
+    }
+
+    /* 이미지·글 짝짓기 규칙.
+       ① 원본 비율을 절대 자르지 않는다(썸네일은 16:9, 케이스 스터디는 세로).
+       ② 비율을 지키려고 폭을 줄이면 옆에 빈 공간이 남는다. 그 자리에는 반드시
+          그 이미지를 설명하는 글이 들어간다 — 이미지 혼자 떠 있지 않게.
+       ③ 글 짝이 없는 이미지(발표 슬라이드·웨비나 다시보기)는 폭을 줄이지 않고
+          전체 폭으로 두고 캡션을 좌우로 벌린 한 줄로 받는다.
+       evidence-row가 ②를, deck-preview/youtube-card가 ③을 맡는다. */
+    .evidence-row {
+      display: grid;
+      gap: clamp(1.5rem, 3vw, 3.5rem);
+      align-items: end;
+      margin-block-start: clamp(4rem, 9vw, 8rem);
+    }
+
+    .evidence-note {
+      padding-block-end: .25rem;
+    }
+
+    .evidence-note .section-lede {
+      margin: 0;
+    }
+
+    .evidence-note .asset-caption {
+      display: block;
+      margin-block-start: 1.75rem;
+      padding-block-start: 1rem;
+      border-block-start: 1px solid currentColor;
+      font-size: var(--text-sm);
+      line-height: 1.6;
+      opacity: .78;
+    }
+
+    .origin-preview {
+      margin: 0;
+    }
+
+    .origin-preview a {
+      position: relative;
+      display: block;
+      overflow: hidden;
+      background: #1b1b1b;
+    }
+
+    .origin-preview img {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      transition: transform 450ms var(--ease-jeton);
+    }
+
+    .origin-preview a:hover img,
+    .origin-preview a:focus-visible img {
+      transform: scale(1.025);
+    }
+
+    .asset-caption {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: .5rem 1.5rem;
+      padding-block-start: 1rem;
+      color: currentColor;
+      font-size: var(--text-sm);
+      opacity: .78;
+    }
+
+    /* Role — 어두운 면. 전시회의 execution과 같은 자리. */
+    .role {
+      padding-block: var(--section-y);
+      background: var(--color-media);
+      color: var(--color-on-ink);
+    }
+
+    .role .section-heading {
+      max-inline-size: 18ch;
+    }
+
+    .role .section-heading strong {
+      color: #83a1ff;
+    }
+
+    /* 칸 사이 여백을 grid gap으로 두면 그 여백이 다음 줄 윗선 바깥에 생긴다 —
+       글이 제 칸 위쪽 선에 붙고 아래만 넓게 비었다. 여백을 칸 안으로 옮겨
+       위아래를 같게 주면 글이 두 선 사이 가운데에 선다. */
+    .role-grid {
+      display: grid;
+      margin-block-start: clamp(4rem, 8vw, 7rem);
+    }
+
+    .role-group {
+      display: grid;
+      grid-template-columns: minmax(8rem, .25fr) minmax(0, .75fr);
+      gap: 2rem;
+      padding-block: clamp(2rem, 3.2vw, 3.25rem);
+      border-block-start: 1px solid rgb(255 255 255 / .32);
+    }
+
+    .role-group dt {
+      color: #83a1ff;
+      font-family: var(--font-accent-en);
+      font-size: clamp(1.25rem, 2vw, 1.75rem);
+      font-style: italic;
+    }
+
+    .role-group dd {
+      color: rgb(255 255 255 / .82);
+      font-size: clamp(1.05rem, 1.55vw, 1.3rem);
+      line-height: 1.7;
+    }
+
+    .role-group ul {
+      display: grid;
+      gap: .65rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .role-group li {
+      padding-inline-start: 1.1rem;
+      text-indent: -1.1rem;
+    }
+
+    .role-group li::before {
+      color: #83a1ff;
+      content: "— ";
+    }
+
+    /* 행사(공식 배너)와 그 안의 내 몫(발표 섹션 타이틀 슬라이드)을 나란히 둔다.
+       img의 width·height 속성이 있으므로 비율은 브라우저가 원본대로 잡는다 —
+       배너 1352×737, 슬라이드 960×540. 어느 쪽도 자르지 않는다. */
+    .role-assets {
+      display: grid;
+      gap: clamp(1.5rem, 3vw, 3rem);
+      align-items: start;
+      margin-block-start: clamp(4rem, 9vw, 8rem);
+    }
+
+    .role-assets figure {
+      min-width: 0;
+    }
+
+    .role-assets img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #10131d;
+    }
+
+    /* 반 폭 칸에서는 캡션을 좌우로 벌리면 오른쪽 글이 잘린다(실측).
+       라벨을 위, 설명을 아래로 쌓는다. */
+    .role-assets .asset-caption {
+      display: grid;
+      gap: .35rem;
+      justify-items: start;
+    }
+
+    .role-assets .asset-caption span:first-child {
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    /* Structure — 밝은 면. 전시회의 evidence와 같은 자리. */
+    .structure {
+      padding-block: var(--section-y);
+      background: #eef1fa;
+    }
+
+    /* 줄바꿈을 <br>로 직접 잡았으므로 19자 상한을 푼다. 그대로 두면
+       "생산 현장의 과제부터"가 한 번 더 접혀 3줄이 4줄이 됐다(실측). */
+    .structure .section-heading {
+      max-inline-size: none;
+    }
+
+    .structure-intro {
+      display: grid;
+      gap: 2rem 5rem;
+      align-items: end;
+    }
+
+    .structure-intro .section-lede {
+      margin: 0;
+    }
+
+    .structure-intro .section-lede + .section-lede {
+      margin-block-start: 1.25rem;
+    }
+
+    /* 발표 구성 3단계. 전시회 execution-flow의 번호 카드 문법을 밝은 면에 맞춰
+       옮겼다. 단계별 이미지는 넣지 않았다 — 어떤 슬라이드가 어느 단계에
+       해당하는지 확인된 근거가 없다. 확인된 슬라이드 2장은 아래에 따로 둔다. */
+    .story-steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-block-start: clamp(4rem, 8vw, 7rem);
+      padding: 0;
+      border-block: 1px solid var(--color-rule-strong);
+      list-style: none;
+    }
+
+    .story-steps li {
+      min-width: 0;
+      min-height: 12rem;
+      padding: 1.75rem 1.5rem 2rem;
+      border-inline-end: 1px solid var(--color-rule-strong);
+    }
+
+    .story-steps li:last-child {
+      border-inline-end: 0;
+    }
+
+    .story-steps span {
+      display: block;
+      margin-block-end: 1rem;
+      color: var(--color-accent);
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    .story-steps strong {
+      display: block;
+      max-inline-size: 16ch;
+      font-size: clamp(1.15rem, 1.9vw, 1.6rem);
+      font-weight: 600;
+      line-height: 1.4;
+      letter-spacing: -.02em;
+    }
+
+    .slide-principle {
+      margin-block-start: clamp(4rem, 9vw, 8rem);
+      padding-block-start: clamp(2rem, 4vw, 3rem);
+      border-block-start: 2px solid var(--color-ink);
+    }
+
+    .slide-principle h3 {
+      max-inline-size: 20ch;
+      margin-block-start: 1.5rem;
+      font-size: clamp(1.75rem, 3.6vw, 3rem);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -.03em;
+    }
+
+    .slide-principle h3 strong {
+      color: var(--color-accent);
+      font-weight: 800;
+    }
+
+    .eyebrow {
+      margin: 0;
+      color: var(--color-focus);
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .comparison-grid {
+      display: grid;
+      gap: clamp(1.5rem, 3vw, 3rem);
+      margin-block-start: clamp(3rem, 6vw, 5rem);
+    }
+
+    .comparison-item {
+      min-width: 0;
+    }
+
+    .comparison-item img {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      background: var(--color-media);
+    }
+
+    .comparison-item figcaption {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      align-items: baseline;
+      padding-block-start: 1rem;
+      color: var(--color-ink-2);
+      font-size: var(--text-sm);
+      line-height: 1.55;
+    }
+
+    .comparison-item figcaption strong {
+      color: var(--color-accent);
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      letter-spacing: .08em;
+    }
+
+    /* Outcome + Next */
+    .outcome {
+      padding-block: var(--section-y);
+      border-block-end: 1px solid var(--color-ink);
+    }
+
+    .outcome-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-block-start: clamp(3rem, 6vw, 5rem);
+      border-block-start: 2px solid var(--color-ink);
+    }
+
+    /* 왼쪽 여백이 0이라 숫자가 칸을 나누는 세로선에 붙어 있었다(실측:
+       선 x=640, "약" x=645). 좌우를 같게 줘서 칸 안에 들어앉게 한다. */
+    .outcome-stats > div {
+      padding: 1.75rem 1.5rem 2rem;
+      border-inline-end: 1px solid var(--color-rule-strong);
+    }
+
+    .outcome-stats > div:last-child {
+      border-inline-end: 0;
+    }
+
+    .outcome-stats dt {
+      color: var(--color-focus);
+      font-family: var(--font-en);
+      font-size: clamp(2.5rem, 5.4vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -.04em;
+    }
+
+    .outcome-stats dd {
+      margin-block-start: 1rem;
+      color: var(--color-ink-2);
+      font-size: var(--text-sm);
+      line-height: 1.6;
+    }
+
+    /* ── 스크롤 스택 (Outcome 증거 3장) ────────────────────────
+       ai-project.html의 03 SEARCH PERFORMANCE 카드와 같은 동작.
+       스택이 꺼진 환경에서는 아래 기본값 그대로 평범한 세로 흐름이다.
+       ai-project의 .stack-pinned 토글은 옮기지 않았다 — 그 클래스를 쓰는
+       스타일 규칙이 원본 어디에도 없어 아무 일도 하지 않는다(전체 검색 확인). */
+    /* 제목 바로 아래에 카드가 0px로 붙어 있었다(실측). 다른 구간은 제목과
+       내용 사이에 64~128px을 둔다. 같은 숨통을 준다. */
+    .perf-stack {
+      margin-block-start: clamp(3rem, 6vw, 5rem);
+    }
+
+    .perf-stack__view {
+      width: min(100%, var(--content-wide));
+      margin-inline: auto;
+      padding-inline: var(--stage-x);
+    }
+
+    .perf-stack__view + .perf-stack__view {
+      margin-block-start: clamp(3.5rem, 7vw, 6rem);
+    }
+
+    /* 스크롤 구간 = 카드 수 × 화면 높이. 카드가 한 화면을 통째로 쓴다. */
+    .js-stack .perf-stack {
+      height: calc(var(--views, 3) * 100vh);
+    }
+
+    .js-stack .perf-stack__slot {
+      position: sticky;
+      top: 10px;
+      height: calc(100vh - 20px);
+      overflow: hidden;
+      margin-inline: 10px;
+      border-radius: 20px;
+    }
+
+    /* 카드를 슬롯보다 20px 크게 잡고, 안쪽 여백만큼 들여 색면(::before)을
+       놓는다. 색면이 슬롯과 같은 크기·같은 radius라 카드가 올라갈 때
+       둥근 아래 모서리가 드러나며 다음 카드가 보인다. */
+    /* ai-project.html 1932행과 같은 값. center로 두면 내용이 제 높이만
+       차지하고 가운데에 떠서, 카드 위아래에 빈 자리가 110px씩 남았다(실측).
+       stretch로 두면 안쪽이 카드 높이만큼 늘어난다. */
+    .js-stack .perf-stack__view {
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      z-index: var(--z, 1);
+      display: grid;
+      align-content: stretch;
+      width: calc(100% + 20px);
+      height: 100vh;
+      max-width: none;
+      margin: 0;
+      padding: 10px;
+      will-change: transform;
+    }
+
+    .js-stack .perf-stack__view::before {
+      position: absolute;
+      inset: 10px;
+      z-index: -1;
+      border-radius: 20px;
+      background: var(--view-bg, #eef1fa);
+      content: "";
+    }
+
+    .js-stack .perf-stack__view:nth-child(2n) {
+      --view-bg: #dde5f6;
+    }
+
+    /* 내용은 색면 위에 서고, 카드 안에서 본문 폭을 다시 잡는다.
+       슬롯이 좌우로 10px 들어와 있어서 그냥 --stage-x를 주면 카드 안 글자가
+       섹션 제목보다 11px 오른쪽으로 밀렸다(실측: 제목 76px, 카드 87px).
+       폭과 여백에서 그 10px을 빼 왼쪽 정렬선을 하나로 맞춘다. */
+    .js-stack .perf-stack__view > * {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+      width: min(100%, calc(var(--content-wide) - 20px));
+      margin: 0 auto;
+      /* 내용이 카드 높이를 정확히 채우면서 라벨이 카드 윗변에 붙어 있었다.
+         위아래 숨통을 준다 — ai-project.html이 카드 안 덩어리에 주는 값과 같다. */
+      padding-block: clamp(1.5rem, 3.2vh, 2.5rem);
+      padding-inline: max(0px, calc(var(--stage-x) - 10px));
+    }
+
+    /* 카드 안 설명은 60ch 상한 때문에 세 줄로 접혔다. 카드는 화면 전체 폭을
+       쓰므로 글 영역을 넓혀 두 줄에 앉힌다. 3번 카드의 설명은 좁은 칸 안에
+       있어서 이 상한이 걸리지 않는다. */
+    /* 카드 안 본문만 한 단계 줄인다. 다른 구간의 설명문은 그대로다. */
+    .js-stack .perf-stack__view .section-lede {
+      font-size: clamp(.95rem, 1.2vw, 1.125rem);
+    }
+
+    .js-stack .perf-stack__view > * > .section-lede {
+      max-inline-size: 112ch;
+    }
+
+    /* 다시보기 카드의 소제목은 24ch 상한에 걸려 두 줄로 접혔다. 이 카드는
+       소제목 아래가 영상 하나뿐이라 한 줄로 두는 편이 읽기 좋다.
+       1번 카드는 그대로 둔다 — 아래에 설명 문단이 이어져 두 줄이 맞다. */
+    /* 이 카드만 소제목 다음이 곧바로 영상이라 사이가 0px이었다(실측).
+       소제목은 위 라벨에 붙여 두고 영상 쪽으로 숨통을 낸다. */
+    .js-stack .perf-stack__view .proof-block > .card-heading {
+      max-inline-size: none;
+      margin-block-end: clamp(1.5rem, 3vw, 2.5rem);
+    }
+
+    /* 남는 높이를 가져갈 요소. ai-project가 증거 캡처에 flex: 1 1 0을 거는
+       자리와 같다 — 이 장에서 늘어날 수 있는 건 숫자 줄과 문서 두 장이다. */
+    .js-stack .perf-stack__view :is(.outcome-stats, .study-row) {
+      flex: 1 1 0;
+    }
+
+    /* 길어진 칸 안에서 숫자를 세로 가운데에 세운다. 그러면 칸을 나누는
+       세로선이 카드 높이만큼 길어지고 아래 빈자리가 사라진다. */
+    .js-stack .perf-stack__view .outcome-stats > div {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* 카드 하나가 한 화면이므로 세로 여백을 걷어낸다.
+       .study-row는 여기 넣지 않는다 — 3번 카드에서는 그게 첫 요소라
+       위 여백이 남아 내용이 가운데보다 20px 아래로 내려갔다(실측). */
+    .js-stack .perf-stack__view .outcome-stats {
+      margin-block-start: clamp(1.5rem, 3vw, 2.5rem);
+    }
+
+    /* 원본 비율은 그대로 두고 높이만 화면에 맞춘다 — 폭은 브라우저가
+       비율에서 계산한다. 자르지 않는다. */
+    .js-stack .perf-stack__view .youtube-card {
+      width: auto;
+      max-width: 100%;
+      height: min(50vh, 25rem);
+      margin-inline: auto;
+    }
+
+    /* 세로 문서 2장이 칸 폭의 절반도 못 쓰고 있었다(실측 208px / 칸 430px).
+       높이 상한을 46vh → 70vh로 올려 칸을 채운다. max-width가 칸 밖으로
+       못 나가게 막고, 비율(793×1122)은 브라우저가 그대로 유지한다. */
+    .js-stack .perf-stack__view .study-row img {
+      width: auto;
+      max-width: 100%;
+      height: min(74vh, 40rem);
+      margin-inline: auto;
+    }
+
+    /* 감싸는 칸이 하나 생기면서 .study-row가 직계 자식이 아니게 됐고,
+       그 바람에 기본 위 여백 112px이 되살아나 카드를 넘치게 했다(실측). */
+    .js-stack .perf-stack__view .study-row {
+      align-items: center;
+      margin-block-start: 0;
+    }
+
+    /* 이미지 윗변이 52px이라 상단 메뉴(20~65px)에 덮였다(실측).
+       그림과 캡션을 행 아래쪽으로 붙여 메뉴 아래로 내린다. */
+    .js-stack .perf-stack__view .study-row figure {
+      align-self: end;
+    }
+
+    .proof-block {
+      margin-block-start: clamp(4rem, 8vw, 7rem);
+    }
+
+    /* 카드 소제목 — ai-project.html의 .block__head h3와 같은 값.
+       영문 라벨 밑에 결론형 한글 한 줄이 오는 구조를 맞춘다. */
+    .card-heading {
+      max-inline-size: 24ch;
+      margin-block-start: 1.25rem;
+      font-size: clamp(1.4rem, 2.7vw, 2.4rem);
+      font-weight: 400;
+      line-height: 1.16;
+      letter-spacing: -.03em;
+    }
+
+    .proof-label {
+      margin-block-end: 1rem;
+      color: var(--color-accent);
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .youtube-card {
+      position: relative;
+      display: block;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: var(--color-media);
+    }
+
+    .youtube-card img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 450ms var(--ease-jeton);
+    }
+
+    .youtube-card::after {
+      position: absolute;
+      inset: 0;
+      background: rgb(0 0 0 / .12);
+      transition: background 220ms var(--ease-jeton);
+      content: "";
+    }
+
+    .youtube-card:hover img,
+    .youtube-card:focus-visible img {
+      transform: scale(1.025);
+    }
+
+    .youtube-card:hover::after,
+    .youtube-card:focus-visible::after {
+      background: rgb(0 0 0 / .2);
+    }
+
+    .youtube-card__play {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      left: 50%;
+      display: grid;
+      place-items: center;
+      width: clamp(4.25rem, 7vw, 6.5rem);
+      aspect-ratio: 1;
+      border: 1px solid rgb(255 255 255 / .8);
+      border-radius: 50%;
+      background: rgb(49 99 246 / .92);
+      transform: translate(-50%, -50%);
+    }
+
+    .youtube-card__play::before {
+      width: 0;
+      height: 0;
+      margin-inline-start: .3rem;
+      border-block: .65rem solid transparent;
+      border-inline-start: 1rem solid white;
+      content: "";
+    }
+
+    .proof-note {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: .5rem 1.5rem;
+      padding-block-start: 1rem;
+      color: var(--color-ink-2);
+      font-size: var(--text-sm);
+      line-height: 1.55;
+    }
+
+    /* 세로 문서 2장은 가로 폭을 다 쓰면 지나치게 커지고, 폭을 줄이면 옆이 빈다.
+       설명 글을 첫 칸에 넣어 3단으로 짝지었다. 비율은 원본(793×1122) 그대로. */
+    .study-row {
+      display: grid;
+      gap: clamp(1.5rem, 3vw, 3rem);
+      align-items: start;
+      margin-block-start: clamp(4rem, 8vw, 7rem);
+    }
+
+    .study-row figure {
+      min-width: 0;
+    }
+
+    .study-row img {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 793 / 1122;
+      background: var(--color-paper-2);
+    }
+
+    /* 1·2번 카드의 감싸는 칸은 세로 배치라 라벨 아래 16px과 소제목 위 20px이
+       그대로 더해져 36px이 된다. 이 칸만 일반 블록이라 두 여백이 겹쳐
+       20px로 먹혔다(실측). 같은 방식으로 맞춘다. */
+    .study-intro {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .study-intro .section-lede {
+      margin-block-start: 1rem;
+    }
+
+    /* 이미지는 칸 가운데에 서는데 캡션만 칸 왼쪽 끝에 붙어 있었다
+       (실측: 이미지 왼쪽 559px, 캡션 왼쪽 454px). 캡션 상자를 이미지와 같은
+       폭으로 잡고 같이 가운데에 세운다 — 글자는 왼쪽 정렬 그대로다.
+       이미지 폭은 높이 상한에 비율을 곱해 나오는 값이라 CSS만으로는 알 수 없다.
+       ai-project.html의 --media-w와 같은 방식으로 JS가 실측해 넘긴다. */
+    .study-row figcaption {
+      width: var(--media-w, 100%);
+      margin-inline: auto;
+      padding-block-start: 1rem;
+      color: var(--color-ink-2);
+      font-size: var(--text-sm);
+      line-height: 1.55;
+    }
+
+    .study-row figcaption strong {
+      display: block;
+      margin-block-end: .35rem;
+      color: var(--color-accent);
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      letter-spacing: .08em;
+    }
+
+    .link-arrow {
+      font-style: normal;
+    }
+
+    /* "…로 이동 ↗"이라고 써 놓고 정작 글자는 눌리지 않던 자리들이 있었다.
+       링크는 그림에만 걸려 있었다. 화살표가 붙은 문구 자체를 링크로 만든다.
+       색은 캡션 그대로 두고 가리키면 밑줄만 나오게 한다. */
+    .caption-link {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .caption-link:hover,
+    .caption-link:focus-visible {
+      text-decoration: underline;
+      text-underline-offset: .25em;
+    }
+
+    /* 마무리 구간 — ai-project.html의 .closing을 그대로 옮겼다.
+       가운데 정렬, 이탤릭 Next 라벨, 앞 절만 파랑·굵게, 알약 버튼 2개.
+       ai-project는 등장 애니메이션(.reveal)을 함께 쓰지만 이 장에는 모션
+       장치가 없어 그 부분만 뺐다(전시·경주도 모션 없음). */
+    .closing {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-block: clamp(7rem, 14vw, 12rem);
+      border-block-end: 1px solid var(--color-ink);
+      text-align: center;
+    }
+
+    .closing > .section-shell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .next-eyebrow {
+      margin: 0 0 1.375rem;
+      color: var(--color-ink-2);
+      font-family: var(--font-accent-en), serif;
+      font-size: 1.375rem;
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    .closing h2 {
+      max-inline-size: none;
+      margin: 0;
+      color: var(--color-ink);
+      font-size: clamp(2.25rem, 6.3vw, 4.5rem);
+      font-weight: 400;
+      line-height: 1.08;
+      letter-spacing: -.04em;
+      word-break: keep-all;
+    }
+
+    .closing h2 > span {
+      display: block;
+    }
+
+    /* 줄바꿈을 브라우저에 맡기지 않고 문맥 단위로 고정한다. */
+    .next-line {
+      display: block;
+    }
+
+    .next-l1 {
+      color: var(--color-accent);
+      font-weight: 800;
+    }
+
+    .next-l2 {
+      color: var(--color-ink);
+      font-weight: 400;
+    }
+
+    .next-lede {
+      max-inline-size: 40rem;
+      margin-block-start: 1.625rem;
+      color: var(--color-ink-2);
+      font-size: 1.0625rem;
+      line-height: 1.7;
+      text-wrap: pretty;
+      word-break: keep-all;
+    }
+
+    .next-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      justify-content: center;
+      margin-block-start: 2.375rem;
+    }
+
+    .next-btn {
+      display: inline-flex;
+      gap: .5rem;
+      align-items: center;
+      min-block-size: 48px;
+      padding-inline: 1.5rem;
+      border: 1px solid var(--color-accent);
+      border-radius: 12px;
+      font-size: 1.125rem;
+      font-weight: 600;
+      transition: background-color 220ms var(--ease-jeton), color 220ms var(--ease-jeton);
+    }
+
+    /* 흰 글자 on --color-accent = 4.95. */
+    .next-btn--solid {
+      background: var(--color-accent);
+      color: var(--color-paper);
+    }
+
+    .next-btn--solid:hover,
+    .next-btn--solid:focus-visible {
+      background: #2c57d5;
+    }
+
+    /* 이 버튼만 글자가 흰색이라 공용 포커스 테두리(currentColor)가 흰 종이
+       위에서 안 보인다. 옆 버튼과 같은 파랑으로 고정한다. */
+    .next-btn--solid:focus-visible {
+      outline-color: var(--color-accent);
+    }
+
+    /* --color-accent 글자 on 흰 면 = 4.95. */
+    .next-btn--ghost {
+      background: var(--color-paper);
+      color: var(--color-accent);
+    }
+
+    .next-btn--ghost:hover,
+    .next-btn--ghost:focus-visible {
+      background: var(--color-accent);
+      color: var(--color-paper);
+    }
+
+    .next-arrow {
+      font-size: 1.125rem;
+      line-height: 1;
+      transition: transform 220ms var(--ease-jeton);
+    }
+
+    .next-btn:hover .next-arrow,
+    .next-btn:focus-visible .next-arrow {
+      transform: translate(3px, -3px);
+    }
+
+    @media (min-width: 62rem) {
+      /* 제목 칸이 696px인데 가장 긴 줄 "생산 현장의 과제부터"가 722px이라
+         <br>로 잡은 3줄이 4줄로 접혔다(실측). 제목 칸을 756px로 넓힌다. */
+      .structure-intro {
+        grid-template-columns: minmax(0, .58fr) minmax(0, .42fr);
+      }
+
+      /* 영상이 넓게, 설명 글이 좁게. 글이 영상 아래끝에 맞춰 선다. */
+      .evidence-row {
+        grid-template-columns: minmax(0, .62fr) minmax(0, .38fr);
+      }
+
+      .role-assets,
+      .comparison-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      /* 이미지 칸을 비율로 잡으면 칸이 이미지보다 넓어서 두 장 사이가 멀어진다
+         (실측: 칸 472px에 이미지 262px). 이미지 칸은 내용 폭에 맞추고 남는
+         자리는 설명 칸이 가져가게 해서, 간격이 곧 두 장 사이 거리가 되게 한다. */
+      .study-row {
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        column-gap: clamp(1rem, 2vw, 1.75rem);
+      }
+    }
+
+    @media (max-width: 61.99rem) {
+      .role-group {
+        grid-template-columns: 1fr;
+        gap: .75rem;
+      }
+
+      .story-steps {
+        grid-template-columns: 1fr;
+      }
+
+      .story-steps li {
+        min-height: 0;
+        border-inline-end: 0;
+        border-block-end: 1px solid var(--color-rule-strong);
+      }
+
+      .story-steps li:last-child {
+        border-block-end: 0;
+      }
+
+      .outcome-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .outcome-stats > div {
+        padding-inline: 0;
+        border-inline-end: 0;
+        border-block-end: 1px solid var(--color-rule-strong);
+      }
+
+      .outcome-stats > div:last-child {
+        border-block-end: 0;
+      }
+    }
+
+    @media (max-width: 47.99rem) {
+      .section-heading,
+      .closing h2 {
+        letter-spacing: -.025em;
+      }
+
+      .hero-stage {
+        padding: calc(var(--header-height) + 5rem) 1.25rem 3.5rem;
+      }
+
+      .hero-copy {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .hero-kicker {
+        grid-column: auto;
+      }
+
+      .hero-copy h1 {
+        font-size: clamp(2.25rem, 10.5vw, 3.25rem);
+      }
+
+      .scroll-cue {
+        display: none;
+      }
+
+      .comparison-item figcaption {
+        grid-template-columns: 1fr;
+        gap: .35rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .youtube-card img,
+      .origin-preview img {
+        transition: none;
+      }
+
+      /* 꺾쇠는 멈추되 사라지지는 않는다. animation을 지우기만 하면 마지막
+         프레임(opacity 0)에 멈춰 표시가 통째로 없어진다. */
+      .scroll-cue__chevrons path {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <span class="header-role" lang="en">Content Marketer</span>
+      <nav class="pillnav" aria-label="주요 메뉴">
+        <ul class="pillnav__list">
+          <!-- jeton.com처럼 홈은 글자 없이 집 아이콘만. 이름은 aria-label로 남긴다. -->
+          <li><a class="pillnav__home" href="index.html" aria-label="홈">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none"
+                 stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 10.2 12 3.5l9 6.7V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>
+            </svg>
+          </a></li>
+          <li><a href="profile.html" lang="en">Profile</a></li>
+          <li><a href="ai-project.html" lang="en">AI Project</a></li>
+          <li class="pillnav__group">
+            <button type="button" class="pillnav__toggle" aria-expanded="false" aria-controls="key-projects" lang="en">
+              Key Projects<span class="pillnav__caret" aria-hidden="true">↓</span>
+            </button>
+            <ul class="pillnav__menu" id="key-projects" hidden>
+              <li><a href="hp-webinar.html" aria-current="page" lang="en">HP Co-hosted Webinar</a></li>
+              <li><a href="exhibition.html" lang="en">KOREA MAT Exhibition</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <a class="brand" href="index.html" lang="en">Lim Sohee</a>
+    </header>
+
+    <main>
+      <section class="webinar-hero" id="top" aria-labelledby="case-title">
+        <div class="hero-stage">
+          <div class="hero-copy">
+            <p class="hero-kicker" lang="en">HP Co-hosted Webinar 2025</p>
+            <h1 id="case-title">
+              유튜브 기술 콘텐츠를
+              <strong>HP 공동 웨비나로 확장했습니다.</strong>
+            </h1>
+            <div class="hero-detail">
+              <p class="hero-meta" lang="en">B2B Marketing · Co-hosted Webinar · Presentation Design</p>
+              <p class="hero-summary">회사 유튜브에 올린 3D 프린팅 콘텐츠를 보고<br>HP에서 먼저 협업을 제안했습니다.<br>자동차 부품 생산에 쓰이는<br>지그·검사구·몰드 사례를 발표 흐름에 맞게 정리하고,<br>더프라임그룹 발표 섹션을 디자인했습니다.</p>
+              <!-- 세부 항목 네 줄은 아래 Role 구간이 그대로 갖고 있어 첫 화면과
+                   문장이 겹쳤다. 첫 화면에는 기간과 한 줄 범위만 남기고
+                   구체적인 작업 목록은 Role에 맡긴다. -->
+              <p class="hero-scope">2025.10 · 발표 덱 사업 추진 체계·사업 전략 구성·디자인 · 발표는 웨비나 발표자가 진행</p>
+            </div>
+          </div>
+          <span class="scroll-cue" aria-hidden="true">
+            <span class="scroll-cue__label">SCROLL</span>
+            <svg class="scroll-cue__chevrons" viewBox="0 0 24 22" fill="none" aria-hidden="true">
+              <path d="M4 4l8 7 8-7"/>
+              <path d="M4 11l8 7 8-7"/>
+            </svg>
+          </span>
+        </div>
+      </section>
+
+      <section class="inbound" aria-labelledby="inbound-title">
+        <div class="section-shell">
+          <p class="section-name" lang="en">Inbound</p>
+          <h2 class="section-heading" id="inbound-title">유튜브 콘텐츠가 <strong>HP의 협업 제안으로 이어졌습니다.</strong></h2>
+
+          <!-- 협업의 계기가 된 영상과, 그 계기를 설명하는 문단을 한 줄에 나란히 둔다. -->
+          <div class="evidence-row">
+            <figure class="origin-preview">
+              <a href="https://youtu.be/KBvTgvossxs?si=T2uHRStnE1Up4FUt" target="_blank" rel="noreferrer">
+                <img src="https://i.ytimg.com/vi/KBvTgvossxs/maxresdefault.jpg" width="1280" height="720" alt="유튜브 영상 썸네일 — 자동차 조립 라인 사진 위에 “리드타임 단축과 70% 경량화를 동시에! 3D프린팅 조립 지그 적용 사례” 제목이 얹혀 있다" loading="lazy">
+              </a>
+            </figure>
+            <div class="evidence-note">
+              <p class="section-lede">HP 담당자가 회사 유튜브의 3D 프린팅 콘텐츠를 보고 연락해 오면서 공동 웨비나가 추진됐습니다. 여러 참여사가 함께 준비하는 자리인 만큼, 더프라임그룹의 기술과 적용 사례를 제조 현장의 맥락에서 설명할 발표 자료가 필요했습니다.</p>
+              <p class="asset-caption">ORIGIN VIDEO · <a class="caption-link" href="https://youtu.be/KBvTgvossxs?si=T2uHRStnE1Up4FUt" target="_blank" rel="noreferrer">협업 제안으로 이어진 유튜브 콘텐츠 — YouTube에서 보기 <i class="link-arrow" aria-hidden="true">↗</i></a></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="role" aria-labelledby="role-title">
+        <div class="section-shell">
+          <p class="section-name" lang="en">Role</p>
+          <h2 class="section-heading" id="role-title">더프라임그룹 발표 섹션을 <strong>직접 구성하고 디자인했습니다.</strong></h2>
+
+          <dl class="role-grid">
+            <div class="role-group">
+              <dt>Direct</dt>
+              <dd>
+                <ul>
+                  <li>발표 덱 (사업 추진 체계·사업 전략) 직접 구성과 디자인</li>
+                  <li>아젠다1 콘티(10분 분량) 단독 작성</li>
+                  <li>전달받은 베이스 발표 자료의 내용 보강과 디자인 수정</li>
+                  <li>지그·검사구·몰드 적용 사례와 검증 결과 정리</li>
+                </ul>
+              </dd>
+            </div>
+            <div class="role-group">
+              <dt>Co-hosted</dt>
+              <dd>HP·더프라임그룹·AM Korea 참여</dd>
+            </div>
+            <div class="role-group">
+              <dt>Presented by</dt>
+              <dd>웨비나 발표자가 진행</dd>
+            </div>
+          </dl>
+
+          <div class="role-assets">
+            <figure>
+              <a href="https://youtu.be/Kn-4J2Flo-c?si=syZLBMOVRouMRP31" target="_blank" rel="noreferrer">
+                <img src="assets/hp/hp-webinar-banner.jpg" width="1352" height="737" alt="HP·더프라임그룹·AM Korea 공동 웨비나 공식 배너 — 2025년 10월 22일 개최, 발표자 4인" loading="lazy">
+              </a>
+              <figcaption class="asset-caption">
+                <span>OFFICIAL BANNER</span>
+                <span><a class="caption-link" href="https://youtu.be/Kn-4J2Flo-c?si=syZLBMOVRouMRP31" target="_blank" rel="noreferrer">공동 웨비나 공식 배너 — 다시보기로 이동 <i class="link-arrow" aria-hidden="true">↗</i></a></span>
+              </figcaption>
+            </figure>
+            <figure>
+              <img src="assets/hp/hp-deck-title-slide.jpg" width="960" height="540" alt="파란 그라데이션 배경의 발표 타이틀 슬라이드 — “더프라임의 3D프린팅 활용 사례 / 더프라임이 출력하는 산업의 미래”, 왼쪽 위 HP 로고와 오른쪽 위 THE PRIME 로고" loading="lazy">
+              <figcaption class="asset-caption">
+                <span>DECK SLIDE</span>
+                <span>직접 구성·디자인한 발표 섹션의 타이틀 슬라이드</span>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="structure" aria-labelledby="narrative-title">
+        <div class="section-shell">
+          <div class="structure-intro">
+            <div>
+              <p class="section-name" lang="en">Structure</p>
+              <h2 class="section-heading" id="narrative-title">기술 설명보다<br><strong>생산 현장의 과제부터<br>보여줬습니다.</strong></h2>
+            </div>
+            <div>
+              <p class="section-lede">3D 프린팅의 원리와 장점을 길게 나열하기보다, 자동차 부품 생산 과정에서 지그·검사구·몰드가 어떤 작업을 돕는지에 초점을 맞췄습니다.</p>
+              <p class="section-lede">내부 자료에 흩어져 있던 사례도 이 순서에 맞춰 다시 정리했습니다. 참가자가 기술을 적용한 이유부터 결과까지 자연스럽게 따라올 수 있도록 하기 위해서였습니다.</p>
+            </div>
+          </div>
+
+          <ol class="story-steps" aria-label="발표 구성 순서">
+            <li><span>01</span><strong>생산 과정의 과제</strong></li>
+            <li><span>02</span><strong>지그·검사구·몰드에<br>3D 프린팅 적용</strong></li>
+            <li><span>03</span><strong>활용 및 검증 결과</strong></li>
+          </ol>
+
+          <div class="slide-principle">
+            <p class="eyebrow" lang="en">Slide Principle</p>
+            <h3>한 장에는 <strong>하나의 메시지만</strong> 남도록 정리했습니다.</h3>
+            <p class="section-lede">사례마다 먼저 핵심 메시지를 정한 뒤 이미지와 도식, 설명 문구를 배치했습니다. 각 장이 하나의 이야기에 집중하도록 정보의 순서와 문장 길이를 조정했습니다. 발표자가 막힘없이 설명할 수 있게 슬라이드 사이의 연결도 함께 살폈습니다.</p>
+
+            <div class="comparison-grid">
+              <figure class="comparison-item">
+                <img src="assets/hp/hp-slide-own-process.png" width="1280" height="720" alt="발표 슬라이드 15p — 반원 도식에서 뻗어 나온 5개 단계 상자에 적용 분야 발굴 및 컨설팅, 3D 모델링 및 구조 최적화, 출력 및 제작, 검사 및 평가, 납품 및 솔루션 제공이 차례로 놓이고 각 단계 오른쪽에 두 줄 설명이 붙어 있다" loading="lazy">
+                <figcaption><strong>01 DESIGNED SLIDE</strong><span>직접 구성·디자인한 장 — 3D프린팅 솔루션 제공 프로세스</span></figcaption>
+              </figure>
+              <figure class="comparison-item">
+                <img src="assets/hp/hp-slide-own-cost.png" width="1280" height="720" alt="발표 슬라이드 17p — 위쪽에 기존 Steel 지그와 3DP 지그의 3D 모델을 화살표로 잇고, 아래 비교표가 제작품 소요일 14일에서 4일로, 제작비 약 60~70만원에서 약 40~60만원으로 줄어드는 것을 보여준다" loading="lazy">
+                <figcaption><strong>02 DESIGNED SLIDE</strong><span>직접 구성·디자인한 장 — 제조 원가 최적화 전략</span></figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="outcome" aria-labelledby="outcome-title">
+        <div class="section-shell">
+          <p class="section-name" lang="en">Outcome</p>
+          <h2 class="section-heading" id="outcome-title">발표 자료가 공동 웨비나에 활용되고 <strong>후속 신청이 접수됐습니다.</strong></h2>
+        </div>
+
+        <!-- 스크롤 스택 — ai-project.html의 03 SEARCH PERFORMANCE와 같은 동작.
+             증거 3장이 화면을 통째로 채운 채 한 장씩 걷혀 나간다.
+             스택이 꺼진 환경(모바일·모션 축소)에서는 평범한 세로 흐름이다. -->
+        <div class="perf-stack">
+          <div class="perf-stack__slot">
+
+            <article class="perf-stack__view">
+              <div>
+                <p class="proof-label" lang="en">Results</p>
+                <h3 class="card-heading">등록과 참석, 후속 신청을 수치로 남겼습니다.</h3>
+                <!-- 줄바꿈을 브라우저에 맡기지 않고 문장 경계에 고정한다. -->
+                <p class="section-lede">더프라임그룹의 사업 추진 체계와 3D 프린팅 적용 사례를 하나의 발표 섹션으로 완성해 공동 웨비나에 활용했습니다.<br>행사 후 참가자 설문을 통해 무료 출력 이벤트 신청 37건의 리드가 접수됐습니다.</p>
+                <dl class="outcome-stats">
+                  <div><dt>230</dt><dd>공동 웨비나 등록</dd></div>
+                  <div><dt>약 170</dt><dd>실시간 참석</dd></div>
+                  <div><dt>37</dt><dd>리드 접수<br>무료 출력 이벤트 신청 설문</dd></div>
+                </dl>
+              </div>
+            </article>
+
+            <article class="perf-stack__view">
+              <div class="proof-block">
+                <p class="proof-label" lang="en">Webinar Replay</p>
+                <h3 class="card-heading">공동 웨비나 전체가 공식 채널에 공개돼 있습니다.</h3>
+                <a class="youtube-card" href="https://youtu.be/Kn-4J2Flo-c?si=syZLBMOVRouMRP31" target="_blank" rel="noreferrer" aria-label="공동 웨비나 다시보기 — YouTube에서 재생">
+                  <img src="https://i.ytimg.com/vi/Kn-4J2Flo-c/maxresdefault.jpg" width="1280" height="720" alt="웨비나 다시보기 썸네일 — [HP 웨비나] 기존 가공 방식의 한계 극복! 더프라임 맞춤형 3D프린팅 제조 혁신" loading="lazy">
+                  <span class="youtube-card__play" aria-hidden="true"></span>
+                </a>
+                <p class="proof-note"><span>공동 웨비나 다시보기</span><span><a class="caption-link" href="https://youtu.be/Kn-4J2Flo-c?si=syZLBMOVRouMRP31" target="_blank" rel="noreferrer">더프라임그룹 공식 YouTube <i class="link-arrow" aria-hidden="true">↗</i></a></span></p>
+              </div>
+            </article>
+
+            <article class="perf-stack__view">
+              <!-- 1·2번 카드처럼 감싸는 칸을 하나 둔다. 이게 없으면 .study-row가
+                   곧 카드의 직계 자식이라 아래 세로 배치 규칙이 3단 가로 배치를
+                   덮어써 버린다. -->
+              <div>
+              <div class="study-row">
+                <div class="study-intro">
+                  <p class="proof-label" lang="en">HP Case Study</p>
+                  <h3 class="card-heading">웨비나 이후 HP가 케이스 스터디를 제작했습니다.</h3>
+                  <p class="section-lede">웨비나 이후 HP는 회사가 제공한 콘텐츠로<br>더프라임그룹 케이스 스터디를 제작했습니다.<br>그 협업 과정은 직접 조율했습니다.<br>완성된 케이스 스터디는 2026년 3월 AM Korea에 게재됐습니다.</p>
+                </div>
+                <figure>
+                  <a href="https://www.amkorea21.com/26" target="_blank" rel="noreferrer">
+                    <img src="assets/hp/hp-case-study-cover.jpg" width="793" height="1122" alt="AM Korea에 게시된 더프라임그룹 3D 프린팅 케이스 스터디 표지" loading="lazy">
+                  </a>
+                  <figcaption><strong>01 COVER</strong><a class="caption-link" href="https://www.amkorea21.com/26" target="_blank" rel="noreferrer">케이스 스터디 표지 — AM Korea 게시글로 이동 <i class="link-arrow" aria-hidden="true">↗</i></a></figcaption>
+                </figure>
+                <figure>
+                  <a href="https://www.amkorea21.com/26" target="_blank" rel="noreferrer">
+                    <img src="assets/hp/hp-case-study-p2.jpg" width="793" height="1122" alt="케이스 스터디 내지 — 더프라임그룹 소개와 3D 프린팅 프레스 몰드 적용 페이지" loading="lazy">
+                  </a>
+                  <figcaption><strong>02 INSIDE PAGE</strong><a class="caption-link" href="https://www.amkorea21.com/26" target="_blank" rel="noreferrer">케이스 스터디 내지 — AM Korea 게시글로 이동 <i class="link-arrow" aria-hidden="true">↗</i></a></figcaption>
+                </figure>
+              </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </section>
+
+      <section class="closing" id="closing" aria-labelledby="next-title">
+        <div class="section-shell">
+          <p class="next-eyebrow" lang="en">Next</p>
+          <h2 id="next-title"><span class="next-l1"><span class="next-line">AMR을 보고</span><span class="next-line">이해하는</span></span><span class="next-l2"><span class="next-line">전시 경험을</span><span class="next-line">기획했습니다.</span></span></h2>
+          <p class="next-lede">AMR 시연과 제품 상담이 한 부스 안에서 이어지도록 공간을 나눠 제안하고,<br>부스 상영 영상까지 직접 만든 KOREA MAT 전시 사례입니다.</p>
+          <div class="next-actions">
+            <a class="next-btn next-btn--solid" href="exhibition.html">
+              <span lang="en">KOREA MAT Exhibition</span>
+              <span class="next-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a class="next-btn next-btn--ghost" href="index.html">
+              <span lang="en">Home</span>
+              <span class="next-arrow" aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="page-footer">
+      <a href="index.html">← Home</a>
+      <div class="footer-links">
+        <a href="mailto:sohee.lim.lsh@gmail.com">Email</a>
+        <a href="https://www.linkedin.com/in/sohee-lim-marketing/en/" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 스타일은 pillnav.css 한 곳에 있다(6장이 같은 버튼을 쓴다).
+       화살표와 TOP을 같은 칸에 겹쳐 두고 가리키면 맞바꾼다. -->
+  <a class="back-to-top" href="#top" aria-label="페이지 상단으로 이동">
+    <span class="back-to-top__arrow" aria-hidden="true">↑</span>
+    <span class="back-to-top__label" aria-hidden="true" lang="en">TOP</span>
+  </a>
+  <script>
+    /* 키 프로젝트 드롭다운 + 스크롤 시 이름·직무 숨김. 6장이 같은 동작. */
+    (() => {
+      const header = document.querySelector(".site-header");
+      const toggle = document.querySelector(".pillnav__toggle");
+      const menu = document.getElementById("key-projects");
+      if (!header || !toggle || !menu) return;
+
+      const setOpen = (open) => {
+        toggle.setAttribute("aria-expanded", String(open));
+        menu.hidden = !open;
+      };
+      toggle.addEventListener("click", () => {
+        setOpen(toggle.getAttribute("aria-expanded") !== "true");
+      });
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".pillnav__group")) setOpen(false);
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        setOpen(false);
+        toggle.focus();
+      });
+
+      const mark = () => header.classList.toggle("is-scrolled", window.scrollY > 120);
+      window.addEventListener("scroll", mark, { passive: true });
+      mark();
+    })();
+    /* 스크롤 스택 — ai-project.html의 동작을 그대로 옮겼다.
+       스크롤 구간을 카드 수만큼 나눠, 구간마다 맨 위 카드만 위로 걷어낸다.
+       아래 카드는 제자리에 서 있고 위 카드가 빠지면서 드러난다.
+       transform만 만지므로 다른 스크롤 동작과 부딪히지 않는다. */
+    (() => {
+      const stack = document.querySelector(".perf-stack");
+      if (!stack) return;
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (!matchMedia("(hover: hover) and (pointer: fine) and (min-width: 62rem)").matches) return;
+
+      const views = [...stack.querySelectorAll(".perf-stack__view")];
+      if (views.length < 2) return;
+      stack.style.setProperty("--views", views.length);
+      views.forEach((v, i) => v.style.setProperty("--z", views.length - i));
+      document.documentElement.classList.add("js-stack");
+      /* 첫 화면에서 스택이 아직 화면 밖이면 paint()가 일찍 돌아간다.
+         그 사이에 Tab이 숨은 카드로 새지 않도록 처음부터 잠가 둔다. */
+      views.forEach((v, i) => { v.inert = i !== 0; });
+
+      let raf = 0;
+      const paint = () => {
+        raf = 0;
+        const rect = stack.getBoundingClientRect();
+        /* 화면 밖이면 아무것도 쓰지 않는다. */
+        if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+
+        const seg = Math.round(views[0].getBoundingClientRect().height) || window.innerHeight;
+        const range = (views.length - 1) * seg;
+        const s = Math.min(Math.max(-rect.top, 0), range);
+
+        /* 구간 앞 45% 안에서 이전 카드가 화면 밖으로 완전히 빠지고,
+           남은 55% 동안 다음 카드가 온전히 드러난 채 멈춰 있다. */
+        const EXIT = .45;
+        let active = views.length - 1;
+        views.forEach((v, i) => {
+          const t = Math.min(Math.max((s - i * seg) / seg, 0), 1);
+          const own = Math.min(t / EXIT, 1) * seg;
+          v.style.transform = `translate3d(0, ${-own}px, 0)`;
+          /* 아직 다 빠지지 않은 첫 카드가 지금 보이는 카드다. */
+          if (own < seg && i < active) active = i;
+        });
+
+        /* 카드는 서로 겹쳐 있고 위 카드의 불투명한 면이 아래 카드를 가린다.
+           그래서 Tab을 누르면 화면에 없는 카드의 링크로 포커스가 넘어가고,
+           표시도 안 보이는 채로 Enter를 누르면 본 적 없는 곳이 열렸다.
+           보이는 카드 하나만 조작 대상으로 남긴다(inert는 포커스와
+           보조기술 노출을 함께 끊는다). */
+        views.forEach((v, i) => {
+          if (v.inert !== (i !== active)) v.inert = i !== active;
+        });
+      };
+      const queue = () => { if (!raf) raf = requestAnimationFrame(paint); };
+      window.addEventListener("scroll", queue, { passive: true });
+      window.addEventListener("resize", queue, { passive: true });
+      paint();
+    })();
+
+    /* 캡션 상자를 그림과 같은 폭으로 맞춘다 — ai-project.html과 같은 방식.
+       그림 폭은 높이 상한에 비율을 곱해 나오는 값이라 CSS만으로는 캡션에
+       물려줄 수 없다. 그려진 뒤 폭을 읽어 --media-w로 넘긴다.
+       스택이 꺼진 환경에서는 그림이 칸 폭을 다 쓰므로 결과가 같다. */
+    (() => {
+      const figures = [...document.querySelectorAll(".study-row figure")];
+      if (!figures.length) return;
+
+      const sync = () => {
+        figures.forEach((fig) => {
+          const img = fig.querySelector("img");
+          if (!img) return;
+          const w = Math.round(img.getBoundingClientRect().width);
+          if (w > 0) fig.style.setProperty("--media-w", `${w}px`);
+        });
+      };
+
+      if (typeof ResizeObserver === "function") {
+        const ro = new ResizeObserver(sync);
+        figures.forEach((fig) => {
+          const img = fig.querySelector("img");
+          if (img) ro.observe(img);
+        });
+      }
+      window.addEventListener("load", sync);
+      window.addEventListener("resize", sync, { passive: true });
+      sync();
+    })();
+
+    /* 상단으로 — 6장이 같은 동작. 화면 절반을 지나면 나타난다. */
+    (() => {
+      const topButton = document.querySelector(".back-to-top");
+      if (!topButton) return;
+      const toggleTopButton = () => {
+        topButton.classList.toggle("is-visible", window.scrollY > window.innerHeight * .5);
+      };
+      window.addEventListener("scroll", toggleTopButton, { passive: true });
+      toggleTopButton();
+    })();
+  </script>
+</body>
+</html>

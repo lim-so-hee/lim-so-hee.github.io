@@ -1,0 +1,3933 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="수동 AI 활용으로 시작해 문서 업무와 블로그 자동화, 검색 성과까지 확장한 B2B 마케터의 AI 프로젝트입니다.">
+  <title>AI Content Operations | Lim Sohee</title>
+  <link rel="stylesheet" href="tokens.css?v=2">
+  <link rel="stylesheet" href="pillnav.css?v=6">
+  <!-- 첫 페인트 전에 걸어야 제목이 한 번 보였다 사라지지 않는다.
+       모션을 끈 사용자와 IO 없는 브라우저는 여기서 걸러져 전부 그냥 보인다. -->
+  <script>
+    if ("IntersectionObserver" in window &&
+        !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      document.documentElement.classList.add("js-motion");
+    }
+  </script>
+  <style>
+    /* 카라반·전시회와 같은 제톤 어휘를 쓴다. 다른 점은 히어로뿐이다.
+       두 장은 실사진 풀블리드지만 이 프로젝트엔 쓸 사진이 없다.
+       jeton.com/about 상단처럼 액센트 면 + 좌하단 초대형 타이포 +
+       우상단 작은 이미지 구성으로 간다. */
+    /* Lenis 공식 스타일시트(lenis.css). JS만 번들하고 이걸 빠뜨렸다.
+       tokens.css:89가 html에 scroll-behavior: smooth를 걸어두는데, 그 상태로
+       Lenis가 매 프레임 스크롤 위치를 쓰면 네이티브 부드러운 스크롤과 Lenis가
+       같은 값을 각자 애니메이션해 서로 목표를 덮어쓴다. 그래서 스크롤이
+       끌리고 걸린다. tokens.css의 되돌림은 prefers-reduced-motion 안에만
+       있어서 평소에는 적용되지 않는다(실측: scroll-behavior = smooth). */
+    html.lenis,
+    html.lenis body {
+      height: auto;
+    }
+
+    /* 선택자가 `.lenis.lenis-smooth`였는데 이 조합이 한 번도 성립하지 않았다.
+       살아 있는 클래스는 `js-motion lenis js-actions js-stack`이라 lenis-smooth가
+       없고, 그래서 위에서 막으려던 scroll-behavior: smooth가 그대로 남아 있었다
+       (실측: html의 계산값이 여전히 smooth). 그 결과 맨 위로 버튼과 #앵커가
+       전부 죽어 있었다 — 해시만 바뀌고 화면은 그대로.
+       실제로 붙는 `.lenis` 하나로 건다. */
+    .lenis {
+      scroll-behavior: auto !important;
+    }
+
+    .lenis [data-lenis-prevent] {
+      overscroll-behavior: contain;
+    }
+
+    .lenis.lenis-stopped {
+      overflow: hidden;
+    }
+
+    :root {
+      --stage-x: clamp(1.25rem, 5vw, 4.75rem);
+      /* 1536px에서 9vw = 138.24px이 상하로 붙어, 섹션이 맞물리는 자리마다
+         276px가 쌓였다(실측). 6.5vw = 99.8px로 낮춘다. */
+      --section-y: clamp(3.5rem, 6.5vw, 8rem);
+      --content-wide: 100rem;
+      --ai-night: #10131d;
+      --ai-mist: #eef1fa;
+      --ai-accent-soft: #83a1ff;
+      --ease-jeton: cubic-bezier(.16, 1, .3, 1);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      overflow-x: clip;
+    }
+
+    body {
+      margin: 0;
+      background: var(--color-paper);
+      color: var(--color-ink);
+    }
+
+    body :where(h1, h2, h3, h4, p, dl, dd, figure, ol, ul) {
+      margin: 0;
+    }
+
+    body :where(h1, h2, h3, h4) {
+      overflow-wrap: normal;
+      word-break: keep-all;
+      line-break: strict;
+      text-wrap: balance;
+    }
+
+    /* figcaption과 small이 빠져 있었다. 그 둘만 word-break 기본값이라
+       한글이 어절 중간에서 끊겼다(390px 실측: "SEO 순 / 위 추적",
+       "연관 키워 / 드 3,308개"). div로 감싼 수치 묶음도 같은 이유로 넣는다. */
+    body :where(p, li, dt, dd, figcaption, small, .growth-row div, .time-comparison div) {
+      word-break: keep-all;
+      line-break: strict;
+      text-wrap: pretty;
+    }
+
+    /* 여기 모인 것은 모두 한두 문장짜리 짧은 덩어리다. 긴 산문이 아니라
+       balance가 맞다. pretty는 마지막 줄이 한 단어일 때만 손을 대서
+       모바일에서 "유입 경로"(52px)처럼 꼬리가 남았다(390px 실측).
+       긴 산문인 .section-lede의 문장 블록은 각자 자기 규칙에서 처리한다. */
+    body :where(
+      .hero-summary, .metric-note, .result-note,
+      .tool-roles p, .channel-row__body > p, .time-card span,
+      .rank-grid dd, .ai-metrics dd, .setup-grid dd, .principle-list dd,
+      .evidence-stage figcaption, .closing .section-shell > p
+    ) {
+      text-wrap: balance;
+    }
+
+    /* 4열 흐름 표의 셀 안쪽 여백. 원래 왼쪽이 0이라 2·3·4번 칸의 글자가
+       바로 왼쪽 칸의 세로선에 붙어 있었다. 좌우를 같게 주고, 줄의 첫 칸만
+       0으로 되돌려 섹션 왼쪽 기준선과 어긋나지 않게 한다. */
+    :is(.process-row, .automation-flow, .responsibility-flow) > li:first-child {
+      padding-inline-start: 0;
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 5px;
+    }
+
+    /* 폭이 100vw였는데 이 값은 세로 스크롤바까지 포함한다. 담는 상자는
+       스크롤바를 뺀 484.8px인데 헤더만 500px이라, 가운데 정렬 계산이
+       어긋나 내비가 왼쪽으로 8px 밀려 있었다(실측 500px 화면).
+       담는 상자와 같은 기준(100%)으로 재고 평범하게 가운데 둔다. */
+    .site-header {
+      width: min(100%, 75rem);
+      margin-inline: auto;
+      padding-inline: clamp(1.25rem, 3vw, 2.25rem);
+    }
+
+    .header-role {
+      letter-spacing: -.08em;
+    }
+
+    .brand {
+      letter-spacing: -.02em;
+    }
+
+    /* 히어로가 액센트 면이던 시절 양끝 글자를 흰색으로 띄우던 규칙이 있었다.
+       히어로를 흰 배경으로 바꾸면서 흰 종이 위 흰 글자가 됐다(실측: 글자·배경
+       모두 rgb(255,255,255)). 규칙을 걷고 pillnav.css의 기본색을 쓴다 —
+       직무는 --color-ink-2, 이름은 --color-ink를 상속받는다. */
+
+    .page {
+      min-width: 0;
+    }
+
+    .section-shell {
+      width: min(100%, var(--content-wide));
+      margin-inline: auto;
+      padding-inline: var(--stage-x);
+    }
+
+    .section-name {
+      color: currentColor;
+      font-family: var(--font-accent-en);
+      font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+      font-style: italic;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    /* ── 밴드는 장(chapter)이다 ────────────────────────────────
+       라벨 17개가 전부 같은 종류의 신호(Newsreader 이탤릭)라서 크기를 한 단
+       줄이는 것만으로는 "이게 대구역인가?"를 매번 다시 묻게 된다. 번호를 붙여
+       층위를 크기 비교가 아니라 종류 구분으로 바꾼다 — 번호가 있으면 장,
+       없으면 장 안. 순서 자체도 정보다: 수작업 → 자동화 → 현재 운영 체계.
+       마감(CLOSING)은 번호를 받지 않는다. 그게 "본문 끝"이라는 신호다. */
+    main {
+      counter-reset: band;
+    }
+
+    .adoption,
+    .automation,
+    .performance,
+    .workspace {
+      counter-increment: band;
+    }
+
+    /* 장 번호는 목차 인덱스가 아니라 폴리오다. 크게 두지 않으면
+       .process-row의 01~04 단계 번호(12px 파란 볼드)와 같은 관용구로 읽혀
+       "번호=장"이라는 규칙이 무너진다. 1.5em이면 37px 대 12px로 3배 차이다. */
+    .band-intro .section-name {
+      display: flex;
+      gap: .5em;
+      align-items: baseline;
+    }
+
+    .band-intro .section-name::before {
+      color: var(--color-accent);
+      font-family: var(--font-en);
+      font-size: 1.5em;
+      font-style: normal;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      line-height: 1;
+      content: counter(band, decimal-leading-zero);
+    }
+
+    .performance .band-intro .section-name::before {
+      color: var(--ai-accent-soft);
+    }
+
+    /* 장이 시작하는 자리에만 굵은 선. 배경색이 안 바뀌는 구간에서도
+       "새 장"이 보이게 한다. 블록은 1px 헤어라인으로 남는다. */
+    .band-intro {
+      padding-block-start: clamp(1.25rem, 2.2vw, 2rem);
+      border-block-start: 2px solid var(--color-ink);
+    }
+
+    /* 이 밴드는 제목 바로 뒤에 100vh 카드가 붙는다. 제목이 92px 4줄로 397px,
+       도입부 전체가 512px이라 카드에 닿기까지 612px을 스크롤해야 했다(실측).
+       이 밴드에서만 제목을 2줄로 접어 카드가 곧바로 오게 한다. */
+    .performance .section-heading {
+      max-inline-size: 26ch;
+      margin-block-start: clamp(.75rem, 1.4vw, 1.25rem);
+      font-size: clamp(1.9rem, 4vw, 3.4rem);
+    }
+
+    .performance .section-lede {
+      margin-block-start: clamp(1rem, 2vw, 1.5rem);
+    }
+
+    .performance .band-intro {
+      border-block-start-color: rgb(255 255 255 / .9);
+    }
+
+    /* 블록 라벨은 한 단 내린다. 레벨 4(12px/700/.08em)가 이미 여섯 갈래로
+       붐비니 그쪽으로 강등하지 않고 같은 서체 안에서 크기·색만 낮춘다. */
+    .block .section-name {
+      font-size: clamp(.95rem, 1.1vw, 1.05rem);
+      color: var(--color-muted);
+    }
+
+    .performance .block .section-name {
+      color: rgb(255 255 255 / .5);
+    }
+
+    .section-heading {
+      max-inline-size: 19ch;
+      margin-block-start: clamp(1.5rem, 3vw, 2.75rem);
+      font-size: clamp(2.5rem, 6.1vw, 5.75rem);
+      font-weight: 400;
+      line-height: 1.08;
+      letter-spacing: -.035em;
+    }
+
+    .section-heading strong {
+      color: var(--color-accent);
+      font-weight: 800;
+    }
+
+    /* 제목의 절 경계는 항상 줄 경계로 둔다. 그 안에서만 balance가 돌아
+       절 내부에 고아 줄이 남지 않는다.
+       <br>로 고정했을 때는 폭이 줄면 절 안에서 고아가 생겼다
+       (1440px 실측: "않고," 165px 단독 줄, 최장 줄의 31%).
+       반대로 <br>을 그냥 지우면 balance가 절 경계를 줄 중간으로 밀어
+       "연결하고, 최종"처럼 설정절과 결론절이 한 줄에 섞였다.
+       절을 블록으로 쪼개면 두 문제가 같이 없어진다. */
+    :is(.section-heading, .ai-hero h1, .closing h2) > :is(span, strong) {
+      display: block;
+      text-wrap: balance;
+    }
+
+    .section-lede {
+      max-inline-size: 60ch;
+      margin-block-start: clamp(1.5rem, 3vw, 2.5rem);
+      color: var(--color-ink-2);
+      font-size: clamp(1rem, 1.45vw, 1.25rem);
+      line-height: 1.6;
+      letter-spacing: -.015em;
+    }
+
+    /* 리드는 문장마다 블록이다. 두 줄로 접힐 때 둘째 줄만 짧게 남으므로
+       (실측 148px / 376px = 39%) 문장 안에서 balance를 돌린다. */
+    .section-lede span {
+      display: block;
+      text-wrap: balance;
+    }
+
+    .section-lede span + span {
+      margin-block-start: .85rem;
+    }
+
+    .band-intro {
+      display: grid;
+      gap: clamp(2rem, 6vw, 6rem);
+      align-items: end;
+    }
+
+    .band-intro .section-lede {
+      margin: 0;
+    }
+
+    /* 밴드 안의 작은 묶음. 카라반의 research-proof / render-proof와 같은 역할. */
+    /* 블록 사이가 96px이라 한 섹션 안에서도 흐름이 끊겼다(실측). 5vw로 줄인다. */
+    .block {
+      margin-block-start: clamp(2.5rem, 5vw, 4.5rem);
+      padding-block-start: clamp(1.75rem, 3vw, 2.75rem);
+      border-block-start: 1px solid var(--color-rule-strong);
+    }
+
+    .block__head h3 {
+      max-inline-size: 24ch;
+      margin-block-start: 1.25rem;
+      font-size: clamp(1.7rem, 3.4vw, 3rem);
+      font-weight: 400;
+      line-height: 1.16;
+      letter-spacing: -.03em;
+    }
+
+    .block__head--with-note {
+      display: grid;
+      gap: 1rem 3rem;
+      align-items: end;
+    }
+
+    .block__head--with-note > p:last-child {
+      color: var(--color-ink-2);
+      font-family: var(--font-en);
+      font-size: var(--text-sm);
+      letter-spacing: .02em;
+    }
+
+    /* 한두 문장짜리 단락이라 pretty로는 부족하다. pretty는 마지막 줄이
+       한 단어일 때만 손을 대므로 "…관련 / 부서가 맡았습니다."처럼 꼬리가
+       585px 대 138px로 남았다(실측). 짧은 단락은 balance가 맞다. */
+    .block-copy {
+      max-inline-size: 64ch;
+      margin-block-start: 1.5rem;
+      color: var(--color-ink-2);
+      font-size: clamp(1rem, 1.4vw, 1.16rem);
+      line-height: 1.6;
+      letter-spacing: -.015em;
+      text-wrap: balance;
+    }
+
+    .block-copy + .block-copy {
+      margin-block-start: 1.1rem;
+    }
+
+    /* ── Motion ───────────────────────────────────────────────
+       제톤 about은 스크롤에서 두 가지만 한다(2026-07-30 실측).
+       ① [data-split-text]가 제목을 글자마다 span.c로 쪼개 한 자씩 세운다.
+       ② 내용 덩어리는 아래에서 올라온다.
+       여기서도 그 둘만 쓴다. 제목이 주인공이고 덩어리는 따라온다.
+       .reveal 문법은 profile.html에서 그대로 가져와 6장이 같은 말을 쓴다.
+
+       한글은 keep-all이 생명이라 글자를 바로 inline-block으로 쪼개면
+       어절 한가운데서 줄이 끊긴다. 어절(.w)로 먼저 묶고 그 안에서만
+       쪼갠다. 줄바꿈 기회는 어절 사이에만 남는다. */
+    .js-motion [data-split] {
+      opacity: 0;
+    }
+
+    /* 쪼개기 전에는 통째로 숨긴다. 스플릿이 파싱 뒤에 돌기 때문에
+       이게 없으면 제목이 한 번 보였다 사라진 뒤 다시 올라온다. */
+    .js-motion [data-split].is-split {
+      opacity: 1;
+    }
+
+    .js-motion .w {
+      display: inline-block;
+      /* 글자가 줄 아래에서 올라오는 동안 윗줄을 침범하지 않게 가린다.
+         받침과 괄호가 잘리지 않도록 넣은 만큼 그대로 당긴다. */
+      padding-block: .2em;
+      margin-block: -.2em;
+      overflow: clip;
+      white-space: nowrap;
+    }
+
+    .js-motion [data-split] .c {
+      display: inline-block;
+      transform: translateY(.85em) rotate(12deg);
+      opacity: 0;
+      /* 620ms + 23자×16ms 스태거면 마지막 글자가 988ms에 선다(실측).
+         관성 스크롤로 지나가면 그 1초를 못 기다려 제목이 반쯤 투명한 채
+         화면을 지나간다. 이동은 380ms, 불투명은 220ms로 줄인다. */
+      transition:
+        transform 380ms var(--ease-jeton) var(--cd, 0ms),
+        opacity 220ms linear var(--cd, 0ms);
+    }
+
+    .js-motion [data-split].is-in .c {
+      transform: none;
+      opacity: 1;
+    }
+
+    /* 덩어리는 조용히 올라온다. 제목이 주인공이라 이동량을 절반으로 둔다. */
+    .js-motion .reveal {
+      opacity: 0;
+      transform: translateY(38px);
+      transition:
+        opacity 320ms var(--ease-jeton) var(--d, 0ms),
+        transform 460ms var(--ease-jeton) var(--d, 0ms);
+    }
+
+    .js-motion .reveal.is-in {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ── Hero ─────────────────────────────────────────────── */
+    /* 제톤 홈 taglines처럼 흰 면에 가운데로 세운다. 액센트 면을 걷어냈으므로
+       글자는 잉크로 돌아가고, 제목 세 줄만 각자 색을 갖는다(아래 --line-*). */
+    .ai-hero {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100svh;
+      margin-block-start: calc(-1 * var(--header-height));
+      background: var(--color-paper);
+      color: var(--color-ink);
+    }
+
+    /* 제톤 실측(1881px 기준): 이미지 폭이 화면의 22.6%, 히어로는 정확히 한 화면.
+       열 비율과 여백을 그 비율에 맞춰 잡는다. */
+    .hero-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 1.42fr) minmax(14rem, .58fr);
+      grid-template-rows: auto 1fr auto;
+      gap: clamp(1.5rem, 3vw, 2.5rem) clamp(2rem, 5vw, 5.5rem);
+      width: min(100%, var(--content-wide));
+      min-height: 100vh;
+      min-height: 100svh;
+      margin-inline: auto;
+      /* 아래 여백을 48px → 112px로 키워 제목과 요약을 화면 바닥에서 띄운다.
+         제목이 3줄로 줄어든 뒤 생긴 여유를 여기에 쓴다. */
+      padding: calc(var(--header-height) + 1.25rem) var(--stage-x) clamp(4rem, 8vw, 7rem);
+    }
+
+    .hero-kicker {
+      grid-column: 1;
+      grid-row: 1;
+      color: var(--color-ink-2);
+      font-family: var(--font-accent-en);
+      font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+      font-style: italic;
+      line-height: 1;
+    }
+
+    .ai-hero h1 {
+      grid-column: 1;
+      grid-row: 3;
+      align-self: end;
+      max-inline-size: 15ch;
+      font-size: clamp(2.8rem, 5.4vw, 5rem);
+      font-weight: 400;
+      line-height: 1.04;
+      letter-spacing: -.04em;
+    }
+
+    .ai-hero h1 strong {
+      color: currentColor;
+      font-weight: 800;
+    }
+
+    .hero-detail {
+      grid-column: 2;
+      grid-row: 3;
+      align-self: end;
+    }
+
+    .hero-summary span {
+      display: block;
+      text-wrap: balance;
+    }
+
+    .hero-summary span + span {
+      margin-block-start: .7rem;
+    }
+
+    /* 본문 리듬 통일 (2026-07-31). 히어로 요약 1.7, 리드·본문 1.75, 채널 설명
+       1.7로 셋이 달라 같은 성격의 문장이 다른 호흡으로 읽혔다. 히어로는 짧은
+       두 문장이라 1.7이 특히 성글었다. 넷을 1.6 / -0.015em으로 맞춘다. */
+    /* 한 줄로 세운다. 40ch에서는 이 문장이 두 줄로 접혔다(실측). */
+    .hero-summary {
+      max-inline-size: none;
+      text-wrap: nowrap;
+      color: var(--color-ink-2);
+      font-size: clamp(1rem, 1.35vw, 1.16rem);
+      line-height: 1.6;
+      letter-spacing: -.015em;
+    }
+
+    /* 요약과 이 줄을 가르던 윗선을 뺐다. 히어로가 흰 종이 위 중앙 정렬이라
+       가로선 하나가 화면을 반으로 자르는 것처럼 읽혔다. 간격만으로 가른다. */
+    .hero-meta {
+      margin-block-start: 1rem;
+      padding-block-start: 1rem;
+      color: var(--color-ink);
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    /* 기간·기여 범위. 위 직무 태그는 영문 대문자 굵은 줄이라 라벨처럼
+       읽히는데, 이 줄은 읽는 정보라 한글 본문 서체로 한 단계 낮춘다.
+       태그 바로 아래 붙여 둘이 한 묶음으로 보이게 한다. */
+    .hero-scope {
+      margin-block-start: .5rem;
+      color: var(--color-ink-2);
+      font-size: var(--text-sm);
+      line-height: 1.6;
+    }
+
+    /* 화면 가운데 아래. 전에는 오른쪽 끝에 세로쓰기로 세워 뒀는데, 구석에
+       있으면 안내가 되기 전에 지나친다. 시선이 제목에서 내려오는 길목에
+       둔다. */
+    /* 가운데 정렬이 38px 오른쪽으로 밀렸다(실측: 표시 중앙 798, 화면 중앙
+       760). .rows-stage가 sticky라 기준 상자가 [왼쪽 패딩 안쪽 ~ 오른쪽
+       패딩 바깥쪽]으로 잡혀 왼쪽 패딩 하나만큼 비대칭이었다. 시작 쪽을
+       그만큼 되돌려 기준 상자를 화면과 맞춘 뒤 auto 여백으로 가운데를 잡는다. */
+    .scroll-cue {
+      position: absolute;
+      inset-inline: calc(-1 * var(--stage-x)) 0;
+      bottom: 2rem;
+      inline-size: fit-content;
+      margin-inline: auto;
+      display: grid;
+      justify-items: center;
+      gap: .5rem;
+      color: var(--color-muted);
+    }
+
+    .scroll-cue__label {
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      letter-spacing: .16em;
+    }
+
+    .scroll-cue__chevrons {
+      inline-size: 1.5rem;
+      block-size: 1.375rem;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* 두 꺾쇠가 시간차를 두고 같은 길을 내려간다. 하나가 아직 내려가는
+       중에 다음 것이 출발해 "계속 아래로"라는 방향이 끊기지 않는다.
+       위로 되돌아오는 구간은 흐려서 눈에 남지 않는다. */
+    .scroll-cue__chevrons path {
+      animation: cue-drop 1.9s cubic-bezier(.4, 0, .2, 1) infinite;
+    }
+
+    .scroll-cue__chevrons path:nth-child(2) {
+      animation-delay: .18s;
+    }
+
+    @keyframes cue-drop {
+      0%        { transform: translateY(-2px); opacity: 0; }
+      22%       { opacity: 1; }
+      58%       { transform: translateY(4px); opacity: 1; }
+      82%, 100% { transform: translateY(7px); opacity: 0; }
+    }
+
+    /* ── Hero runway (제톤 홈 taglines 방식) ──────────────────
+       기본값은 평범한 히어로다. js-actions가 붙어야 활주로가 된다 —
+       JS가 죽거나 모바일이면 제목 3줄과 요약이 그냥 보인다. */
+    .rows-stage {
+      display: grid;
+      align-content: center;
+      gap: clamp(1.5rem, 3vw, 2.5rem);
+      width: min(100%, var(--content-wide));
+      min-height: 100svh;
+      margin-inline: auto;
+      padding: calc(var(--header-height) + 1.25rem) var(--stage-x) clamp(4rem, 8vw, 7rem);
+    }
+
+    /* 세 줄의 색은 프로필 히어로 알약 팔레트에서 가져왔다(.hero-chip 1·2·6).
+       그 팔레트 10색 중 흰 면에서 쓸 수 있는 것은 넷뿐이다 — 노랑·라임·민트·
+       하늘·분홍·라벤더는 대비가 1.29~2.90이라 흰 바탕에서 읽히지 않는다(실측).
+         #FF5C34 3.07 · #3163F6 4.95 · #0095B6 3.51
+       제목은 45~80px이므로 큰 글자 기준 3:1을 적용한다. 가운데 줄은 강조행이라
+       대비가 가장 높은 브랜드 액센트를 준다. */
+    .hero-line {
+      display: block;
+      color: var(--line-color, currentColor);
+    }
+
+    .hero-line:nth-child(1) { --line-color: #0095B6; }
+    .hero-line:nth-child(2) { --line-color: #3163F6; }
+    .hero-line:nth-child(3) { --line-color: #FF5C34; }
+
+    .js-actions .ai-hero {
+      height: 320svh;
+    }
+
+    /* 킥커는 grid-column 1, 요약은 2를 쓰던 흔적 때문에 암묵 2열
+       (795px + 534px)이 생겨 제목이 왼쪽 열 안에서만 가운데였다(실측).
+       활주로에서는 한 열로 접고 모든 자식을 그 열에 올린다. */
+    .js-actions .rows-stage {
+      position: sticky;
+      top: 0;
+      grid-template-columns: minmax(0, 1fr);
+      align-content: center;
+      justify-items: center;
+      height: 100svh;
+      min-height: 0;
+      overflow: clip;
+    }
+
+    /* 절대 배치된 그리드 자식의 포함 블록은 "자기 그리드 영역"이다.
+       킥커는 row 1, 제목은 row 3에 있어 top:50%가 각각 159.8px과 319.6px로
+       풀렸다(실측). 셋을 한 칸에 겹쳐 같은 기준을 쓰게 한다. */
+    .js-actions .rows-stage {
+      grid-template-rows: minmax(0, 1fr);
+    }
+
+    .js-actions .rows-stage > * {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    /* 위아래 패딩이 비대칭이라 제목 앵커가 화면 중앙보다 112px 위에 섰다
+       (실측). 활주로에서는 패딩을 걷고 중앙을 기준으로만 배치한다. */
+    .js-actions .rows-stage {
+      padding-block: 0;
+    }
+
+    /* 제목 세 줄은 height 0에 transform으로만 놓이므로 마지막 줄이 화면
+       한가운데(y=0)에 서고 먼저 온 줄들이 그 위로 쌓인다. 즉 중앙 아래는
+       늘 비어 있다. 요약은 그 빈 자리에 절대 배치한다 —
+       같은 grid-row에 두면 제목 위에 겹쳐 찍힌다(실측). */
+    .js-actions .hero-detail {
+      position: absolute;
+      left: 0;
+      right: var(--stage-x);
+      top: 50%;
+      margin-block-start: calc(var(--block-bottom, 180px) + 32px);
+      text-align: center;
+    }
+
+    .js-actions .hero-summary {
+      margin-inline: auto;
+    }
+
+    /* 제목 3줄이 활주로의 "행"이다. 줄 높이를 접고 transform으로만 배치해
+       화면 중앙이 도착 기준점(0)이 되게 한다 — 제톤과 같은 좌표계다. */
+    /* 킥커·제목·요약을 모두 화면 중앙(top 50%) 기준 절대 배치로 통일한다.
+       그리드 흐름에 맡기면 앵커가 중앙에서 213px 어긋났다(실측).
+       --anchor-y는 3줄 블록의 한가운데가 화면 중앙에 오도록 JS가 계산한다. */
+    .js-actions .ai-hero h1 {
+      position: absolute;
+      left: 0;
+      right: var(--stage-x);
+      top: 50%;
+      display: grid;
+      justify-items: center;
+      gap: 0;
+      max-inline-size: none;
+      margin: 0;
+      text-align: center;
+      transform: translateY(var(--anchor-y, 0px));
+    }
+
+    .js-actions .hero-line {
+      height: 0;
+      transform: translate3d(0, var(--y, 90vh), 0);
+      opacity: var(--o, 0);
+      will-change: transform, opacity;
+    }
+
+    /* 킥커는 제목 블록 위에 고정한다. 그리드 흐름에 두면 줄이 위로 쌓이면서
+       제목이 킥커를 뚫고 지나간다(실측). --stack-top은 JS가 매 프레임 준다. */
+    .js-actions .hero-kicker {
+      /* 이 그리드의 절대 위치 포함 블록은 왼쪽이 content 가장자리(76px),
+         오른쪽이 border 가장자리(1521px)로 비대칭이라 left/right를 0으로
+         두면 중심이 stage-x의 절반만큼 밀린다(실측 798 vs 760).
+         오른쪽 여백을 명시해 좌우를 맞춘다. */
+      position: absolute;
+      left: 0;
+      right: var(--stage-x);
+      top: 50%;
+      transform: translateY(calc(var(--block-top, -180px) - 100% - 26px));
+      text-align: center;
+      opacity: var(--kicker, 1);
+    }
+
+    .js-actions .hero-detail {
+      opacity: var(--detail, 0);
+      transform: translateY(calc((1 - var(--detail, 0)) * 1.5rem));
+      will-change: transform, opacity;
+    }
+
+    .js-actions .scroll-cue {
+      opacity: var(--cue, 1);
+    }
+
+    /* ── Band: AI Adoption (paper) ────────────────────────── */
+    .adoption {
+      padding-block: var(--section-y);
+      background: var(--color-paper);
+    }
+
+    /* 문구와 시간 상자의 바닥을 맞춘다. 위 정렬이면 문구가 두 줄뿐이라
+       바닥이 64px 어긋나(실측: 문구 433 vs 상자 497) 그 사이가 빈 채로
+       남았다. 바닥을 맞추면 두 덩어리가 한 줄로 읽힌다. */
+    .figure-row {
+      display: grid;
+      gap: clamp(1.5rem, 4vw, 3.5rem);
+      align-items: end;
+      /* 제목과의 간격이 48px이라 그 사이가 비어 보였다(실측). 32px로 낮춘다. */
+      margin-block-start: clamp(1.5rem, 2.6vw, 2rem);
+    }
+
+    .time-card {
+      padding: clamp(1.5rem, 3vw, 2.25rem);
+      background: var(--ai-mist);
+    }
+
+    .time-card strong {
+      display: block;
+      color: var(--color-accent);
+      font-family: var(--font-en);
+      font-size: clamp(2.25rem, 4vw, 2.5rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -.03em;
+    }
+
+    .time-card span {
+      display: block;
+      margin-block-start: .85rem;
+      color: var(--color-ink-2);
+      font-size: var(--text-sm);
+      line-height: 1.55;
+    }
+
+    .process-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-block-start: clamp(2.5rem, 5vw, 4rem);
+      padding: 0;
+      border-block: 1px solid var(--color-rule-strong);
+    }
+
+    .process-row li {
+      counter-increment: step;
+      min-width: 0;
+      padding: clamp(1.1rem, 2vw, 1.6rem) clamp(1rem, 1.6vw, 1.5rem);
+      border-inline-end: 1px solid var(--color-rule-strong);
+      list-style: none;
+      font-size: clamp(1rem, 1.35vw, 1.15rem);
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .process-row li:last-child {
+      border-inline-end: 0;
+    }
+
+    .process-row li::before {
+      display: block;
+      margin-block-end: .65rem;
+      color: var(--color-accent);
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: .08em;
+      content: "0" counter(step);
+    }
+
+    .channel-row {
+      margin-block-start: clamp(2.5rem, 5vw, 4rem);
+      padding-block-start: clamp(1.5rem, 3vw, 2.25rem);
+      border-block-start: 1px solid var(--color-rule-strong);
+    }
+
+    /* 설명은 소제목 옆에 붙인다. 아래에 두면 링크 줄과 나란히 서서
+       링크가 화면 절반만 쓰게 된다(실측: 링크 폭 850 / 설명 옆자리 비어 있음). */
+    .channel-row__head {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: baseline;
+      gap: clamp(1rem, 2.5vw, 2rem);
+    }
+
+    /* 문구 오른쪽 끝을 아래 채널 표의 오른쪽 끝(1445)에 맞춘다. 왼쪽에
+       붙어 있으면 라벨 옆에 걸쳐진 꼬리처럼 보이고, 표와 이어지는 설명이라는
+       관계가 안 읽혔다. 오른쪽을 맞추면 표의 마지막 칸과 한 기둥에 선다. */
+    .channel-row__head > p:last-child {
+      justify-self: end;
+      text-align: right;
+      color: var(--color-ink-2);
+      font-size: clamp(.9rem, 1.15vw, 1.05rem);
+      line-height: 1.6;
+      letter-spacing: -.015em;
+    }
+
+    .channel-row > .eyebrow,
+    .channel-row__head > .eyebrow {
+      color: var(--color-accent);
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    .channel-row__body {
+      display: grid;
+      gap: clamp(1.5rem, 4vw, 3.5rem);
+      align-items: start;
+      margin-block-start: 1.5rem;
+    }
+
+    .channel-row__body > p {
+      max-inline-size: 44ch;
+      color: var(--color-ink-2);
+      font-size: clamp(.95rem, 1.3vw, 1.1rem);
+      line-height: 1.6;
+      letter-spacing: -.015em;
+    }
+
+    /* 채널 넷을 한 줄에 세운다. 세로로 쌓으면 네 줄을 눈으로 따라가야 해서
+       "네 채널을 함께 운영했다"가 한눈에 안 보였다. 구분은 이 페이지의
+       흐름 표(.process-row 등)와 같은 문법으로 왼쪽 세로선을 쓴다. */
+    .channel-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      padding: 0;
+      border-block: 1px solid var(--color-rule-strong);
+    }
+
+    .channel-grid li {
+      list-style: none;
+      border-inline-start: 1px solid var(--color-rule-strong);
+    }
+
+    /* 줄의 첫 칸만 선과 안쪽 여백을 지워 섹션 왼쪽 기준선에 맞춘다. */
+    .channel-grid li:first-child {
+      border-inline-start: 0;
+    }
+
+    .channel-grid a {
+      display: flex;
+      gap: .55rem;
+      align-items: center;
+      padding-block: .9rem;
+      padding-inline: 1rem;
+      font-size: clamp(.9rem, 1.15vw, 1.05rem);
+      font-weight: 600;
+    }
+
+    .channel-grid li:first-child a {
+      padding-inline-start: 0;
+    }
+
+    /* 좁은 화면에서는 넷을 둘씩 접는다. 한 줄에 넣으면 글자가 잘린다. */
+    @media (max-width: 60rem) {
+      .channel-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .channel-grid li:nth-child(3) {
+        border-inline-start: 0;
+      }
+
+      .channel-grid li:nth-child(3) a {
+        padding-inline-start: 0;
+      }
+
+      .channel-grid li:nth-child(-n + 2) {
+        border-block-end: 1px solid var(--color-rule-strong);
+      }
+    }
+
+    .channel-grid a:hover,
+    .channel-grid a:focus-visible {
+      color: var(--color-accent);
+    }
+
+    .channel-logo {
+      flex: none;
+    }
+
+    .link-arrow {
+      margin-inline-start: auto;
+      color: var(--color-accent);
+      font-style: normal;
+    }
+
+    /* 본문은 왼쪽 60%만 쓰는데 이 박스만 100%라 오른쪽 445px이 비어 보였다
+       (1254px 실측: 본문 669 / 박스 1114). 넓은 화면에서는 본문 옆 빈 자리로
+       옮겨 두 덩어리가 나란히 서게 한다. 제목과 태그 줄은 폭을 그대로 쓴다. */
+    @media (min-width: 62rem) {
+      #export-voucher {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, .82fr);
+        column-gap: clamp(2rem, 4vw, 4rem);
+        align-items: start;
+      }
+
+      #export-voucher .block__head,
+      #export-voucher .tag-list {
+        grid-column: 1 / -1;
+      }
+
+      #export-voucher .block-copy {
+        grid-column: 1;
+      }
+
+      #export-voucher .result-callout {
+        grid-column: 2;
+        grid-row: 2 / span 3;
+        margin-block-start: 1.5rem;
+        align-self: start;
+      }
+    }
+
+    /* 진파랑 면이라 흰 종이 위에서 이 상자만 홀로 튀었다. 같은 섹션의
+       .time-card와 같은 연파랑(--ai-mist)으로 낮춘다. 면이 연해졌으니
+       글자는 흰색에서 잉크로 뒤집는다. */
+    .result-callout {
+      display: grid;
+      gap: 1rem;
+      margin-block-start: clamp(2.5rem, 5vw, 3.5rem);
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+      background: var(--ai-mist);
+      color: var(--color-ink);
+      font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+      line-height: 1.65;
+    }
+
+    /* 강조 패널이라 폭이 1281px까지 벌어져 한 줄에 한글 68자가 들어갔다.
+       본문과 같은 64ch로 묶고 절 단위로 균형을 맞춘다. */
+    .result-callout > span:last-child {
+      max-inline-size: 64ch;
+      text-wrap: balance;
+    }
+
+    /* 진파랑 면 위에서는 흰 글자를 82%로 낮춰 라벨을 뒤로 물렸다. 연파랑
+       면에서는 그 방식이 안 통한다 — 잉크를 흐리면 대비가 무너진다.
+       같은 상자의 .time-card가 큰 수치에 쓰는 액센트 색을 라벨에 준다. */
+    .result-callout__label {
+      color: var(--color-accent);
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    /* 진파랑 면일 때는 굵기만으로 강조가 됐다. 연파랑으로 낮추면서
+       굵은 글자에 액센트 색을 준다 — 사업명과 선정 결과가 먼저 읽힌다. */
+    .result-callout strong {
+      color: var(--color-accent);
+      font-weight: 800;
+    }
+
+    /* 산출물은 순서 있는 작업이다. 전에는 알약이라 롱테일 키워드(검색어)와
+       형태가 거의 같아 의미가 섞였다 — 둘 다 radius 알약 · 테두리 · 14px/600.
+       알약은 키워드 전용으로 남기고, 여기는 이 페이지의 흐름 표
+       (.process-row)와 같은 번호 인덱스 행으로 바꾼다. */
+    .tag-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-block-start: 1.75rem;
+      padding: 0;
+      border-block-start: 1px solid var(--color-ink);
+    }
+
+    .tag-list li {
+      counter-increment: deliverable;
+      min-width: 0;
+      padding: 1rem 1.25rem 1.1rem;
+      border-inline-start: 1px solid var(--color-rule-strong);
+      list-style: none;
+      color: var(--color-ink);
+      font-size: clamp(.9rem, 1.15vw, 1.05rem);
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    /* 줄의 첫 칸만 세로선과 안쪽 여백을 지워 섹션 왼쪽 기준선에 맞춘다. */
+    .tag-list li:first-child {
+      border-inline-start: 0;
+      padding-inline-start: 0;
+    }
+
+    .tag-list li::before {
+      display: block;
+      margin-block-end: .55rem;
+      color: var(--color-accent);
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: .08em;
+      content: "0" counter(deliverable);
+    }
+
+    @media (max-width: 60rem) {
+      .tag-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .tag-list li:nth-child(3) {
+        border-inline-start: 0;
+        padding-inline-start: 0;
+      }
+
+      .tag-list li:nth-child(-n + 2) {
+        border-block-end: 1px solid var(--color-rule-strong);
+      }
+    }
+
+    /* ── Band: Blog Automation (dark) ─────────────────────── */
+    /* 02는 "시스템을 만들었다", 03은 "성과가 났다". 03이 다크를 가져간 이유는
+       순위·인용·증거 컴포넌트의 어두운 스타일이 이미 거기 맞춰져 있어서다.
+       색 리듬: 블루 → 흰(01) → 미스트(02) → 다크(03) → 흰(04) → 블루. */
+    .automation {
+      padding-block: var(--section-y);
+      background: var(--ai-mist);
+    }
+
+    .performance {
+      padding-block: var(--section-y);
+      background: var(--ai-night);
+      color: var(--color-on-ink);
+    }
+
+    .performance .section-heading strong {
+      color: var(--ai-accent-soft);
+    }
+
+    .performance .section-lede {
+      color: rgb(255 255 255 / .72);
+    }
+
+    .performance .block {
+      border-block-start-color: rgb(255 255 255 / .32);
+    }
+
+    .performance .band-intro .section-name {
+      color: var(--ai-accent-soft);
+    }
+
+    .performance .block-copy {
+      color: rgb(255 255 255 / .74);
+    }
+
+    /* "네이버 검색 순위 · 2026.07 기준" 주석. 이전에는 잉크색이 다크 배경에
+       깔려 대비 1.8:1이었다(기존 버그). 다크 밴드에서 읽히는 밝기로 고정한다. */
+    .performance .block__head--with-note > p:last-child {
+      color: rgb(255 255 255 / .6);
+    }
+
+    .automation-flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-block-start: clamp(2.5rem, 5vw, 4rem);
+      padding: 0;
+      border-block: 1px solid var(--color-rule-strong);
+    }
+
+    .automation-flow li {
+      min-width: 0;
+      padding: clamp(1.25rem, 2.4vw, 2rem) clamp(1rem, 1.6vw, 1.5rem);
+      border-inline-end: 1px solid var(--color-rule-strong);
+      list-style: none;
+    }
+
+    .automation-flow li:last-child {
+      border-inline-end: 0;
+    }
+
+    .automation-flow span {
+      display: block;
+      margin-block-end: .85rem;
+      color: var(--color-accent);
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    .automation-flow strong {
+      display: block;
+      font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .automation-flow p {
+      margin-block-start: .6rem;
+      color: var(--color-ink-2);
+      font-size: var(--text-sm);
+      line-height: 1.6;
+    }
+
+    /* 이 페이지에는 4칸짜리 테두리 줄이 네 개 있고(단계·채널·산출물·이 흐름)
+       모두 같은 모양이라, 뜻이 다른데 눈에는 같은 가구로 보였다.
+       이 줄만은 구분한다 — 여기가 "AI가 하고 사람이 끊는다"는 이 페이지의
+       논지이기 때문이다.
+       ① 칸 사이에 화살표를 넣어 목록이 아니라 흐름으로 읽히게 하고,
+       ② 사람이 개입하는 칸(HUMAN GATE)에 색면과 굵은 왼쪽 선을 줘서
+          네 칸 중 어디가 사람 몫인지 한눈에 보이게 한다. */
+    /* HUMAN GATE 칸을 따로 표시하려고 화살표·색면·세로선을 얹어봤으나
+       전부 걷었다. 네 칸이 같은 무게로 나란히 서는 지금이 이 밴드의
+       원래 문법이고, 사람이 끊는 지점은 라벨(HUMAN GATE)과 본문이
+       이미 말한다. */
+
+    .automation-flow li:nth-child(3) span {
+      color: var(--color-focus);
+    }
+
+    /* 오른쪽 끝을 위 워크플로 표의 오른쪽 끝(1445)에 맞춘다. 왼쪽에 붙어
+       있으면 내용이 548에서 끝나 오른쪽 897px이 빈 채로 남았다(실측).
+       표의 마지막 칸과 한 기둥에 세워 두 덩어리를 잇는다. */
+    .time-comparison {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: clamp(1.25rem, 4vw, 3.5rem);
+      align-items: center;
+      margin-block-start: clamp(2.5rem, 4vw, 3.5rem);
+    }
+
+    .time-comparison div span {
+      display: block;
+      color: var(--color-ink-2);
+      font-size: var(--text-sm);
+    }
+
+    .time-comparison div strong {
+      display: block;
+      margin-block-start: .4rem;
+      font-family: var(--font-en);
+      font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -.02em;
+    }
+
+    .time-comparison div:last-of-type strong {
+      color: var(--color-accent);
+    }
+
+    /* 근거 강도 표시(추정 / 관찰 1회)는 수치 옆에서 떼어 블록 끝
+       .metric-note 한 줄로 내렸다. 큰 글자 사이에 작은 단서가 끼면
+       숫자를 읽는 흐름이 끊긴다. */
+
+    .time-comparison i {
+      color: var(--color-muted);
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      font-style: normal;
+    }
+
+    /* 증거 캡처는 웨비나 장(case.css .evidence-figure)과 같은 문법을 쓴다 —
+       흰 면에 얇은 테두리를 두른 슬라이드 액자다. 전에는 #0b0e15 검은 상자에
+       캡처를 얹어, 비율이 남는 자리가 검게 비치고 캡처 자체도 어두운 판에
+       파묻혔다. 검은 배경을 걷고 액자를 흰색으로 세운다. */
+    .evidence-stage {
+      min-width: 0;
+      margin-block-start: clamp(2rem, 4vw, 3rem);
+      border: 1px solid var(--color-rule-strong);
+      border-radius: 2px;
+      background: var(--color-paper);
+      overflow: hidden;
+    }
+
+    .evidence-stage img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: var(--color-paper-2);
+      border-block-end: 1px solid var(--color-rule-strong);
+    }
+
+    .evidence-stage figcaption {
+      display: grid;
+      gap: .35rem;
+      padding: .85rem 1rem 1rem;
+      color: var(--color-muted);
+      font-size: var(--text-sm);
+      line-height: 1.5;
+      letter-spacing: -.015em;
+    }
+
+    /* 증거 캡처를 원본 링크로 감쌌다. 폰에서 이 그림들이 원본의 27~45%로
+       줄어 화면 글씨를 읽을 수 없었는데(실측 390px), 탭하면 원본 크기로
+       열려 확인할 수 있다.
+       display:contents로 두는 이유 — 이 그림들의 크기는 .evidence-stage의
+       flex 계산이 정하고, 그 규칙들이 img를 직계 자식으로 겨냥한다. 링크가
+       상자를 만들면 그 계산이 전부 어긋난다. contents는 상자를 만들지 않아
+       img가 그대로 flex 항목으로 남는다. 링크 기능과 키보드 초점은 유지된다. */
+    .evidence-open {
+      display: contents;
+    }
+
+    .evidence-stage figcaption span {
+      color: var(--color-accent);
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    /* 어두운 성과 밴드에서는 진한 파랑이 배경에 묻힌다. MAIN SEARCH ·
+       AI BRIEFING · MONTHLY VIEWS 세 라벨이 대비 2.40~2.64로 기준(4.5)에
+       한참 못 미쳤다(실측). 같은 계열의 밝은 파랑으로 바꾸면 5.31이 된다.
+       그래프 캡션 본문도 함께 — 어두운 판 위에 밝은 면용 먹색이 그대로
+       남아 3.88이었다(실측 390×844). */
+    .performance .evidence-stage figcaption span,
+    .evidence-stage--chart figcaption span {
+      color: var(--ai-accent-soft);
+    }
+
+    .evidence-stage--chart figcaption {
+      color: rgb(255 255 255 / .72);
+    }
+
+    .evidence-grid {
+      display: grid;
+      gap: clamp(1.5rem, 3vw, 2.5rem);
+      margin-block-start: clamp(2rem, 4vw, 3rem);
+    }
+
+    /* 증거 캡처는 원본 비율을 지켜야 해서(잘라내면 증거가 아니다) 한 행 안에서
+       이미지 높이가 다르다. 캡션을 행 바닥에 붙여 여러 장이 한 세트로 읽히게 한다.
+       남는 자리는 패널 배경으로 채워져 레터박스처럼 보인다. */
+    .evidence-grid .evidence-stage {
+      display: flex;
+      flex-direction: column;
+      margin-block-start: 0;
+    }
+
+    .evidence-grid .evidence-stage figcaption {
+      margin-block-start: auto;
+    }
+
+    /* 아랫줄 두 장은 CSS로 자르지 않는다. 한때 object-fit: cover로 높이를
+       맞췄는데 폴더 목록 마지막 줄이 반쯤 잘렸다 — 증거 캡처를 화면에서
+       잘라내면 안 된다. 대신 원본에서 아래 빈 여백만 덜어낸 파일을 새로
+       만들어 비율을 1.566과 1.571로 맞췄다(2026-08-01). 목록 내용은
+       한 줄도 잘리지 않았고 높이는 저절로 같아진다. */
+
+    /* 도입부 오른쪽 칸 = 리드 문장 + 롱테일 알약. 한 셀로 묶어야
+       .band-intro의 2단 그리드(제목 .6fr | 리드 .4fr)를 깨지 않는다. */
+    .band-intro__lede {
+      display: grid;
+      gap: clamp(1.25rem, 2.4vw, 1.75rem);
+    }
+
+    .longtail .eyebrow {
+      color: var(--ai-accent-soft);
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    .keyword-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-block-start: .8rem;
+      padding: 0;
+    }
+
+    /* 롱테일은 "이런 주제까지 덮었다"는 범위 표시다. 순위를 보여주는
+       RANKINGS 카드의 알약보다 한 단계 조용해야 위계가 선다 —
+       테두리만 있고 면은 비운다. */
+    .keyword-list li {
+      padding: .45rem 1rem;
+      border: 1px solid rgb(255 255 255 / .28);
+      border-radius: var(--radius-pill);
+      list-style: none;
+      color: rgb(255 255 255 / .78);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      letter-spacing: -.01em;
+    }
+
+
+    .rank-grid {
+      display: grid;
+      margin-block-start: clamp(2.5rem, 5vw, 3.5rem);
+      border-block-start: 1px solid rgb(255 255 255 / .32);
+    }
+
+    /* 세 칸의 설명 줄(dd)을 같은 높이에 맞춘다. 왼쪽 칸은 dt가 알약 3줄,
+       나머지 둘은 숫자 한 줄이라 그냥 두면 설명이 75px씩 어긋나 격자가
+       깨져 보였다(실측: 10/10·6/10 설명 y=290 vs 메인 키워드 순위 y=365).
+       1fr로 dt를 늘려 dd를 바닥에 붙인다. */
+    .rank-grid > div {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      padding-block: clamp(1.35rem, 2.6vw, 2rem);
+      padding-inline-end: 1.5rem;
+      border-block-end: 1px solid rgb(255 255 255 / .32);
+    }
+
+    .rank-grid dt {
+      font-family: var(--font-en);
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -.03em;
+    }
+
+    .rank-grid dd {
+      margin-block-start: .85rem;
+      color: rgb(255 255 255 / .66);
+      font-size: var(--text-sm);
+      line-height: 1.6;
+    }
+
+    .rank-grid__keywords dt {
+      display: grid;
+      gap: .4rem;
+      line-height: 1.3;
+    }
+
+    /* 메인 키워드 알약 — 도입부 롱테일과 형태를 맞추되(같은 radius),
+       면을 채워 한 단계 위로 올린다. 이름은 왼쪽 끝, 순위는 오른쪽 끝에
+       붙여 세 줄의 순위 숫자가 세로로 정렬되게 한다. 순위 막대가 아니라
+       읽는 표에 가깝게 — 4위를 흐리게 하지 않고 셋을 같은 무게로 둔다. */
+    /* baseline 정렬이면 이름(14px)과 순위(21px)의 밑선이 맞아 이름이 알약
+       위쪽으로 밀린다. 두 글자 크기가 다르므로 상자 기준 중앙에 세운다. */
+    .rank-kw {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      /* 좌우 17.6px이라 글자가 알약 가장자리에 붙어 보였다(실측). 알약은
+         radius가 커서 모서리가 안쪽으로 파고들기 때문에 사각형보다 여백이
+         더 필요하다. 두 배로 벌린다. */
+      padding: .6rem 2.2rem;
+      border-radius: var(--radius-pill);
+      background: rgb(255 255 255 / .07);
+    }
+
+    /* 14px은 옆 칸 10/10(52px)에 견주면 라벨처럼 읽혔다. 키워드 자체가
+       이 카드의 주어이므로 순위 숫자와 비슷한 무게로 올린다. */
+    .rank-kw b {
+      color: rgb(255 255 255 / .92);
+      font-size: clamp(1rem, 1.35vw, 1.2rem);
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+
+    .rank-kw i {
+      color: var(--ai-accent-soft);
+      font-family: var(--font-en);
+      font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+      font-style: normal;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    /* "위"는 숫자에 붙는 단위다. 같은 크기로 두면 숫자가 안 읽힌다. */
+    .rank-kw em {
+      margin-inline-start: .1em;
+      font-family: var(--font-ko);
+      font-size: .55em;
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    .result-note {
+      margin-block-start: clamp(1.5rem, 3vw, 2.25rem);
+      color: rgb(255 255 255 / .72);
+      font-size: clamp(.95rem, 1.3vw, 1.1rem);
+      line-height: 1.7;
+    }
+
+    .result-note strong {
+      color: var(--color-on-ink);
+      font-weight: 700;
+    }
+
+    /* 간격이 하나면 351·화살표·3.6K·10.3배가 균등 4열로 서고, 결론인
+       10.3배가 자기를 만든 두 재료와 동급으로 읽힌다. 간격을 둘로 나눈다 —
+       앞의 셋은 붙여 한 덩이(전후 비교)로 묶고, 결론은 아래 p 규칙에서
+       크게 띄운다. */
+    .growth-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: clamp(.75rem, 1.6vw, 1.5rem);
+      align-items: center;
+      margin-block-start: clamp(2.5rem, 5vw, 3.5rem);
+    }
+
+    /* 결론을 아랫줄로 내린다. 같은 줄에 두면 앞 덩이와 폭을 나눠 써야 해서
+       숫자를 키울 여지가 없었다. 줄을 통째로 쓰면 왼쪽 칸 499px이 전부
+       이 숫자 것이 된다(실측 1536×639). 옆으로 벌리던 여백은 필요 없어져
+       걷고, 대신 위로 한 뼘 띄워 "351 → 3.6K"와 "그래서 10.3배"를 가른다. */
+    .growth-row > p {
+      flex-basis: 100%;
+      margin-inline-start: 0;
+      margin-block-start: clamp(.5rem, 1.6vh, 1.25rem);
+    }
+
+    .growth-row div,
+    .growth-row p {
+      min-width: 0;
+    }
+
+    .growth-row span {
+      display: block;
+      color: rgb(255 255 255 / .6);
+      font-size: var(--text-sm);
+    }
+
+    /* 351과 3.6K는 그 자체로는 좋은지 나쁜지 판단이 안 되는 원자료다.
+       기념비 두 개가 아니라 결론의 근거 한 줄이어야 하므로 낮춘다
+       (40px → 32px @1536). 라벨과 캡션은 그대로 둔다 — 5월이 자동화
+       시작 월이라는 것은 이 숫자를 읽는 데 필요한 정보다. */
+    .growth-row strong {
+      display: block;
+      margin-block-start: .4rem;
+      font-family: var(--font-en);
+      font-size: clamp(1.5rem, 2.2vw, 2rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -.03em;
+    }
+
+    .growth-row small {
+      display: block;
+      margin-block-start: .5rem;
+      color: rgb(255 255 255 / .55);
+      font-size: var(--text-xs);
+    }
+
+    /* 화살표는 접속사지 항목이 아니다. 숫자를 낮추고 나니 36px 화살표가
+       32px 숫자보다 커져 저 혼자 항목처럼 보였다. 숫자 아래로 내린다. */
+    .growth-row i {
+      color: rgb(255 255 255 / .5);
+      font-size: clamp(1rem, 1.8vw, 1.5rem);
+      font-style: normal;
+    }
+
+    .growth-row p strong {
+      color: var(--ai-accent-soft);
+    }
+
+    /* .growth-row span { display: block }이 이 span에도 걸린다. 특이도가
+       0-1-1로 같고 그쪽이 뒤에 있어 block이 이겼다 — 그래서 "10.3"과 "배"가
+       두 줄로 갈렸다(실측: mult-unit의 계산값이 block). 부모를 붙여 올린다. */
+    .growth-row .mult-unit {
+      display: inline;
+      font-family: var(--font-ko);
+      font-size: .5em;
+    }
+
+    /* "약"은 수치를 꾸미는 말이지 수치의 일부가 아니다. 그래서 "배"와 달리
+       파랑을 물려받지 않고 옆 라벨들과 같은 회색으로 둔다 — 눈은 파란 덩이
+       하나(10.3배)를 잡고, 회색 "약"은 그 옆에 조건으로 앉는다.
+       위 .growth-row span 규칙(0-2-0)과 특이도가 같으므로 반드시 그 뒤에
+       와야 display:block을 덮는다. mult-unit이 같은 이유로 여기 있다. */
+    /* 띄어쓰기는 span 안에 둔다. 밖에 두면 그 공백이 strong의 72px 기준으로
+       잡혀 18px이 되고, 안에 두면 이 글자 크기(19px) 기준이라 5px이다.
+       마크업에 실제 공백이 있어야 화면낭독기가 "약10.3배"로 붙여 읽지 않는다. */
+    .growth-row .approx {
+      display: inline;
+      margin-inline-end: .2em;
+      color: rgb(255 255 255 / .6);
+      font-family: var(--font-ko);
+      font-size: .26em;
+      font-weight: 400;
+      letter-spacing: normal;
+    }
+
+    /* "증가"도 같은 대우. 앞뒤로 "약 … 증가"가 수치를 감싸 한 문장으로
+       읽힌다. 값은 .approx와 같게 두어 양쪽 무게가 맞는다. */
+    .growth-row .trail {
+      display: inline;
+      margin-inline-start: .2em;
+      color: rgb(255 255 255 / .6);
+      font-family: var(--font-ko);
+      font-size: .26em;
+      font-weight: 400;
+      letter-spacing: normal;
+    }
+
+    /* 수치와 단위는 한 낱말이다. 칸이 좁으면 "10.3"과 "배" 사이에서 줄이
+       바뀌어 세 줄이 됐다(실측). 붙여 둔다 — 아래 "증가"만 다음 줄이다. */
+    /* 이 카드가 하려는 말은 이 숫자 하나다. 351도 3.6K도 그 자체로는
+       기준이 없어 판단이 안 되고, 배수만 혼자 힘으로 의미가 선다.
+       제목 다음으로 눈에 들어오는 것이 이것이어야 한다(32px → 72px @1536). */
+    .growth-row p strong {
+      white-space: nowrap;
+      /* 아랫줄로 내리니 폭도 세로도 여유가 생겼다. 그림이 2~4행을 통째로
+         걸치므로 이 숫자가 커져도 그림 높이는 그대로고, 늘어난 만큼 비어
+         있던 3행에서 가져올 뿐이다(실측: 152px까지 넘침 0, 그림 725×396
+         불변). 그래도 무한정은 아니라 vw와 vh 중 작은 쪽을 따르게 묶는다 —
+         vw만 보면 낮은 화면에서, vh만 보면 좁은 화면에서 넘친다. */
+      font-size: clamp(3rem, min(9vw, 20vh), 8.5rem);
+      /* 72px 글자가 line-height 1이면 위아래로 빈 여백을 20px씩 물고 온다.
+         행이 가운데 정렬이라 그만큼 이 덩이가 옆의 351·3.6K보다 키가 커져
+         "약"이 다른 두 라벨보다 20px 위로 떴다(실측). 줄높이를 조이면
+         어긋남이 절반으로 줄고, 동시에 "약"과 "증가"가 숫자에 달라붙어
+         셋이 한 덩이로 읽힌다. 숫자에는 디센더가 없어 잘리지 않는다. */
+      line-height: .82;
+    }
+
+    .ai-metrics {
+      display: grid;
+      margin-block-start: clamp(2.5rem, 5vw, 3.5rem);
+      border-block-start: 1px solid rgb(255 255 255 / .32);
+    }
+
+    .ai-metrics > div {
+      padding-block: clamp(1.35rem, 2.6vw, 2rem);
+      padding-inline-end: 1.5rem;
+      border-block-end: 1px solid rgb(255 255 255 / .32);
+    }
+
+    /* 칸이 하나뿐이면 이건 표가 아니다. TRAFFIC처럼 세 칸이 늘어설 때는
+       위아래 선이 표의 머리와 바닥이지만, AI CITATIONS는 7.9K 하나라
+       선이 아무것도 나누지 않으면서 "여기부터 새 절"이라는 신호만 준다.
+       그 아래가 각주가 스스로 깎는 곁다리인데 절 구분선이 앞에 서면
+       곁다리가 본론으로 읽힌다. 같은 판단을 .rank-grid에서 이미 했다
+       ("선을 지운다 ... 간격만으로 가른다").
+       숫자와 설명도 눕힌다. 세로로 쌓는 건 지표 카드의 형식이고 그 형식
+       자체가 무게를 싣는다. 한 줄이면 부연으로 읽힌다.
+       :only-child로 거는 이유 — 나중에 칸이 둘 이상으로 돌아오면 표가
+       맞으므로 선과 세로 배치가 저절로 복구된다. */
+    .ai-metrics:has(> div:only-child) {
+      border-block-start: 0;
+    }
+
+    .ai-metrics:has(> div:only-child) > div {
+      display: flex;
+      align-items: baseline;
+      gap: .75rem;
+      padding-block: 0;
+      border-block-end: 0;
+    }
+
+    .ai-metrics:has(> div:only-child) dd {
+      margin-block-start: 0;
+    }
+
+    /* 7.9K가 카드에서 제일 컸는데(45.6px), 바로 아래 각주가 "자동화 도입
+       이전에 발행한 콘텐츠가 포함되어 있습니다"라고 스스로 깎는 값이다.
+       성격도 다르다 — 위 351·3.6K는 자동화 기간의 월별 값이고 이건 1월부터의
+       전체 누적이다. 가장 큰 활자가 가장 조건 붙은 숫자에 가 있으면 카드가
+       주장하려는 것과 보이는 것이 어긋난다. 배수 아래로 내려 곁다리 자리에
+       둔다(45.6px → 36px @1536). */
+    .ai-metrics dt {
+      font-family: var(--font-en);
+      font-size: clamp(1.5rem, 2.4vw, 2.25rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -.03em;
+    }
+
+    .ai-metrics dd {
+      margin-block-start: .85rem;
+      color: rgb(255 255 255 / .66);
+      font-size: var(--text-sm);
+      line-height: 1.6;
+    }
+
+    .metric-note {
+      max-inline-size: 72ch;
+      margin-block-start: clamp(1.5rem, 3vw, 2.25rem);
+      color: rgb(255 255 255 / .52);
+      font-size: var(--text-sm);
+      line-height: 1.7;
+    }
+
+    /* 결론 숫자(113%)와 문의 건수(3건)를 한 줄에 세우는 겹.
+       flex이 아니라 grid인 이유 — 두 덩이의 속 구조가 다르다. 왼쪽은
+       [숫자][아래 캡션]이고 오른쪽은 [위 라벨][숫자]다. flex는 상자 단위로만
+       맞출 수 있어서, 윗선을 맞추면 오른쪽 숫자가 라벨 높이만큼 내려가고
+       바닥을 맞추면 왼쪽이 캡션 높이만큼 올라간다(실측: 19px 어긋남).
+       맞춰야 하는 건 상자가 아니라 숫자다.
+       격자로 행을 라벨/숫자/캡션 셋으로 못 박고 p를 display:contents로 풀면,
+       속 요소들이 바깥 격자에 직접 놓여 두 숫자가 같은 행에 선다. */
+    .growth-row__tail {
+      flex-basis: 100%;
+      display: grid;
+      grid-template-columns: auto auto minmax(0, 1fr);
+      grid-template-rows: auto auto auto;
+      align-items: end;
+      column-gap: clamp(2rem, 5vw, 4.5rem);
+      margin-block-start: clamp(.5rem, 1.6vh, 1.25rem);
+    }
+
+    .growth-row__tail > p {
+      display: contents;
+    }
+
+    /* 행 배정 — 1행 라벨, 2행 숫자, 3행 캡션. */
+    .growth-row__tail > p > span:not(.mult-unit):not(.approx) { grid-row: 1; }
+    .growth-row__tail > p > strong { grid-row: 2; }
+    .growth-row__tail > p > small { grid-row: 3; }
+
+    /* 열 배정 — 결론 1열, 화살표 2열, 문의 3열. */
+    .growth-row__tail > p:first-child > * { grid-column: 1; }
+    .growth-row__tail > .signal-stat > * { grid-column: 3; }
+
+    /* 화살표는 숫자 행에, 그 높이 가운데. 아래 캡션·위 라벨과 무관하게
+       두 숫자 사이에 놓여야 잇는 구실을 한다. */
+    .growth-row__tail > .tail-arrow {
+      grid-column: 2;
+      grid-row: 2;
+      align-self: center;
+    }
+
+    /* 라벨이 3열을 통째로 늘리지 않게 묶는다. 풀어두면 라벨 한 줄 길이만큼
+       열이 벌어져 숫자가 그래프 쪽으로 밀린다. */
+    .signal-stat > span:not(.mult-unit) {
+      max-inline-size: 22rem;
+    }
+
+
+    .metric-note em {
+      color: rgb(255 255 255 / .7);
+      font-style: normal;
+      font-weight: 700;
+    }
+
+    /* 위 두 규칙은 어두운 스택 카드용이다. 02 워크플로 블록은 밝은 면이라
+       흰 글자 52%가 배경에 묻혀 각주가 통째로 안 보였다(실측). 밝은 면에서는
+       잉크 계열로 뒤집는다. 굵기는 주지 않는다 — 각주는 물러나 있어야 한다.
+
+       자리는 시간 비교 덩어리 바로 아래다. 기본값대로 두면 왼쪽 76에서
+       시작해 '약 4–5시간'(973)과 어긋난다. 오른쪽으로 밀어 두 수치가
+       놓인 기둥에 맞춘다. */
+    #automation-workflow .metric-note {
+      inline-size: fit-content;
+      max-inline-size: 100%;
+      margin-inline-start: auto;
+      margin-block-start: .75rem;
+      color: var(--color-ink-2);
+      font-weight: 400;
+      text-align: right;
+    }
+
+    /* ── Band: AI Workspace (mist) ────────────────────────── */
+    .workspace {
+      padding-block: var(--section-y);
+      background: var(--color-paper);
+    }
+
+    .tool-roles {
+      display: grid;
+      gap: 0;
+      margin-block-start: clamp(2.5rem, 5vw, 3.5rem);
+      border-block-start: 1px solid var(--color-rule-strong);
+    }
+
+    .tool-roles article {
+      padding-block: clamp(1.35rem, 2.6vw, 2rem);
+      padding-inline-end: 1.5rem;
+      border-block-end: 1px solid var(--color-rule-strong);
+    }
+
+    .tool-roles h4 {
+      display: flex;
+      gap: .65rem;
+      align-items: center;
+      font-family: var(--font-en);
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+
+    .tool-logo {
+      flex: none;
+    }
+
+    .tool-roles p {
+      margin-block-start: .85rem;
+      color: var(--color-ink-2);
+      font-size: var(--text-sm);
+      line-height: 1.7;
+    }
+
+    .setup-grid {
+      display: grid;
+      margin-block-start: clamp(2.5rem, 5vw, 3.5rem);
+      border-block-start: 1px solid var(--color-rule-strong);
+    }
+
+    .setup-grid > div {
+      padding-block: clamp(1.25rem, 2.4vw, 1.85rem);
+      padding-inline-end: 1.5rem;
+      border-block-end: 1px solid var(--color-rule-strong);
+    }
+
+    /* 소제목을 강조색으로. 같은 밴드의 .principle-list dt가 이미 같은
+       토큰을 쓰고 있어 두 표의 라벨 열이 한 색으로 맞는다 — 값을 따로
+       정하면 나중에 한쪽만 바뀐다. */
+    .setup-grid dt {
+      color: var(--color-accent);
+      font-size: clamp(1.1rem, 1.7vw, 1.35rem);
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .setup-grid dd {
+      margin-block-start: .7rem;
+      color: var(--color-ink-2);
+      font-size: var(--text-sm);
+      line-height: 1.7;
+    }
+
+    .responsibility-flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-block-start: clamp(2.5rem, 5vw, 3.5rem);
+      padding: 0;
+      border-block: 1px solid var(--color-rule-strong);
+      counter-reset: gate;
+    }
+
+    .responsibility-flow li {
+      counter-increment: gate;
+      min-width: 0;
+      padding: clamp(1.1rem, 2vw, 1.6rem) clamp(1rem, 1.6vw, 1.5rem);
+      border-inline-end: 1px solid var(--color-rule-strong);
+      list-style: none;
+      font-size: clamp(1rem, 1.35vw, 1.15rem);
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .responsibility-flow li:last-child {
+      border-inline-end: 0;
+    }
+
+    .responsibility-flow li::before {
+      display: block;
+      margin-block-end: .65rem;
+      color: var(--color-accent);
+      font-family: var(--font-en);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: .08em;
+      content: "0" counter(gate);
+    }
+
+    .principle-list {
+      display: grid;
+      margin-block-start: clamp(2.5rem, 5vw, 3.5rem);
+      border-block-start: 1px solid var(--color-rule-strong);
+    }
+
+    .principle-list > div {
+      display: grid;
+      grid-template-columns: minmax(8rem, .24fr) minmax(0, .76fr);
+      gap: 1rem clamp(1.5rem, 3vw, 3rem);
+      padding-block: clamp(1.35rem, 2.6vw, 2rem);
+      border-block-end: 1px solid var(--color-rule-strong);
+    }
+
+    /* 이탤릭을 걷고 굵게. --font-accent-en도 함께 뺀다 — 그 서체는 영문
+       세리프라 한글 글리프가 없어 어차피 한글 폰트로 떨어지는데, 남겨두면
+       이탤릭만 사라진 어중간한 상태가 된다. 같은 밴드의 .setup-grid dt와
+       같은 서체·같은 굵기(800)로 맞춰 두 표의 라벨 열이 한 벌로 읽히게
+       한다. 색은 그대로 --color-accent.
+       크기도 .setup-grid dt와 같은 값으로 맞춘다. 둘 중 작은 쪽(22px)을
+       택했다 — .setup-grid는 4열이라 셀이 좁아 키우면 라벨이 접히고,
+       이쪽은 라벨 열에 여유가 있어 줄여도 자리가 남는다. */
+    .principle-list dt {
+      font-size: clamp(1.1rem, 1.7vw, 1.35rem);
+      font-weight: 800;
+      color: var(--color-accent);
+    }
+
+    .principle-list dd {
+      max-inline-size: 58ch;
+      color: var(--color-ink-2);
+      font-size: clamp(1rem, 1.35vw, 1.15rem);
+      line-height: 1.75;
+    }
+
+    /* ── Scroll stack (03 밴드 성과 패널) ─────────────────────
+       제톤 실측값: 래퍼 높이 3×100vh, 슬롯 sticky top 10px /
+       height calc(100vh - 20px) / radius 20px / overflow hidden,
+       패널 absolute + z-index 역순, JS가 translateY를 넣는다.
+       스택이 꺼진 환경(모바일·모션 축소)에서는 아래 기본값 그대로
+       평범한 세로 흐름이다. */
+    .perf-stack .block {
+      margin-block-start: clamp(3.5rem, 7vw, 6rem);
+      padding-inline: var(--stage-x);
+    }
+
+    .perf-stack__view {
+      width: min(100%, var(--content-wide));
+      margin-inline: auto;
+    }
+
+    /* 스크롤 구간 = 카드 수 × 카드 높이. 카드가 한 화면을 통째로 쓰므로
+       래퍼도 화면 높이 배수다. */
+    .js-stack .perf-stack {
+      height: calc(var(--views, 3) * 100vh);
+    }
+
+    /* 도입부와 첫 카드 사이 숨통. 전에는 사이에 KEYWORD MAP 블록이 있어
+       그 블록의 margin이 완충 역할을 했는데, 블록을 없애면서 간격이
+       정확히 0px이 됐다(실측: 알약 바닥 494 = 카드 윗변 494). 카드가
+       제목을 물고 올라오는 것처럼 보였다. 72px은 넓어서 절반으로 줄인다 —
+       줄인 만큼이 아래 카드 몫이 된다. */
+    .perf-stack {
+      margin-block-start: clamp(1.5rem, 2.6vw, 2.25rem);
+    }
+
+    /* 03 밴드만 위아래 여백을 줄인다. 섹션 패딩이 위아래 100px씩인데 이
+       밴드는 카드가 화면을 통째로 쓰는 구조라 도입부가 자리를 많이 차지할
+       이유가 없다. 줄인 만큼 카드가 커진다. */
+    .performance {
+      padding-block: clamp(2.5rem, 5vh, 4rem);
+    }
+
+    /* 제목 위 가로선을 뺀다. 아래 카드가 자기 면을 갖고 있어 경계가 이미
+       분명하다 — 선까지 더하면 구분 기호가 두 겹이 된다. */
+    .performance .band-intro {
+      border-block-start: 0;
+      padding-block-start: 0;
+    }
+
+    /* 카드가 고정된 동안에도 머리말은 떠 있다. 숨기면 카드 3장 구간
+       1917px 내내 이동 수단이 사라진다. 카드가 화면을 통째로 쓰므로
+       머리말이 카드 위 84px을 덮지만, 그 자리는 카드 안쪽 여백이라
+       글자를 가리지 않는다. */
+
+    .site-header {
+      transition: opacity 260ms ease;
+    }
+
+    /* 슬롯을 화면 맨 위에 붙인다. 제톤과 같은 값이다(원본 확인:
+       ._scroll-stack[data-method=transform] .views-slot { top: var(--margin) },
+       --margin은 clamp(8px, …, 10px)).
+       머리말 아래로 내렸더니 카드가 535px로 줄었다 — 한 화면 안에 들어와야
+       하고 스크롤 스택이라 화면 위에 고정돼야 하므로, 카드가 쓸 수 있는
+       높이는 화면에서 머리말과 여유를 뺀 값이 전부다. 머리말 84px을
+       되가져오면 카드가 619px이 된다. 대신 카드가 고정된 동안에는
+       머리말이 물러난다(아래 .stack-pinned 규칙). */
+    .js-stack .perf-stack__slot {
+      position: sticky;
+      top: 10px;
+      height: calc(100vh - 20px);
+      overflow: hidden;
+      margin-inline: 10px;
+      border-radius: 20px;
+    }
+
+    /* 제톤 카드 구조(실측 1521×695):
+         슬롯   [10, y, 1502, 676]  radius 20  overflow hidden
+         패널   [0, y-10, 1521, 695]  top/left -10px  padding 10px   ← 뷰포트 전체
+         색면   [10, y, 1502, 676]  absolute inset 0  radius 20      ← 별도 레이어
+       패널을 슬롯보다 크게 잡고 안쪽 여백만큼 들여 색면을 놓는다. 색면은
+       슬롯과 같은 크기·같은 radius라, 카드가 올라가면 둥근 아래 모서리가
+       드러나며 다음 카드가 보인다. 전에는 패널이 inset:0에 배경을 직접 깔아
+       라운드가 프레임에만 있었고, 그래서 종이 넘김이 아니라 배경색 교체로
+       보였다. 우리는 자식을 추가하는 대신 ::before로 색면을 만든다. */
+    .js-stack .perf-stack__view {
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      z-index: var(--z, 1);
+      display: grid;
+      align-content: center;
+      width: calc(100% + 20px);
+      /* 카드 하나가 슬롯을 정확히 채운다. */
+      height: 100vh;
+      max-width: none;
+      padding: 10px;
+      background: none;
+      will-change: transform;
+    }
+
+    .js-stack .perf-stack__view::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      z-index: -1;
+      border-radius: 20px;
+      background: var(--view-bg, #1c2338);
+    }
+
+    /* 내용은 색면 위에 선다. */
+    .js-stack .perf-stack__view > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 카드 면을 밴드 배경(#10131d)보다 확실히 밝게 올린다. 전에는 #161b2a라
+       배경과 6/8/13밖에 차이 나지 않아, 일부러 다르게 한 것도 같은 것도 아닌
+       상태였다 — 카드가 한 장씩 넘어가는 구조인데 경계가 약해 그 동작이
+       안 읽혔다. 두 번째 카드는 #0f1524로 배경보다 오히려 어두웠다.
+       제톤처럼 두 색을 번갈아 쓴다(원본: ._scroll-stack-view{--view-background:#f96853},
+       :nth-child(2n){--view-background:#fa8270}). */
+    .js-stack .perf-stack__view:nth-child(2n) {
+      --view-bg: #222a42;
+    }
+
+    /* 패널 안에서는 블록이 카드의 내용물이다. 구분선·상단 여백을 걷어내고
+       한 화면에 들어가게 세로 리듬을 줄인다. */
+    .js-stack .perf-stack__view .block {
+      width: min(100%, var(--content-wide));
+      margin: 0 auto;
+      /* 1920×911 실측: RANKINGS 패널이 16px 초과 → 상하 패딩 소폭 축소 */
+      padding: clamp(1.5rem, 3.2vh, 2.5rem) var(--stage-x);
+      border-block-start: 0;
+    }
+
+    .js-stack .perf-stack__view :is(.rank-grid, .ai-metrics, .growth-row, .evidence-grid, .result-note, .metric-note, .block-copy) {
+      margin-block-start: clamp(1rem, 2.6vh, 2rem);
+    }
+
+    /* 증거 캡처가 패널 높이를 넘지 않게 상한을 건다. 비율은 유지된다.
+       1920×911 실측에서 36vh는 RANKINGS 패널이 89px 넘쳤다 → 28vh. */
+    /* 증거 캡처는 vh 고정 상한을 쓰지 않는다.
+       두 가지가 동시에 잘못됐었다. (1) .evidence-stage가 세로 flex라
+       교차축에서 이미지가 stretch돼 690×620(1.11) 캡처가 6.4:1로 납작해졌고,
+       (2) 상한이 28vh 고정이라 639px 화면에서는 102px까지 쪼그라들었다.
+       게다가 패널은 내용이 492px뿐이라 127px가 그냥 비어 있었다(실측).
+
+       그래서 블록을 세로 flex로 만들고 증거 줄이 남는 높이를 전부 가져가게
+       한다. 이미지는 그 칸 안에서 object-fit: contain으로 앉으므로 비율은
+       언제나 고유값 그대로고, 크기는 화면이 커지면 함께 커진다.
+       고정 픽셀이 사라져 어떤 뷰포트에서도 스스로 맞는다. */
+    /* 뷰의 그리드 행이 내용 높이로 잡히면 .block의 height:100%가 제자리를
+       돌아 남는 높이가 생기지 않는다. 행을 늘리고 가운데 정렬은 블록이 맡는다. */
+    .js-stack .perf-stack__view {
+      align-content: stretch;
+    }
+
+    .js-stack .perf-stack__view .block {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+    }
+
+    /* 증거 줄은 두 모양이다. RANKINGS는 .evidence-grid 안에 캡처 두 장,
+       AI BRIEFING은 .evidence-stage가 .block의 직계 자식으로 한 장.
+       둘 다 남는 높이를 가져가야 해서 양쪽에 같은 규칙을 건다. */
+    .js-stack .perf-stack__view .evidence-grid,
+    .js-stack .perf-stack__view > .block > .evidence-stage {
+      flex: 1 1 0;
+      min-height: 0;
+    }
+
+    .js-stack .perf-stack__view .evidence-stage {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* flex-basis는 반드시 0이어야 한다. auto로 두면 대체 요소의 고유 높이
+       (654px 폭 기준 588px)가 기준이 돼 패널이 231px 넘쳤다(실측).
+       0이면 남는 높이만으로 크기가 정해진다. */
+    .js-stack .perf-stack__view .evidence-stage img {
+      flex: 1 1 0;
+      min-height: 0;
+      width: 100%;
+      max-width: 100%;
+      max-height: none;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    /* 위 값들은 1920×911에서 맞춘 것이라 세로가 짧아지면 무너진다.
+       1536×639 실측: RANKINGS 694px·AI BRIEFING 666px가 슬롯 619px를 넘겨
+       제목이 위로, 증거 캡처가 아래로 잘렸다. 화면이 낮아지면 여백과
+       캡처 상한을 함께 줄여 어떤 높이에서도 한 패널이 통째로 담기게 한다. */
+    @media (max-height: 52rem) {
+      /* 639px에서 1.2vh는 7.7px이라 라벨이 카드 모서리에 붙어 보였다(실측:
+         카드 윗변에서 16px). 20px까지 올렸어도 좌우 안쪽 여백이 76px이라
+         위만 유독 좁아 라벨이 천장에 붙어 보였다. 캡처가 남는 높이를
+         흡수하므로 올려도 넘치지 않고 그림이 그만큼 줄어든다. */
+      .js-stack .perf-stack__view .block {
+        padding-block: clamp(2.25rem, 4.6vh, 3.5rem);
+      }
+
+      .js-stack .perf-stack__view :is(.rank-grid, .ai-metrics, .growth-row, .evidence-grid, .result-note, .metric-note, .block-copy) {
+        margin-block-start: clamp(0.375rem, 1.1vh, 1.25rem);
+      }
+
+      /* 순위·지표 칸 아래 32px은 고정값이라 화면이 낮아져도 줄지 않았다.
+         RANKINGS는 .rank-grid, AI BRIEFING은 .ai-metrics가 같은 값을 쓴다. */
+      .js-stack .perf-stack__view :is(.rank-grid, .ai-metrics) > *,
+      .js-stack .perf-stack__view .rank-grid__keywords {
+        padding-bottom: clamp(0.25rem, 0.7vh, 2rem);
+      }
+
+      /* 낮은 화면에서는 제목이 111px을 먹어 증거 칸에 4px밖에 안 남았다
+         (639px 실측). 제목을 화면 높이에 묶어 캡처가 설 자리를 만든다. */
+      .js-stack .perf-stack__view .block__head :is(h2, h3) {
+        font-size: clamp(1.125rem, 3.4vh, 2rem);
+        line-height: 1.15;
+        /* 24ch는 '0' 글자 폭 기준이라 한글에서는 훨씬 좁게 잡힌다. 카드 안
+           제목이 311px에 갇혀 "추적 키워드의 검색 / 노출을 확인했습니다."로
+           끊겼다(실측). 카드 안에서는 글자 수 대신 칸 폭에 맡긴다. */
+        max-inline-size: none;
+      }
+
+      /* 남는 높이가 아무리 없어도 캡처가 사라지지는 않게 한다. */
+      .js-stack .perf-stack__view .evidence-stage img {
+        min-height: 11vh;
+      }
+    }
+
+    /* 스택 네 장을 모두 좌우로 나눈다 — 왼쪽 글·수치, 오른쪽 그림.
+       한 줄로 깔면 흰 박스가 카드 폭 1349px을 차지하는데 남는 높이는
+       96px뿐이라, 1145×660 캡처가 167px 폭으로만 그려지고 좌우 1181px이
+       흰 여백이 됐다(실측 2026-08-01, 1536×639). 높이를 더 줘도 폭의
+       12%만 쓰는 구조여서 내용을 덜어내는 걸로는 풀리지 않았다.
+       오른쪽에 세우면 그림이 여러 행을 합쳐 카드 높이를 쓴다.
+       네 장이 같은 골격이라 스크롤하는 동안 눈이 같은 자리를 본다.
+       좁은 화면에서는 원래대로 위아래로 쌓인다. */
+    @media (min-width: 62rem) {
+      /* 내용을 카드 세로 중앙에 놓는다. start로 두면 내용이 적은 장에서
+         아래가 크게 빈다 — LONG-TAIL은 왼쪽이 y=270에서 끝나는데 카드는
+         690까지 갔다(실측, 빈 공간 400px). 중앙에 두면 남는 높이가 위아래로
+         나뉘어 카드가 균형을 잡는다. */
+      /* 오른쪽 칸을 auto로 둔다. 반반(1fr : 1.05fr)으로 나눴더니 캡처가
+         380×250까지 줄어 검색 결과 글자가 안 읽혔다(실측). 증거 캡처는
+         읽혀야 증거다. 그림이 높이를 먼저 채우고 제 비율대로 폭을 정하면,
+         글은 남는 폭을 쓴다 — 왼쪽은 숫자 서너 개라 좁아도 읽힌다.
+         캡처마다 비율이 1.22 / 1.24 / 1.54 / 1.52로 달라 고정 분할로는
+         어떤 장은 남고 어떤 장은 넘친다. auto가 장마다 맞춰준다. */
+      /* 블록이 카드 높이를 다 쓴다. 내용만큼만 잡으면 남는 높이가 없어
+         그림이 자랄 자리도 없다. 행은 위에서부터 채우고(start) 남는 높이는
+         그림이 걸친 행이 1fr로 가져간다. */
+      .js-stack .perf-stack__view .block {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        /* 2행만 1fr이면 그 행에 놓인 요소가 남는 높이를 혼자 먹는다
+           (실측: growth-row가 내용 110px인데 322px로 부풀어 그 아래만
+           212px 벌어졌다). 왼쪽 요소들이 놓이는 행을 모두 1fr로 두어
+           남는 높이를 고르게 나눈다 — 그림 칸은 이 행들을 통째로 걸치므로
+           높이는 그대로다. */
+        /* 다만 행을 전부 암시적으로 두면 각주도 1fr을 한 몫 받는다. 각주는
+           한 줄(24px)인데 250px짜리 행을 받아 7.9K 아래가 통째로 비었고,
+           그림은 `2 / span 2`라 그 행에 닿지 못해 남는 높이를 못 썼다
+           (실측 1830×980: 행 148/250/250/250, 그림 658×428 = 원본의 47%).
+           세 카드 모두 왼쪽 덩이가 정확히 둘이므로 2·3행만 1fr로 못 박고
+           머리말과 각주는 내용 높이만 쓰게 한다. */
+        grid-template-rows: auto 1fr 1fr auto;
+        grid-auto-rows: auto;
+        /* RANKINGS 카드는 알약 · 수치 · 그림 세 덩이가 가로로 선다. 이 간격과
+           왼쪽 안쪽 간격이 따로 정해져 있어 28px과 44px로 어긋났다(실측).
+           한 변수로 묶어 세 덩이 사이가 같아지게 한다. */
+        column-gap: var(--stack-col-gap);
+        align-content: start;
+        block-size: 100%;
+        min-block-size: 0;
+      }
+
+      /* 머리말은 카드 폭을 다 쓴다. */
+      .js-stack .perf-stack__view .block > .block__head {
+        grid-column: 1 / -1;
+      }
+
+      /* 제목과 첫 덩이 사이를 띄운다. 낮은 화면용 규칙(1.1vh)이 이 자리까지
+         눌러 639px 높이에서 7px밖에 안 됐다(실측). 그 규칙은 왼쪽 칸의 모든
+         덩이에 걸리는 공용값이라 통째로 올리면 카드마다 아래가 밀린다.
+         제목 바로 다음 하나만 골라 띄운다 — 세 카드 모두 이 자리가
+         .growth-row 또는 .rank-grid다.
+         행이 넷 다 1fr/auto로 물려 있어 늘어난 만큼은 비어 있는 3행에서
+         온다. 그림은 2~4행을 통째로 걸치므로 크기가 그대로다.
+         특이도 0-4-0으로 공용 규칙(0-3-0)을 이긴다 — 미디어쿼리가 달라도
+         순서와 무관하게 이쪽이 적용된다. */
+      .js-stack .perf-stack__view .block > .block__head + * {
+        margin-block-start: clamp(1rem, 4vh, 3rem);
+      }
+
+      /* 각주는 왼쪽 칸에 두고 밑선을 그림 쪽 밑선에 맞춘다. 카드 폭을 다
+         쓰면 그림 칸 아래로 흘러 각주만 혼자 한 층 더 내려앉고, 오른쪽
+         캡션 상자와 밑선이 어긋난다. 왼쪽 칸으로 좁히고 그림이 이 행까지
+         내려오게 하면(아래 span 3) 두 덩이가 같은 바닥에서 끝난다. */
+      .js-stack .perf-stack__view .block > .metric-note {
+        grid-column: 1;
+        align-self: end;
+        /* 밑선을 맞춘 뒤 한 뼘 더 내린다. 각주 아래로 카드 안쪽 여백이
+           36px 남아 있어 그 안에서 움직인다(실측). margin이 아니라
+           translate를 쓰는 이유 — 격자 행 높이를 건드리지 않으므로 위
+           칸들과 그림 크기가 그대로다. 14px이면 여백이 22px 남는다. */
+        translate: 0 .875rem;
+      }
+
+      /* 왼쪽 칸 — 문서 순서대로 쌓인다. */
+      .js-stack .perf-stack__view .block > :is(.rank-grid, .growth-row, .ai-metrics, .longtail, .result-note, .block-copy) {
+        grid-column: 1;
+      }
+
+      /* 순위 격자는 2칸이 맞다 — 알약 줄이 폭을 쓰고 10/10·6/10이 나란히 선다. */
+      .js-stack .perf-stack__view .block > .rank-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      /* 칸에 걸린 안쪽 여백을 걷는다. 칸 경계는 44px로 같은데 글자가 칸 안에서
+         왼쪽 24px · 오른쪽 39px씩 물러나 있어, 눈에 보이는 간격이 92px과
+         83px로 어긋났다(실측). 간격은 column-gap 하나가 정하게 한다. */
+      .js-stack .perf-stack__view .rank-grid > div {
+        padding-inline: 0;
+      }
+
+      /* 지표는 개수만큼만 칸을 만들어 한 줄에 세운다. 2칸으로 묶었더니
+         TRAFFIC의 세 칸 중 하나가 둘째 줄로 밀려 237px을 먹었고,
+         auto-fit으로 바꾸니 폭이 남아 빈 네 번째 칸이 생겼다(실측).
+         auto-flow: column이면 1개짜리 AI CITATIONS는 1칸, 3개짜리
+         TRAFFIC은 3칸으로 각자 맞는다. */
+      .js-stack .perf-stack__view .block > .ai-metrics {
+        grid-template-columns: none;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, 1fr);
+      }
+
+      /* 각주 바로 위로 내린다. 각주("누적 인용수에는 자동화 도입 이전에
+         발행한 콘텐츠가 포함되어 있습니다")는 오직 이 숫자만 한정하는
+         문장인데, 자기 행 위쪽에 떠 있으면 둘 사이가 벌어져 그 관계가
+         보이지 않는다. 행 아래에 붙이면 숫자와 한정 문장이 한 덩이가 되고,
+         왼쪽 칸이 "주장(위) / 잔글씨(아래)" 두 덩이로 정리된다.
+         남는 높이는 가운데로 모인다 — 그림이 이 행들을 통째로 걸치므로
+         그림 크기는 그대로다. */
+      .js-stack .perf-stack__view .block > .ai-metrics {
+        align-self: end;
+      }
+
+      /* AI CITATIONS만 그림 쪽으로 폭을 옮긴다. 왼쪽이 695px인데 담긴 것은
+         351→3.6K 한 줄과 6.7K 하나뿐이라 헐거웠고, 그림 칸은 610px이나
+         되면서 정작 그림은 412×268에 머물렀다(실측). 캡션이 527px 2줄로
+         접히며 68px을 먹어 그림 높이를 눌렀기 때문이다. 칸을 넓히면 캡션이
+         한 줄로 펴지고 그 만큼이 그림 높이로 간다 — 높이가 폭을 정하므로
+         그림이 가로세로 함께 커진다. */
+      .js-stack .perf-stack__view:has(#ai-search-results) .block {
+        grid-template-columns: minmax(0, .62fr) minmax(0, 1fr);
+      }
+
+      /* 알약 줄은 자기 행을 통째로 쓰되 폭만 첫 칸에 맞춘다.
+         26rem 상한일 때는 알약이 502에서 끝나는데 칸은 908까지라 오른쪽
+         406px이 선으로 둘러싸인 빈 상자가 됐고, 그 선(908)이 아래
+         10/10·6/10 사이 선(497)과 어긋났다(실측).
+         grid-column을 1로 좁히면 10/10이 옆에 붙고 6/10이 아래로 밀린다.
+         행은 그대로 두고 dt만 50%로 잘라 오른쪽 끝을 497에 맞춘다. */
+      .js-stack .perf-stack__view .rank-grid__keywords {
+        grid-column: 1 / -1;
+      }
+
+      /* 알약 묶음을 왼쪽 열에 두고, 10/10·6/10을 그 오른쪽 열에 세로로
+         쌓는다. 전에는 알약 아래에 가로 2칸으로 깔려 세로가 두 층이 됐다.
+         옆에 세우면 "무엇이 몇 위인가"와 "전체 중 몇 개인가"가 한 눈에
+         나란히 읽히고, 카드 세로도 그만큼 줄어 그림이 커진다. */
+      /* 세 덩이가 쓰는 하나의 가로 간격. 카드 2단과 왼쪽 안쪽이 같은 값을
+         쓴다 — 따로 두면 28px과 44px로 어긋난다(실측). */
+      .js-stack .perf-stack__view .block {
+        --stack-col-gap: clamp(1.5rem, 3vw, 2.75rem);
+      }
+
+      /* 1열을 알약 폭으로 고정한다. fr로 두면 열만 넓게 남아 ②가 오른쪽에
+         머물고 ①→② 간격이 200px로 벌어졌고(1열 440px인데 알약은 368px),
+         auto로 두면 반대로 알약이 내용 폭까지 쪼그라들어 롱테일보다 177px
+         짧아졌다(실측). 23rem은 롱테일 알약이 세 개씩 접히는 폭이다. */
+      .js-stack .perf-stack__view .block > .rank-grid {
+        grid-template-columns: 23rem minmax(0, 1fr);
+        /* start여야 두 덩어리가 같은 윗선에서 시작한다. center면 알약 묶음이
+           아래로 내려앉아 라벨이 10/10보다 89px 밑에 놓였다(실측). */
+        align-items: start;
+        /* start를 쓴다. space-between으로 그림 높이(373px)에 맞춰 늘렸더니
+           왼쪽 내용이 215px뿐이라 10/10과 6/10이 187px 떨어져 한 묶음으로
+           안 읽혔다(실측). 내용량이 다른 건 결함이 아니므로 높이를 억지로
+           같게 만들지 않는다 — 제톤도 크기가 3배 차이 나는 두 이미지의
+           밑선만 맞췄지 높이를 같게 하지는 않았다(원본 실측: 밑선 59px 일치). */
+        align-content: start;
+        column-gap: var(--stack-col-gap);
+        row-gap: clamp(1.25rem, 2.4vh, 2rem);
+      }
+
+      .js-stack .perf-stack__view .rank-grid__keywords {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+      }
+
+      /* 오른쪽 두 칸은 내용 높이만 쓴다. 알약 칸(215px)에 맞춰 늘어나면
+         10/10과 6/10이 183px 떨어져 한 묶음으로 안 읽혔다(실측).
+         칸 안에서는 가운데에 놓는다. 왼쪽에 붙이면 알약과 44px밖에 안 떨어져
+         붙어 보였고, 오른쪽 끝으로 밀면 반대로 225px이 벌어졌다(실측).
+         가운데면 양쪽이 나뉜다. 숫자와 그 아래 설명이 함께 중앙에 선다.
+         아래 방문 문장은 제자리를 지키므로 이 규칙에서 뺀다. */
+      .js-stack .perf-stack__view .rank-grid > div:not(.rank-grid__keywords) {
+        align-self: start;
+        justify-self: center;
+        padding-block: 0;
+        text-align: center;
+      }
+
+      /* 라벨은 알약 묶음 위로 올린다 — 오른쪽 자리는 10/10이 가져갔다. */
+      .js-stack .perf-stack__view .rank-grid__keywords dd {
+        order: -1;
+        margin-block-start: 0;
+        margin-block-end: .7rem;
+      }
+
+      /* 선을 지운다. 격자 위 가로선 하나와 칸 사이 세로선 둘이 있었는데,
+         알약이 이미 각자 면을 갖고 있어 선까지 더하면 칸막이가 두 겹이 된다.
+         간격만으로 가른다. */
+      .js-stack .perf-stack__view .rank-grid,
+      .js-stack .perf-stack__view .rank-grid > div {
+        border: 0;
+      }
+
+      /* 알약 묶음 폭을 아래 롱테일 키워드 줄에 맞춘다. 열 폭을 다 쓰면
+         562에서 끝나 롱테일(449)보다 113px 길어, 두 묶음의 오른쪽 끝이
+         어긋났다(실측). 롱테일 알약이 세 개씩 접히는 폭과 같은 값으로 묶는다. */
+      .js-stack .perf-stack__view .rank-grid__keywords dt {
+        max-inline-size: 23rem;
+      }
+
+      /* 제목 오른쪽에 붙던 기준 표기가 그림 칸 위로 넘어가 캡션처럼 보였다
+         (실측: x=850, 그림 왼쪽 위 모서리 바로 위). 2단에서는 제목 아래로
+         내린다. */
+      .js-stack .perf-stack__view .block__head--with-note {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: .4rem;
+      }
+
+      /* 오른쪽 칸 — 2행부터 왼쪽 칸이 쓰는 행을 전부 덮는다. `2 / -2`를 쓰면
+         행이 전부 암시적이라 -2가 해석되지 않아 그림이 자기 행을 따로 차지했다
+         (실측: TRAFFIC 카드가 365px 넘침). 왼쪽 항목이 가장 많은 장이 셋이라
+         span 4면 넉넉하고, 남는 빈 행은 높이 0으로 접힌다. */
+      /* stretch여야 그림 칸이 행 높이를 다 받는다. center면 내용만큼만 잡혀
+         남는 높이가 그림으로 가지 않는다. */
+      .js-stack .perf-stack__view .block > .evidence-stage {
+        grid-column: 2;
+        /* 왼쪽에 놓이는 덩이는 세 카드 모두 둘이다(순위+롱테일 / 변화+지표).
+           span 4로 두면 빈 행 둘이 생겨 각주 앞이 169px 벌어진다(실측).
+           span 3으로 늘린다 — 각주 행(4행)까지 함께 쓴다. 위 각주 규칙이
+           각주를 왼쪽 칸으로 옮겼으니 자리가 겹치지 않고, 행이 `auto 1fr
+           1fr auto` 넷으로 명시돼 있어 span 3이 정확히 2·3·4행에서 끝난다.
+           암시적 빈 행이 생기던 옛 span 4 문제는 재발하지 않는다. */
+        grid-row: 2 / span 3;
+        align-self: stretch;
+        /* 칸이 그림보다 넓은 카드가 있다(AI CITATIONS는 열 비율이 달라
+           오른쪽 여백이 257px까지 벌어졌다 — 실측). figure는 칸 폭을 그대로
+           쓰고, 그 안에서 그림과 캡션을 오른쪽에 붙여 세 카드가 같은 여백을
+           갖게 한다. 칸 폭을 좁히면 SVG 그래프가 순환에 걸려 무너진다. */
+        align-items: flex-end;
+        margin-block-start: 0;
+
+        /* 캡처 자체가 흰 화면이라 뒤에 흰 판을 한 겹 더 깔 이유가 없다.
+           판을 걷고 그림만 남긴다. 캡션은 어두운 배경 위에 맨몸으로 두면
+           떠 보이므로 캡션에만 상자를 준다. */
+        display: flex;
+        flex-direction: column;
+        /* 내용을 칸 바닥에 붙인다. 그림은 `flex: 1 1 0`이라 남는 높이를
+           가져가야 하지만 `max-block-size: 62vh` 상한에 먼저 걸려, 칸 안쪽
+           아래가 비고 캡션 밑선이 왼쪽 각주보다 36px 위에 떴다(실측
+           1536×695, TRAFFIC은 24px). 남는 높이를 위로 보내면 캡션 상자와
+           각주가 같은 밑선에서 끝난다. */
+        justify-content: flex-end;
+        gap: .7rem;
+        border: 0;
+        background: none;
+        /* TRAFFIC의 `.evidence-stage--chart`가 어두운 판(#10141f)과 짝으로
+           24px 여백을 갖는데, 바로 위 `background: none`이 판만 지워 여백이
+           홀로 남았다. 그래서 이 카드만 캡션 밑선이 각주보다 24px 위에
+           떴다(실측 1536×695). 판이 없으면 여백도 없다. */
+        padding: 0;
+        overflow: visible;
+      }
+
+      /* 그림 — 원본 비율 그대로, 뒤에 아무것도 깔지 않는다. 캡처 자체가
+         흰 화면이라 그 뒤에 흰 판을 한 겹 더 까는 건 의미가 없다.
+         테두리도 배경도 없애고 그림만 남긴다. 상자는 아래 캡션만 갖는다. */
+      .js-stack .perf-stack__view .block > .evidence-stage > :is(img, .traffic-chart) {
+        border: 0;
+        border-radius: 6px;
+        background: none;
+      }
+
+      /* 그래프에만 어두운 판을 되살린다. 옆 두 카드는 오른쪽이 흰 캡처라
+         자기 면을 갖는데, 이 그래프는 카드 바닥 위에 막대만 떠 있어 셋을
+         나란히 보면 이 칸만 경계가 없다.
+         흰 판은 쓰지 않는다 — 그래프 글자가 전부 흰색 계열(값 92%, 월 60%,
+         범례 60%, 서로이웃 막대 55%, 기준선 28%)이라 흰 바닥에서 사라지고,
+         흰 사각형은 이 페이지에서 "네이버 화면 캡처"라는 뜻을 이미 갖고
+         있어 직접 그린 그래프가 캡처로 보인다.
+         판을 figure가 아니라 그래프에만 두는 이유 — 원래 규칙
+         (.evidence-stage--chart)은 figure 전체를 감쌌지만, 스택에서는
+         캡션이 자기 상자를 따로 갖고 있어 상자가 두 겹이 된다. 그래프만
+         감싸면 세 카드의 캡션 처리가 같은 채로 남는다.
+         위 규칙과 특이도가 같으므로(0-4-0) 반드시 뒤에 와야 한다. */
+      .js-stack .perf-stack__view .block > .evidence-stage--chart > .traffic-chart {
+        padding: clamp(1rem, 2vw, 1.5rem);
+        background: #10141f;
+      }
+
+      /* 캡션 상자는 그림과 같은 폭이다. fit-content로 두면 글자 길이에 따라
+         그림보다 넓어지거나 좁아져 두 상자가 어긋난다(실측: 그림 412 vs
+         캡션 527). anchor-name으로 폭을 물려줄 수 없으므로 JS가 그림 폭을
+         --media-w로 넘기고 캡션이 그 값을 쓴다. */
+      .js-stack .perf-stack__view .block > .evidence-stage > figcaption {
+        /* 그림과 같은 축에 선다. 그림만 end로 바꾸고 캡션을 center로 두면
+           캡션이 왼쪽으로 밀린다(실측: RANKINGS 60px, AI CITATIONS 195px).
+           오른쪽 여백도 그림과 같은 값을 쓴다. */
+        align-self: end;
+        margin-inline-end: clamp(1rem, 2vw, 1.75rem);
+        inline-size: var(--media-w, 100%);
+        max-inline-size: 100%;
+        /* 아래 안쪽 여백이 12px이라 캡션 글자가 왼쪽 지표 글자보다 7px 위에
+           떴다(실측). 상자 바닥이 아니라 글자 밑선이 맞아야 한 줄로 읽힌다.
+           그만큼 줄인다. */
+        padding: .7rem .85rem .3rem;
+        border-radius: 8px;
+        background: rgb(255 255 255 / .06);
+        color: rgb(255 255 255 / .68);
+      }
+
+      /* 알약 6개가 660px 폭에서 5+1로 접혀 둘째 줄에 하나만 남았다(실측).
+         폭을 묶어 3+3으로 갈라 두 줄이 비슷한 무게가 되게 한다. */
+      .js-stack .perf-stack__view .longtail .keyword-list {
+        max-inline-size: 30rem;
+      }
+
+      /* 제목 바로 아래 4px에 붙어 답답했다. */
+      .js-stack .perf-stack__view .longtail .eyebrow {
+        margin-block-start: .35rem;
+      }
+
+      /* 순위 격자와 롱테일 알약은 다른 묶음이다. 간격이 0px이라 AGV 알약과
+         LONG-TAIL KEYWORDS 라벨이 붙어 한 덩어리로 보였다(실측). */
+      .js-stack .perf-stack__view .rank-grid + .longtail {
+        margin-block-start: clamp(1.5rem, 3vh, 2.5rem);
+      }
+
+      /* 라벨은 윗줄 전체, 아랫줄에 알약과 설명 문장이 나란히 선다.
+         위 순위 격자와 열을 똑같이 맞춘다 — 비율로 두면 476/421이 되어
+         368/530인 위층과 어긋나고, 방문 문장이 654로 밀려 ② 덩이가
+         오른쪽으로 벌어진다(실측). */
+      .js-stack .perf-stack__view .longtail {
+        display: grid;
+        grid-template-columns: 23rem minmax(0, 1fr);
+        align-items: start;
+        column-gap: var(--stack-col-gap);
+      }
+
+      .js-stack .perf-stack__view .longtail .eyebrow {
+        grid-column: 1 / -1;
+      }
+
+      /* 방문 문장도 위 10/10·6/10과 한 덩어리라 같은 축에 세운다. 다만
+         글자는 왼쪽에 맞춘다 — 세 줄짜리 문장이라 가운데 정렬하면 줄 끝이
+         들쭉날쭉해 읽는 흐름이 끊긴다. 상자만 가운데, 글은 왼쪽. */
+      .js-stack .perf-stack__view .longtail .result-note {
+        justify-self: center;
+        text-align: start;
+        margin-block-start: .8rem;
+      }
+
+      /* 이 칸이 가운데로 모이면서 좌우에 자리가 생겼다. 숫자를 키워 알약
+         묶음과 무게를 맞춘다(52px → 74px 언저리). */
+      .js-stack .perf-stack__view .rank-grid > div:not(.rank-grid__keywords) dt {
+        font-size: clamp(2.75rem, 5.4vw, 4.6rem);
+      }
+
+      /* 행 높이는 왼쪽 칸이 정하므로 거기 맞추면 그림이 다시 눌린다.
+         남는 높이를 받는 flex를 끄고 높이를 화면에 묶은 뒤 폭이 비율대로
+         따라오게 뒤집는다. figure가 세로 flex라 stretch가 폭을 밀어붙이므로
+         align-self를 center로 풀어야 높이가 기준이 된다. */
+      /* 그림 높이를 고정값에서 푼다. 50vh로 못박았더니 글이 적은 장은 아래가
+         280px 비고 글이 많은 장은 92px 넘쳤다(실측). 카드마다 글 양이
+         214~409px로 두 배 차이라 어떤 고정값도 네 장을 동시에 못 맞춘다.
+
+         그림이 남는 높이를 먹게 하면 글이 적은 장은 그림이 커지고 글이 많은
+         장은 알아서 작아진다 — 빈 자리와 넘침이 같이 사라진다.
+         제톤도 같은 구조다(원본: .slot-container { height:100%; flex-grow:1 }).
+
+         figure는 세로 flex이므로 여기서 그림이 자란다. 폭은 비율이 정하고,
+         상한을 둬 글이 아주 적은 장에서 그림만 커지지 않게 한다. */
+      .js-stack .perf-stack__view .block > .evidence-stage {
+        min-block-size: 0;
+      }
+
+      .js-stack .perf-stack__view .evidence-stage img,
+      .js-stack .perf-stack__view .evidence-stage .traffic-chart {
+        flex: 1 1 auto;
+        /* 칸 안에서 가운데 두면 그림 오른쪽에 60px이 남아, 세 덩이를 한
+           그룹으로 봤을 때 중심이 731로 카드 중심(761)에서 30px 밀렸다
+           (실측). 오른쪽 끝에 맞추되 한 뼘 띄운다 — 딱 붙이면 카드 모서리에
+           닿아 답답하다. */
+        align-self: end;
+        margin-inline-end: clamp(1rem, 2vw, 1.75rem);
+        block-size: auto;
+        inline-size: auto;
+        /* 상한에서 위 오른쪽 여백을 뺀다. 100%로 두면 여백이 상한에 안 잡혀
+           그림이 칸을 넘어 왼쪽으로 삐져나온다 — 행 배분을 고쳐 그림이
+           커지고 나서야 드러나는 문제다. */
+        max-inline-size: calc(100% - clamp(1rem, 2vw, 1.75rem));
+        max-block-size: 62vh;
+        min-block-size: 0;
+        object-fit: contain;
+      }
+    }
+
+    /* ── TRAFFIC 그래프 ─────────────────────────────────────────────
+       유입에는 캡처가 없어 원본 수치로 직접 그렸다. 이미지가 아니라
+       SVG라 어느 크기에서도 선명하고 색을 페이지 토큰에서 받는다. */
+    .evidence-stage--chart {
+      padding: clamp(1rem, 2vw, 1.5rem);
+      background: #10141f;
+    }
+
+    .traffic-chart {
+      display: block;
+      inline-size: 100%;
+      block-size: auto;
+      aspect-ratio: 640 / 420;
+    }
+
+    .traffic-chart__bars rect {
+      fill: var(--color-accent);
+    }
+
+    /* 서로이웃 몫. 전체 막대 바닥에 겹쳐 깔린다 — 값이 8~37이라 실 한 줄로
+       보이는 것이 정확한 표현이다. 지우지 않는 것이 이 그래프의 요점이다. */
+    .traffic-chart__neighbour rect {
+      fill: rgb(255 255 255 / .55);
+    }
+
+    .traffic-chart__base {
+      stroke: rgb(255 255 255 / .28);
+      stroke-width: 1;
+    }
+
+    .traffic-chart__marker {
+      stroke: rgb(255 255 255 / .4);
+      stroke-width: 1;
+      stroke-dasharray: 3 4;
+    }
+
+    .traffic-chart__marker-label {
+      fill: rgb(255 255 255 / .58);
+      font-family: var(--font-ko);
+      font-size: 13px;
+    }
+
+    .traffic-chart__value text {
+      fill: rgb(255 255 255 / .92);
+      font-family: var(--font-en);
+      font-size: 17px;
+      font-weight: 700;
+      text-anchor: middle;
+    }
+
+    .traffic-chart__month text {
+      fill: rgb(255 255 255 / .6);
+      font-family: var(--font-ko);
+      font-size: 13px;
+      text-anchor: middle;
+    }
+
+    .traffic-chart__legend text {
+      fill: rgb(255 255 255 / .6);
+      font-family: var(--font-ko);
+      font-size: 13px;
+      dominant-baseline: middle;
+    }
+
+    /* 폰에서 이 그래프가 316px로 줄어드는데, SVG 글자는 그림과 같은 비율로
+       작아진다. 640 기준 13px이 화면에서는 6.4px로 찍혀 읽을 수가 없었다
+       (실측 390×844). 이 그래프는 유입 주장의 유일한 증거인데 캡처가 따로
+       없어서, 안 읽히면 근거가 없는 것과 같다.
+       같은 비율(0.494)로 계산해 화면에서 12px 이상 나오도록 올린다 —
+       월 13→26(12.8px), 값 17→30(14.8px). 막대와 축은 그대로다. */
+    @media (max-width: 48rem) {
+      .traffic-chart__value text { font-size: 30px; }
+      .traffic-chart__month text,
+      .traffic-chart__legend text { font-size: 26px; }
+    }
+
+    .traffic-chart__legend .is-total {
+      fill: var(--color-accent);
+    }
+
+    .traffic-chart__legend .is-neighbour {
+      fill: rgb(255 255 255 / .55);
+    }
+
+    /* ── 04 AI WORKSPACE 블록 구분 ─────────────────────────────
+       블록 경계와 그 안의 데이터 그룹이 똑같은 0.8px 헤어라인을 써서
+       두 위계가 같은 기호로 읽혔다(실측). 선을 더 긋는 대신 위계를
+       공간으로 드러낸다 — 블록마다 큰 번호를 왼쪽 열에 세우고 내용은
+       오른쪽 열에 둔다. 번호 어휘는 이 페이지가 밴드(01~04)와 흐름 표
+       (01~04)에서 이미 쓰는 것이라 새 규칙이 아니다. */
+    .workspace .section-shell {
+      counter-reset: wsblock;
+    }
+
+    @media (min-width: 62rem) {
+      .workspace .block {
+        display: grid;
+        grid-template-columns: 5.5rem minmax(0, 1fr);
+        column-gap: clamp(1.5rem, 3vw, 3rem);
+      }
+
+      .workspace .block > * {
+        grid-column: 2;
+      }
+
+      .workspace .block::before {
+        counter-increment: wsblock;
+        grid-column: 1;
+        grid-row: 1 / -1;
+        color: var(--color-rule-strong);
+        font-family: var(--font-en);
+        font-size: clamp(2.25rem, 3.4vw, 3.25rem);
+        font-weight: 700;
+        letter-spacing: -.03em;
+        line-height: 1;
+        content: "0" counter(wsblock);
+      }
+    }
+
+    /* ── Closing ──────────────────────────────────────────── */
+    /* profile.html의 .next-section을 그대로 옮겼다. 두 장이 나란히 놓이는
+       포트폴리오인데 마지막 화면만 서로 다른 문법이었다 — 이쪽은 파란 전면
+       밴드에 왼쪽 정렬 목록형 링크, 저쪽은 흰 면에 가운데 정렬 버튼 두 개.
+       저쪽으로 맞춘다. 토큰이 1:1로 대응해 값은 그대로 쓴다
+       (--lime→--color-accent 둘 다 #3163f6, --ink→--color-ink,
+        --paper→--color-paper, --body→--color-ink-2,
+        --font-accent-en은 양쪽 다 Newsreader).
+       크기는 profile의 자체 스케일(--t-lg 22px, --t-sm 17px, --t-base 18px)이
+       이 파일의 --text-* 스케일과 달라 실측값을 그대로 적는다.
+       좌우 여백은 .section-shell이 이미 맡으므로 상하만 준다. */
+    .closing {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-block: clamp(7rem, 14vw, 12rem);
+      border-block-end: 1px solid var(--color-ink);
+      text-align: center;
+    }
+
+    .closing > .section-shell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .next-eyebrow {
+      margin-block-end: 1.375rem;
+      color: var(--color-ink-2);
+      font-family: var(--font-accent-en), serif;
+      font-size: 1.375rem;
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    /* 두 절이 각자 줄을 갖도록 블록으로 쪼갠다. 위 257행의 공용 규칙이
+       .closing h2 > span에 display:block을 이미 걸어두고 있다. */
+    /* 상한을 88px에서 72px로 낮췄다. profile과 같은 88px이어도 이 문장이
+       40자로 profile의 29자보다 길어, 한 줄이 1345px까지 늘어나 화면 폭을
+       거의 다 먹었다(실측 1536×639, profile은 508px). 줄바꿈 고정과 함께
+       내린다. */
+    .closing h2 {
+      max-inline-size: none;
+      margin: 0;
+      color: var(--color-ink);
+      font-size: clamp(2.25rem, 6.3vw, 4.5rem);
+      font-weight: 400;
+      line-height: 1.08;
+      letter-spacing: -.04em;
+      word-break: keep-all;
+    }
+
+    /* 줄바꿈을 브라우저에 맡기지 않고 문맥 단위로 고정한다 — profile이
+       .next-line으로 하는 것과 같다. 위 257행의 공용 규칙은 h2의 직계
+       자식만 블록으로 만들어서, .next-l1 안에 든 이 스팬에는 안 닿는다. */
+    .next-line {
+      display: block;
+    }
+
+    /* 앞 절이 강조색·굵게, 뒤 절이 먹색·보통. profile과 같은 배분이다. */
+    .next-l1 {
+      color: var(--color-accent);
+      font-weight: 800;
+    }
+
+    .next-l2 {
+      color: var(--color-ink);
+      font-weight: 400;
+    }
+
+    .next-lede {
+      max-inline-size: 40rem;
+      margin-block-start: 1.625rem;
+      color: var(--color-ink-2);
+      font-size: 1.0625rem;
+      line-height: 1.7;
+      text-wrap: pretty;
+      word-break: keep-all;
+    }
+
+    .next-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      justify-content: center;
+      margin-block-start: 2.375rem;
+    }
+
+    .next-btn {
+      display: inline-flex;
+      gap: .5rem;
+      align-items: center;
+      min-block-size: 48px;
+      padding-inline: 1.5rem;
+      border: 1px solid var(--color-accent);
+      border-radius: 12px;
+      font-size: 1.125rem;
+      font-weight: 600;
+      transition: background-color 220ms var(--ease-jeton), color 220ms var(--ease-jeton);
+    }
+
+    /* 흰 글자 on --color-accent = 4.95. */
+    .next-btn--solid {
+      background: var(--color-accent);
+      color: var(--color-paper);
+    }
+
+    .next-btn--solid:hover,
+    .next-btn--solid:focus-visible {
+      background: #2c57d5;
+    }
+
+    /* 키보드로 이 버튼에 오면 아무 표시가 없었다. 공용 규칙이 테두리 색을
+       글자색(currentColor)으로 잡는데, 이 버튼만 글자가 흰색이라 흰 종이
+       위에 흰 테두리가 그려졌다 — 대비 1.00, 즉 안 보인다(실측).
+       옆 버튼과 같은 파랑으로 고정한다. */
+    .next-btn--solid:focus-visible {
+      outline-color: var(--color-accent);
+    }
+
+    /* --color-accent 글자 on 흰 면 = 4.95. */
+    .next-btn--ghost {
+      background: var(--color-paper);
+      color: var(--color-accent);
+    }
+
+    .next-btn--ghost:hover,
+    .next-btn--ghost:focus-visible {
+      background: var(--color-accent);
+      color: var(--color-paper);
+    }
+
+    .next-arrow {
+      font-size: 1.125rem;
+      line-height: 1;
+      transition: transform 220ms var(--ease-jeton);
+    }
+
+    .next-btn:hover .next-arrow,
+    .next-btn:focus-visible .next-arrow {
+      transform: translate(3px, -3px);
+    }
+
+    .site-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1.5rem;
+      padding: 1.5rem var(--stage-x);
+      border-block-start: 1px solid var(--color-rule-strong);
+      color: var(--color-muted);
+      font-family: var(--font-en);
+      font-size: var(--text-sm);
+    }
+
+    @media (min-width: 62rem) {
+      /* 제목 열을 .54 → .6으로 넓혔다. 1440px에서 653px였고 설정절
+         "반복 제작은 연결하고,"가 694px라 한 줄에 못 들어가 "도구를"처럼
+         한 어절이 단독 줄로 떨어졌다. .6이면 726px로 두 밴드 제목의 설정절이
+         모두 한 줄에 앉는다. 리드는 60ch 상한이 있어 줄어들 여유가 있다. */
+      .band-intro {
+        grid-template-columns: minmax(0, .6fr) minmax(0, .4fr);
+      }
+
+      .block__head--with-note {
+        grid-template-columns: minmax(0, .54fr) minmax(0, .46fr);
+      }
+
+      .figure-row {
+        grid-template-columns: minmax(0, 1.35fr) minmax(15rem, .65fr);
+      }
+
+      /* 설명이 소제목 옆으로 올라가 이 자리에는 링크 줄만 남는다.
+         2열을 유지하면 링크가 폭의 55%(755px)만 쓴다(실측). 한 열로 편다. */
+      .channel-row__body {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .evidence-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .rank-grid,
+      .ai-metrics,
+      .tool-roles {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      /* 통합검색 유입 비중이 TRAFFIC 패널로 옮겨가 이 표는 두 칸이 됐다.
+         3열을 유지하면 오른쪽 한 칸이 빈 채로 남는다.
+         :where()로 감싸 스택 밖에서만 적용한다. ID 선택자(1-1-0)라 그냥 두면
+         스택 규칙(0-4-0, 위 `grid-auto-flow: column`)을 이겨, 항목이 7.9K
+         하나뿐인데도 2열이 잡혀 오른쪽 절반이 비고 그 위로 hairline만
+         그어졌다(실측 1830×980: 칸 269px / 상자 537px).
+         `:not(.js-stack)`만으로는 안 된다 — 후손 결합자라 body가 .js-stack이
+         아니면 그냥 매치된다(실측: 스택에서도 233px 2열 그대로). 클래스가
+         걸리는 html을 직접 지목해야 한다.
+         2열도 이제는 틀리다. "방문 확인" 칸을 뺀 뒤로 이 표에 남은 것은
+         7.9K 하나뿐인데 2열이라 오른쪽 절반이 빈다(실측 1536폭 비스택:
+         칸 684px 2개, 항목 1개). 개수를 세지 말고 auto-flow로 항목 수만큼
+         칸을 만든다 — 위 스택 규칙이 쓰는 방식과 같고, 나중에 칸이 늘거나
+         줄어도 따로 고칠 데가 없다. */
+      :where(html:not(.js-stack)) #ai-search-results .ai-metrics {
+        grid-template-columns: none;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, 1fr);
+      }
+
+      .setup-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .rank-grid > div,
+      .ai-metrics > div,
+      .tool-roles article,
+      .setup-grid > div {
+        border-block-end: 0;
+        border-inline-end: 1px solid var(--color-rule-strong);
+        padding-inline: 1.5rem;
+      }
+
+      .rank-grid > div,
+      .ai-metrics > div {
+        border-inline-end-color: rgb(255 255 255 / .32);
+      }
+
+      .rank-grid > div:first-child,
+      .ai-metrics > div:first-child,
+      .tool-roles article:first-child,
+      .setup-grid > div:first-child {
+        padding-inline-start: 0;
+      }
+
+      .rank-grid > div:last-child,
+      .ai-metrics > div:last-child,
+      .tool-roles article:last-child,
+      .setup-grid > div:last-child {
+        padding-inline-end: 0;
+        border-inline-end: 0;
+      }
+    }
+
+    @media (max-width: 61.99rem) {
+      :root {
+        --section-y: clamp(4rem, 8vw, 6rem);
+      }
+
+      .hero-stage {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto 1fr auto;
+      }
+
+      .hero-kicker {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      .ai-hero h1 {
+        grid-column: 1;
+        grid-row: 3;
+        max-inline-size: 16ch;
+      }
+
+      .hero-detail {
+        grid-column: 1;
+        grid-row: 4;
+      }
+
+      .automation-flow,
+      .process-row,
+      .responsibility-flow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .automation-flow li:nth-child(2n),
+      .process-row li:nth-child(2n),
+      .responsibility-flow li:nth-child(2n) {
+        border-inline-end: 0;
+      }
+
+      .automation-flow li:nth-child(-n + 2),
+      .process-row li:nth-child(-n + 2),
+      .responsibility-flow li:nth-child(-n + 2) {
+        border-block-end: 1px solid var(--color-rule-strong);
+      }
+
+      /* 2열이 되면 3번 칸이 새 줄의 첫 칸이다. 그 칸도 왼쪽 여백을 뺀다. */
+      :is(.process-row, .automation-flow, .responsibility-flow) > li:nth-child(2n + 1) {
+        padding-inline-start: 0;
+      }
+    }
+
+    @media (max-width: 47.99rem) {
+      .section-heading,
+      .closing h2 {
+        font-size: clamp(2.35rem, 11vw, 3.75rem);
+      }
+
+      /* 줄 간격을 1.04에서 1.22로 늘린다. 폰에서 글자가 63px까지 커지는데
+         (12.5vw @500px) 줄 상자는 65px뿐이라, 한글 획 높이(약 72px)가
+         상자를 넘어 위아래 줄이 10px씩 물렸다(실측 500×736).
+         데스크톱은 JS가 줄을 하나씩 따로 앉혀서 이 문제가 없다 —
+         그래서 여기(폰 전용)에서만 손댄다.
+         크기는 11vw에서 8.6vw로 더 낮춘다. 11vw면 세 줄이 각각 두 줄로
+         접히면서 "확장했 / 습니다."처럼 한 낱말이 갈라졌다(실측 430px에서
+         여섯 줄). 제일 긴 줄인 "반복 콘텐츠 운영 체계로"가 한 줄에 들어가는
+         크기가 8.6vw다 — 390px에서 약 34px, 글자 폭 338px < 담는 폭 351px.
+         글자는 작아지지만 낱말이 안 쪼개지는 쪽이 읽힌다. */
+      .ai-hero h1 {
+        font-size: clamp(2rem, 8.6vw, 4.25rem);
+        line-height: 1.22;
+      }
+
+      /* .next-links a도 여기 있었다. 마감을 profile 문법(버튼 두 개)으로
+         바꾸면서 그 컴포넌트가 사라져 함께 걷는다. */
+      .principle-list > div {
+        grid-template-columns: 1fr;
+        gap: .65rem;
+      }
+
+      .scroll-cue {
+        display: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+
+      /* head 스크립트가 js-motion을 안 걸지만, 세션 중에 설정을 바꾼
+         사용자가 빈 화면을 보지 않도록 여기서도 한 번 더 편다. */
+      .js-motion [data-split],
+      .js-motion [data-split] .c,
+      .js-motion .reveal {
+        opacity: 1;
+        transform: none;
+      }
+
+      /* 꺾쇠는 멈추되 사라지지는 않는다. animation-duration을 0으로 눌러
+         버리면 마지막 프레임(opacity 0)에 멈춰 표시가 통째로 없어진다. */
+      .scroll-cue__chevrons path {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <span class="header-role" lang="en">Content Marketer</span>
+      <nav class="pillnav" aria-label="주요 메뉴">
+        <ul class="pillnav__list">
+          <!-- jeton.com처럼 홈은 글자 없이 집 아이콘만. 이름은 aria-label로 남긴다. -->
+          <li><a class="pillnav__home" href="index.html" aria-label="홈">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none"
+                 stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 10.2 12 3.5l9 6.7V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>
+            </svg>
+          </a></li>
+          <li><a href="profile.html" lang="en">Profile</a></li>
+          <li><a href="ai-project.html" aria-current="page" lang="en">AI Project</a></li>
+          <li class="pillnav__group">
+            <button type="button" class="pillnav__toggle" aria-expanded="false" aria-controls="key-projects" lang="en">
+              Key Projects<span class="pillnav__caret" aria-hidden="true">↓</span>
+            </button>
+            <ul class="pillnav__menu" id="key-projects" hidden>
+              <li><a href="hp-webinar.html" lang="en">HP Co-hosted Webinar</a></li>
+              <li><a href="exhibition.html" lang="en">KOREA MAT Exhibition</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <a class="brand" href="index.html" lang="en">Lim Sohee</a>
+    </header>
+
+    <main data-canonical-copy>
+      <!-- 히어로 = 제톤 홈 taglines 방식의 활주로(2026-07-31 실측).
+           행은 제목의 3줄이다: 한 줄씩 아래에서 중앙으로 날아와 서고, 다음 줄이
+           도착할 때마다 먼저 온 줄이 한 칸 위로 밀린다. 3줄이 다 쌓이면 같은
+           무대에서 요약 두 문장이 페이드인된다(사용자 지정 구성).
+           JS·데스크톱 포인터가 아니면 활주로 없이 전부 그냥 보인다. -->
+      <section class="ai-hero" id="top" aria-labelledby="case-title">
+        <div class="rows-stage">
+          <p class="hero-kicker" lang="en">AI CONTENT OPERATIONS</p>
+          <h1 id="case-title">
+            <span class="hero-line">AI를 보조 도구에서</span>
+            <span class="hero-line"><strong>반복 콘텐츠 운영 체계로</strong></span>
+            <span class="hero-line">확장했습니다.</span>
+          </h1>
+          <div class="hero-detail">
+            <p class="hero-summary"><span>수동 AI 활용으로 시작해 문서 업무와 블로그 자동화, 검색 성과까지 확장했습니다.</span></p>
+            <p class="hero-meta" lang="en">B2B Marketing · Content Operations · AI Workflow</p>
+            <!-- 기간과 기여 범위가 페이지 어디에도 없었다. REFERENCE_GUIDE
+                 규칙 8과 참고 3·4가 공통으로 "프로젝트명·기간·역할·기여
+                 범위를 먼저, 같은 자리에" 두라고 한다. 읽는 사람이 언제 한
+                 일인지, 어디까지가 본인 몫인지 추론하게 두지 않는다.
+                 근거 — 2025.03: FACTS.md 20행("from March 2025 ... manually
+                 used AI for Naver Blog image generation and first-draft
+                 creation"). 2026.07: FACTS.md 33행의 최신 완전월.
+                 워크플로 구축·운영: FACTS.md 47행. 최종 검수·발행 직접:
+                 FACTS.md 28행("did not automatically publish; Sohee Lim made
+                 the final publishing decision"). 새 주장이 아니라 흩어져
+                 있던 사실을 한 줄에 모은 것이다. -->
+            <p class="hero-scope">2025.03 – 2026.07 · 워크플로 직접 구축·운영 · 최종 검수와 발행 직접</p>
+          </div>
+          <!-- 오른쪽 끝 세로쓰기 'SCROLL' 글자였다. 화면 구석에 세워두면
+               읽히기 전에 지나쳐 안내 구실을 못 했다. 가운데 아래로 옮기고
+               이중 꺾쇠를 붙여 위아래로 움직인다 — 움직이는 것이 '내려가라'는
+               신호다. 페이드아웃은 그대로 --cue가 맡는다. -->
+          <span class="scroll-cue" aria-hidden="true">
+            <span class="scroll-cue__label">SCROLL</span>
+            <svg class="scroll-cue__chevrons" viewBox="0 0 24 22" fill="none" aria-hidden="true">
+              <path d="M4 4l8 7 8-7"/>
+              <path d="M4 11l8 7 8-7"/>
+            </svg>
+          </span>
+        </div>
+      </section>
+
+
+
+      <!-- 제톤 홈 taglines 활주로 재현(2026-07-31 실측: 섹션 3179px 스크럽,
+           행이 아래에서 중앙으로 날아와 서고 다음 행이 오면 무리가 위로 조여져
+           최종 3행 스택으로 남는다). 제톤도 이걸 히어로 뒤 흰 섹션에 뒀으므로
+           같은 위치에 둔다 — 블루 히어로는 그대로다.
+           행 문구는 hero-meta의 승인 문구 3개를 그대로 쓴다(새 카피 없음).
+           색은 profile.html 칩 팔레트에서 가져왔다. -->
+
+      <section class="adoption" id="manual" aria-labelledby="manual-title">
+        <div class="section-shell">
+          <div class="band-intro">
+            <div>
+              <p class="section-name" lang="en">AI ADOPTION</p>
+              <h2 class="section-heading" data-split id="manual-title"><span>수작업에서 시작해</span><strong>자동화할 기준을 찾았습니다.</strong></h2>
+            </div>
+            <!-- 이 페이지에서 "직접"이 본문에만 열 번 넘게 나와 신중함이 아니라
+                 방어처럼 읽혔다. 뜻은 남기고 표현을 바꾼다. -->
+            <p class="section-lede reveal"><span>이미지 생성과 글 초안부터 사업 문서까지 AI를 써보고 결과를 검토했습니다.</span><span>오래 걸리는 단계와 사람이 판단할 단계를 갈랐습니다.</span></p>
+          </div>
+
+          <div class="block reveal" id="manual-ai" aria-labelledby="manual-ai-title">
+            <div class="block__head">
+              <p class="section-name" lang="en">MANUAL OPERATION</p>
+              <h3 id="manual-ai-title">이미지 생성부터 글 초안까지 직접 운영했습니다.</h3>
+            </div>
+            <div class="figure-row">
+              <p class="block-copy">ChatGPT·Gemini·NotebookLM을 활용해 자료를 정리하고, 블로그 이미지와 글 초안을 만들었습니다. 생성된 내용의 정확도와 메시지를 직접 확인하고 수정한 뒤 발행했습니다.</p>
+              <div class="time-card">
+                <strong>4–5h</strong>
+                <span>게시물 한 건을 완성하는 데 걸린 추정 시간</span>
+              </div>
+            </div>
+            <ol class="process-row" aria-label="수동 콘텐츠 제작 과정" style="counter-reset: step">
+              <li>자료 정리</li>
+              <li>이미지 생성</li>
+              <li>초안 작성</li>
+              <li>검토·발행</li>
+            </ol>
+            <div class="channel-row">
+              <div class="channel-row__head">
+                <p class="eyebrow" lang="en">OPERATED CHANNELS</p>
+                <p>네 채널의 기획·제작·발행을 맡았고, 자동화는 이 중 네이버 블로그에만 적용했습니다.</p>
+              </div>
+              <div class="channel-row__body">
+                <ul class="channel-grid" aria-label="운영 채널">
+                  <li><a href="https://blog.naver.com/the_primegroup" target="_blank" rel="noreferrer"><img class="channel-logo" src="icons/naver.svg" width="18" height="18" alt="" loading="lazy">네이버 블로그 <i class="link-arrow" aria-hidden="true">↗</i></a></li>
+                  <li><a href="https://www.youtube.com/@ThePrimegrp" target="_blank" rel="noreferrer"><img class="channel-logo" src="icons/youtube.svg" width="18" height="18" alt="" loading="lazy">YouTube <i class="link-arrow" aria-hidden="true">↗</i></a></li>
+                  <li><a href="https://www.instagram.com/theprimegrp/" target="_blank" rel="noreferrer"><img class="channel-logo" src="icons/instagram.svg" width="18" height="18" alt="" loading="lazy">Instagram <i class="link-arrow" aria-hidden="true">↗</i></a></li>
+                  <li><a href="https://www.linkedin.com/company/theprimegrp/" target="_blank" rel="noreferrer"><img class="channel-logo" src="icons/linkedin.svg" width="18" height="18" alt="" loading="lazy">LinkedIn <i class="link-arrow" aria-hidden="true">↗</i></a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="block reveal" id="export-voucher" aria-labelledby="voucher-title">
+            <div class="block__head">
+              <p class="section-name" lang="en">EXPORT VOUCHER CASE</p>
+              <h3 id="voucher-title">AI 활용 범위를 콘텐츠에서 사업 문서로 확장했습니다.</h3>
+            </div>
+            <p class="block-copy">Perplexity로 시장과 지원사업 자료를 조사하고, Gemini와 NotebookLM으로 사업계획서에 필요한 정보를 정리했습니다.</p>
+            <p class="block-copy">시장 환경에서 회사 역량, 수출 목표와 실행 계획으로 이어지도록 구조를 잡고, 요구사항과 근거를 다시 확인하며 사업계획서를 세 차례 개정했습니다.</p>
+            <p class="block-copy">AMR 시장분석 PPT와 현장평가 서류 패키지를 준비했고, 발표와 질의응답은 관련 부서가 맡았습니다.</p>
+            <p class="result-callout"><span class="result-callout__label" lang="en">DOCUMENT RESULT</span><span>회사는 <strong>2026년 1차 수출바우처 사업</strong>에 선정되어 총 4,500만 원 규모의 마케팅 사업계획을 확정했습니다. 같은 신청으로 동시 접수되는 <strong>글로벌강소기업 1,000+ 유망기업</strong>에도 선정됐습니다.</span></p>
+            <ol class="tag-list" aria-label="수출바우처 문서 작업 단계" style="counter-reset: deliverable">
+              <li>시장·지원사업 조사</li>
+              <li>사업계획서 3차 개정</li>
+              <li>AMR 시장분석 PPT</li>
+              <li>현장평가 서류 패키지</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="automation" id="automation" aria-labelledby="system-title">
+        <div class="section-shell">
+          <div class="band-intro">
+            <div>
+              <p class="section-name" lang="en">BLOG AUTOMATION</p>
+              <h2 class="section-heading" data-split id="system-title"><span>반복 제작은 연결하고,</span><strong>최종 판단은 직접 맡았습니다.</strong></h2>
+            </div>
+            <p class="section-lede reveal"><span>주제와 키워드를 입력하면 자료 확인, 원고 생성, 검수 준비로 이어지도록 구성했습니다.</span><span>자동화는 검토할 수 있는 원고를 만드는 데서 멈춥니다. 그다음은 아래 HUMAN GATE 단계입니다.</span></p>
+          </div>
+
+          <!-- 블록 라벨은 부모 밴드 이름의 확장 문자열을 피한다.
+               "BLOG AUTOMATION > AUTOMATION WORKFLOW"처럼 단어가 이어지면
+               부모/자식이 한 덩어리로 읽힌다(2026-07-30 냉독 리뷰). -->
+          <div class="block reveal" id="automation-workflow" aria-labelledby="automation-workflow-title">
+            <div class="block__head">
+              <p class="section-name" lang="en">WORKFLOW</p>
+              <h3 id="automation-workflow-title">반복 단계는 워크플로우로 연결하고, 검토 지점은 분리했습니다.</h3>
+            </div>
+            <!-- 시간 비교를 표 위로 올렸다. 결과를 먼저 세우고 그 아래에
+                 그렇게 된 흐름을 펼친다.
+                 두 수치의 근거 강도가 다르다. 4–5시간은 추정, 2시간은 관찰된 1회다
+                 (FACTS.md:23 "not yet an average-time claim",
+                 EVIDENCE_MAP.md:31 Limit). 이 한정은 빼면 두 수치가 평균 비교로
+                 읽히므로 지울 수 없다. 수치 옆에 붙이면 큰 글자 사이가 지저분해서
+                 블록 끝 각주 한 줄로 내렸다. -->
+            <div class="time-comparison" aria-label="작업 시간 변화">
+              <div><span>수동 운영</span><strong>약 4–5시간</strong></div>
+              <i aria-hidden="true">→</i>
+              <div><span>자동화 운영</span><strong>약 2시간</strong></div>
+            </div>
+            <p class="metric-note">※ 1회 관찰 기준</p>
+            <ol class="automation-flow" aria-label="블로그 자동화 흐름">
+              <li><span lang="en">INPUT</span><strong>주제·키워드</strong><p>사실 자료와 기존 발행 이력을 함께 입력합니다.</p></li>
+              <li><span lang="en">AUTOMATED</span><strong>자료 확인·원고 생성</strong><p>중복 주제와 사실 오류를 확인할 자료를 준비합니다.</p></li>
+              <li><span lang="en">HUMAN GATE</span><strong>검토·수정·판단</strong><p>키워드 방향과 내용, 최종 발행 여부를 직접 결정합니다.</p></li>
+              <li><span lang="en">OUTPUT</span><strong>검토 가능한 원고</strong><p>자동화는 발행 직전 단계에서 종료됩니다.</p></li>
+            </ol>
+          </div>
+
+          <!-- 예약 실행과 산출물 적재는 "파이프라인이 돌았다"는 같은 주장이다.
+               두 블록으로 나누면 같은 말을 두 번 하게 되므로 증거 4장을 한 격자에 둔다.
+               윗줄은 실행, 아랫줄은 산출물.
+
+               이미지 4장은 사용자가 2026-07-30에 현재 구성이 승인본이라고 확인했다.
+               비율이 2.46 / 1.78 / 1.38 / 2.33으로 섞여 있어 캡션은
+               .evidence-grid 규칙에서 행 바닥으로 정렬한다. -->
+          <div class="block reveal" id="automation-record" aria-labelledby="automation-record-title">
+            <div class="block__head">
+              <p class="section-name" lang="en">RUN RECORD</p>
+              <h3 id="automation-record-title">주중 오전, 예약된 작업이 자동으로 실행됩니다.</h3>
+            </div>
+            <p class="block-copy">실행 폴더와 검수 산출물이 날짜별로 쌓입니다.</p>
+            <div class="evidence-grid">
+              <figure class="evidence-stage">
+                <!-- 캡처에 RankTracking(금 09:30)도 보이지만 FACTS.md 미등록이라
+                     alt와 캡션에서 언급하지 않는다(EVIDENCE_MAP.md:98). -->
+                <a class="evidence-open" href="assets/blog/blog-scheduler-tasks.png" target="_blank" rel="noreferrer" aria-label="원본 크기로 열기">
+                                  <img src="assets/blog/blog-scheduler-tasks.png" width="1105" height="450" alt="Windows 작업 스케줄러에 등록된 블로그 자동화 작업 — 키워드 수집과 원고 생성이 매주 화·수·목 오전으로 예약됨" loading="lazy">
+                                </a>
+                <figcaption><span lang="en">SCHEDULED RUN</span>키워드 수집과 원고 생성이 매주 화·수·목 오전으로 예약되어 실행됩니다.</figcaption>
+              </figure>
+              <figure class="evidence-stage">
+                <a class="evidence-open" href="assets/blog/blog-keyword-collection-20260723.png" target="_blank" rel="noreferrer" aria-label="원본 크기로 열기">
+                                  <img src="assets/blog/blog-keyword-collection-20260723.png" width="1115" height="628" alt="키워드 자동 수집 실행 로그 — 수집된 키워드 3,308개를 keywords.xlsx로 저장" loading="lazy">
+                                </a>
+                <figcaption><span lang="en">COLLECTION LOG</span>실행 로그 — 시드 키워드 38개로 연관 키워드 3,308개를 수집해 검토용 엑셀로 저장합니다.</figcaption>
+              </figure>
+              <figure class="evidence-stage">
+                <a class="evidence-open" href="assets/blog/blog-run-folders-0801.png" target="_blank" rel="noreferrer" aria-label="원본 크기로 열기">
+                                  <img src="assets/blog/blog-run-folders-0801.png" width="775" height="493" alt="날짜별 블로그 실행 폴더 목록" loading="lazy">
+                                </a>
+                <figcaption><span lang="en">RUN HISTORY</span>실행할 때마다 날짜 폴더가 생성됩니다.</figcaption>
+              </figure>
+              <figure class="evidence-stage">
+                <a class="evidence-open" href="assets/blog/blog-workflow-files-0801.png" target="_blank" rel="noreferrer" aria-label="원본 크기로 열기">
+                                  <img src="assets/blog/blog-workflow-files-0801.png" width="768" height="489" alt="초안, 검수, 최종본으로 이어지는 산출물 파일 목록" loading="lazy">
+                                </a>
+                <figcaption><span lang="en">REVIEW FILES</span>초안 → 검수 → 최종본 산출물이 단계별로 남습니다.</figcaption>
+              </figure>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- "시스템을 만들었다"(02)와 "검색에서 성과가 났다"(03)는 다른 주장이라
+           밴드를 갈랐다. 갈라놓기 전에는 한 밴드가 페이지의 48%였다.
+           이 도입부의 제목과 리드는 옛 SEARCH STRATEGY 블록의 h3와 본문을
+           승격한 것이다 — 새 카피를 만들지 않았다(REFERENCE_GUIDE 규칙 5). -->
+      <section class="performance" id="performance" aria-labelledby="performance-title">
+        <div class="section-shell">
+          <div class="band-intro">
+            <div>
+              <p class="section-name" lang="en">SEARCH PERFORMANCE</p>
+              <h2 class="section-heading" data-split id="performance-title"><span>메인 키워드에서 롱테일 키워드까지</span><strong>검색 접점을 확장했습니다.</strong></h2>
+            </div>
+            <!-- KEYWORD MAP 블록(메인 3 + 롱테일 6 알약)을 없앴다. 세 가지였다:
+                   (1) 메인 3개가 뒤 RANKINGS 카드의 "AMR 1위 / 무인지게차 1위 /
+                       AGV 4위"와 같은 사실이었다 — REFERENCE_GUIDE 규칙 5.
+                       그래서 메인은 RANKINGS 카드 안으로 합쳤다.
+                   (2) 롱테일 6개는 아래 리드 문장이 이미 "비교·비용·안전·
+                       체크리스트"로 같은 범위를 말한다. 알약은 그 반복이었다.
+                   (3) 도입부+블록이 634px인데 가용 높이는 610px이라 한 화면에
+                       안 담겼다(실측 2026-08-01). 지금은 도입부가 리드까지만
+                       남아 295px이다. -->
+            <p class="section-lede reveal"><span>AMR, AGV, 무인지게차를 메인 키워드로 설정하고, 실제 도입 검토자가 찾을 만한 비교·비용·안전·체크리스트 주제로 콘텐츠를 확장했습니다.</span></p>
+          </div>
+        </div>
+
+        <!-- 제톤 about의 _scroll-stack 재현(2026-07-30 실측).
+             래퍼 높이 = 패널 수 × 100vh, 슬롯은 sticky(top 10px, radius 20px,
+             overflow hidden), 패널은 absolute로 겹쳐 두고 스크롤 구간마다
+             맨 위 패널을 1:1로 걷어낸다. 아래 패널은 4.6%만 미리 움직인다
+             (실측: s=732에서 v1=-34). 데스크톱 포인터 환경에서만 켜고,
+             그 외에는 평범한 세로 흐름으로 남는다. -->
+        <div class="perf-stack" data-views="3">
+          <div class="perf-stack__slot">
+
+          <article class="perf-stack__view">
+          <div class="block" id="search-results" aria-labelledby="search-results-title">
+            <div class="block__head block__head--with-note">
+              <div>
+                <p class="section-name" lang="en">RANKINGS</p>
+                <h3 id="search-results-title">추적 키워드의 검색 노출을 확인했습니다.</h3>
+              </div>
+              <p>네이버 검색 순위 · 2026.07 기준</p>
+            </div>
+            <dl class="rank-grid">
+              <!-- 도입부 KEYWORD MAP에 있던 메인 키워드 알약을 여기로 합쳤다.
+                   키워드와 그 순위는 같은 사실이라 두 군데서 말할 이유가 없다.
+                   라벨을 "핵심"에서 "메인"으로 맞춘 건 도입부 리드가
+                   "메인 키워드로 설정하고"라고 쓰기 때문이다 — 다른 집합으로
+                   읽히면 안 된다. 순위 숫자는 원본 그대로다. -->
+              <div class="rank-grid__keywords"><dt><span class="rank-kw"><b>AMR</b><i>1<em>위</em></i></span><span class="rank-kw"><b>무인지게차</b><i>1<em>위</em></i></span><span class="rank-kw"><b>AGV</b><i>4<em>위</em></i></span></dt><dd>메인 키워드 순위</dd></div>
+              <div><dt>10/10</dt><dd>추적 키워드 전체가 검색 5위 이내</dd></div>
+              <div><dt>6/10</dt><dd>추적 키워드 중 6개가 검색 1위</dd></div>
+            </dl>
+
+            <!-- LONG-TAIL 카드를 여기로 합치고 없앴다. 두 장이 겹쳤다:
+                   (1) 위 10/10·6/10의 "추적 키워드"는 10개이고 메인 3개와
+                       롱테일이 그 안에 함께 들어 있다. 롱테일 성과가 이미
+                       이 카드에서 집계되는데 다음 장이 같은 키워드를 이름만
+                       다시 나열했다.
+                   (2) 캡처 두 장이 모두 "네이버 통합검색 상위 노출"이라는
+                       같은 주장이었다 — 검색어만 달랐다.
+                 롱테일 카드가 새로 말하던 것은 아래 result-note 한 문장뿐이라
+                 그것과 알약만 옮기고 캡처는 '무인지게차' 한 장으로 줄였다
+                 (REFERENCE_GUIDE 규칙 5). -->
+            <div class="longtail">
+              <p class="eyebrow" lang="en">LONG-TAIL KEYWORDS</p>
+              <ul class="keyword-list"><li>AMR 뜻</li><li>AMR·AGV 비교</li><li>무인지게차 도입 비용</li><li>도입 체크리스트</li><li>안전 기준</li><li>5톤 무인지게차</li></ul>
+              <!-- 알약 아래가 아니라 옆에 둔다. 이 문장은 롱테일 키워드가
+                   무엇을 데려왔는지 설명하므로 알약 묶음과 한 줄로 읽혀야 한다. -->
+              <p class="result-note">정보형 키워드뿐 아니라 <strong>AMR 지게차 업체</strong>처럼<br>업체와 도입 정보를 찾는 구체적인 검색어에서도<br>방문이 확인됐습니다.</p>
+            </div>
+
+            <figure class="evidence-stage">
+              <a class="evidence-open" href="assets/blog/blog-evidence-rank-main-0801.png" target="_blank" rel="noreferrer" aria-label="원본 크기로 열기">
+                              <img src="assets/blog/blog-evidence-rank-main-0801.png" width="890" height="730" alt="네이버 '무인지게차' 통합검색 비즈니스·경제 인기글 — 더프라임그룹 블로그 글이 첫 번째로 노출됨" loading="lazy">
+                            </a>
+              <figcaption><span lang="en">MAIN SEARCH</span>'무인지게차' 통합검색 비즈니스·경제 인기글 첫 번째 · 2026.08 캡처</figcaption>
+            </figure>
+          </div>
+          </article>
+
+          <article class="perf-stack__view">
+          <div class="block" id="ai-search-results" aria-labelledby="ai-search-results-title">
+            <div class="block__head">
+              <p class="section-name" lang="en">AI CITATIONS</p>
+              <h3 id="ai-search-results-title">검색 노출에 그치지 않고, AI 답변의 출처로도 인용됐습니다.</h3>
+            </div>
+            <div class="growth-row" aria-label="AI 브리핑 월간 인용수 변화">
+              <div><span>자동화 시작 월</span><strong>351</strong><small>5월 인용</small></div>
+              <i aria-hidden="true">→</i>
+              <div><span>운영 이후</span><strong>3.6K</strong><small>7월 인용</small></div>
+              <!-- "약"을 라벨 자리에서 빼 숫자 안으로 넣었다. 라벨 줄은 옆의
+                   "자동화 시작 월"·"운영 이후"처럼 시점을 알려주는 자리인데
+                   여기만 수식어라 규칙이 깨졌고, 숫자를 72px로 키운 뒤로는
+                   이 덩이만 키가 커져 "약"이 다른 두 라벨보다 14px 위로
+                   떴다(실측). 수치를 꾸미는 말이므로 수치에 붙는 게 맞다.
+                   읽히는 말은 그대로 "약 10.3배 증가"다. -->
+              <!-- "증가"가 숫자 아래 별도 줄이었다. 한 줄로 붙인다 —
+                   읽는 말이 "약 10.3배 증가" 한 덩이인데 조판이 둘로
+                   갈라져 있었다. 앞의 "약"과 같은 방식으로 strong 안에
+                   넣는다. 띄어쓰기는 span 안에 두어 이 글자 크기 기준으로
+                   잡히게 한다(밖에 두면 128px 기준이라 과하게 벌어진다). -->
+              <p><strong><span class="approx">약 </span>10.3<span class="mult-unit">배</span><span class="trail"> 증가</span></strong></p>
+            </div>
+            <!-- 이 카드에서 둘을 뺐다. 캡처가 설 자리가 없어서다 — 619px 카드에
+                 고정 요소를 다 채우고 캡처에 70px만 남아, 1145×660 원본이
+                 121×70으로 쪼그라들고 좌우 1200px이 흰 여백이 됐다(실측
+                 2026-08-01, 1536×639). min-height 11vh 하한에 이미 닿아
+                 CSS로는 더 못 늘렸다.
+                   (1) "방문 확인" 칸 — 옆 6.7K는 숫자인데 이 칸만 글자라
+                       격자도 어긋나 보였다.
+                   (2) "AI 브리핑 답변의 출처 카드에 표시됩니다." — 아래
+                       figcaption이 "출처 4건 중 2건이 블로그 글"이라고
+                       이미 밝힌다. -->
+            <dl class="ai-metrics">
+              <!-- 6.7K → 7.9K. 네이버 블로그 관리 화면의 인용수 안내 팝업
+                   실측(2026-08-01 캡처): "누적 인용수 : 7.9천". 같은 팝업에
+                   "AI 브리핑 인용수는 26년 1월부터 집계되어 매일 업데이트
+                   됩니다"라고 적혀 있어 매일 바뀌는 값이다. -->
+              <div><dt>7.9K</dt><dd>AI 브리핑 누적 인용</dd></div>
+            </dl>
+            <!-- 2026-08-01 캡처로 교체. 옛 -0723은 'agv amr차이' 검색이었고
+                 이건 '무인지게차 가격'이다. 둘 다 출처 4건 중 2건이지만
+                 새 것이 크롭이 깨끗하고 출처 패널의 블로그명이 읽힌다.
+                 -crop으로 다시 교체. 원본 1400×910에서 위쪽 검색바·탭줄과
+                 그 아래 잘린 카드 조각(스크롤 위치가 남긴 "니보기 →")이
+                 195px을 먹고, 좌우로도 쓰지 않는 여백이 있었다. 그만큼이
+                 증거가 아니면서 그림 높이를 차지했다 — 1290×705로 잘라
+                 비율이 1.54에서 1.83이 되고, 높이가 폭을 정하는 이 칸에서는
+                 그만큼 그림이 가로로 커진다. 원본 파일은 그대로 둔다.
+                 더불어 출처 패널의 더프라임그룹 2건에 강조 상자를 그려
+                 넣었다. 캡션이 "출처 4건 중 2건"이라고 주장하는데 그림에서
+                 어느 2건인지 짚을 수 없었다 — 상자가 그 대응을 만든다.
+                 CSS 겹침이 아니라 이미지에 구워 넣은 이유는, 이 칸의 그림
+                 크기가 남는 높이에서 계산돼 나오는 값이라 겹침 좌표를
+                 CSS만으로 따라가게 할 수 없기 때문이다(캡션이 --media-w를
+                 JS로 받아 쓰는 것과 같은 사정). 모바일 단일 열에서도 함께
+                 간다. -->
+            <figure class="evidence-stage">
+              <a class="evidence-open" href="assets/blog/blog-evidence-ai-cite-0801-crop.png" target="_blank" rel="noreferrer" aria-label="원본 크기로 열기">
+                              <img src="assets/blog/blog-evidence-ai-cite-0801-crop.png" width="1290" height="705" alt="네이버 '무인지게차 가격' 검색의 AI 브리핑 — 오른쪽 출처 4건 패널에서 더프라임그룹 네이버 블로그 글 2건이 강조 표시됨" loading="lazy">
+                            </a>
+              <figcaption><span lang="en">AI BRIEFING</span>'무인지게차 가격' AI 브리핑 답변과 출처 패널 — 출처 4건 중 2건이 블로그 글 · 2026.08 캡처</figcaption>
+            </figure>
+            <!-- "AI 브리핑 인용수는 콘텐츠가 생성형 AI 검색 답변의 출처로
+                 사용된 횟수입니다."를 뺐다 — 바로 위 6.7K에 "AI 브리핑 누적
+                 인용"이라는 설명이 이미 붙어 있어 같은 말이다. 각주가 2줄에서
+                 1줄로 줄면 그만큼이 그림 높이로 간다.
+                 "자동화 도입 이전 콘텐츠 포함"은 6.7K가 자동화 성과로 읽히지
+                 않게 하는 한정이라 남긴다. -->
+            <p class="metric-note"><em>네이버 자체 집계 기준.</em> 누적 인용수에는 자동화 도입 이전에 발행한 콘텐츠가 포함되어 있습니다.</p>
+          </div>
+          </article>
+
+          <!-- 트래픽을 스택 마지막에 둔다. 전에는 첫 장이었는데, 그러면 밴드가
+               키워드(원인) → 트래픽(결과) → 순위·인용(다시 원인)으로 읽는
+               방향이 중간에 한 번 뒤집혔다. 지금은 설정 → 노출 → 인용 → 유입
+               한 방향이다. REFERENCE_GUIDE 페이지 매핑표의 AI Project 행
+               ("… → 검증 근거와 결과")과 참고 3 관찰("결과는 과정의 마지막
+               단계에 붙여")도 결과를 끝에 둔다.
+               수치와 문장은 EVIDENCE_MAP.md의 "Allowed factual wording"을
+               글자 그대로 옮겼다. 새 카피가 아니다. 그 파일의 Limit 두 가지를
+               지킨다:
+                 (1) 4→6월 증가는 시점 전후 관찰이다. 자동화가 원인이라고 쓰지 않는다.
+                 (2) 499회는 6/29~7/19 3주치다. 7월 월간 실적으로 쓰지 않는다. -->
+          <article class="perf-stack__view">
+          <div class="block" id="traffic-growth" aria-labelledby="traffic-growth-title">
+            <div class="block__head">
+              <p class="section-name" lang="en">TRAFFIC</p>
+              <h3 id="traffic-growth-title">검색 접점이 넓어지면서 블로그 유입도 함께 늘었습니다.</h3>
+            </div>
+            <div class="growth-row" aria-label="월간 조회수 변화">
+              <div><span>자동화 직전 완전월</span><strong>330</strong><small>4월 조회수</small></div>
+              <i aria-hidden="true">→</i>
+              <div><span>최신 완전월</span><strong>702</strong><small>7월 조회수</small></div>
+              <!-- 결론 숫자 오른쪽이 504×204px 비어 있었다(실측 1536×639).
+                   문의 3건을 여기 세운다 — 카드 밖 마감 줄은 스택이 풀린 뒤와
+                   다음 섹션 사이라 어느 덩이에도 안 속했다. 여기 두면 카드
+                   안이고, 이 카드가 "검색 접점이 넓어지면서 블로그 유입도
+                   함께 늘었습니다"로 끝나는 마지막 결과 카드라 흐름의 끝이다.
+                   둘을 나란히 두되 잇지는 않는다. 문장이 "도입 시기"를 유지해
+                   유입 113%가 문의를 일으켰다고 말하지 않는다(FACTS.md 40행).
+                   같은 시기의 두 사실이지 인과가 아니다.
+                   "홈페이지로"를 남겨 블로그 지표와 구분한다.
+                   결론과 이 문장을 한 겹으로 감싼 이유 — .growth-row는 flex라
+                   결론 p가 flex-basis:100%로 줄을 통째로 쓴다. 감싸지 않으면
+                   이 문장이 셋째 줄로 밀린다. 감싼 안에서 둘이 한 줄에 선다. -->
+              <div class="growth-row__tail">
+                <p><strong><span class="approx">약 </span>113<span class="mult-unit">%</span><span class="trail"> 증가</span></strong></p>
+                <!-- 문장이 아니라 숫자로 세운다. 옆 113%와 같은 크기·같은
+                     색이라 "같은 시기의 두 결과"로 나란히 읽힌다.
+                     라벨에 "블로그 자동화 도입 시기"를 반드시 남긴다 — 이게
+                     빠지면 113% 옆에 붙은 3건이 유입 증가의 결과로 읽히고,
+                     그건 FACTS.md 40행이 막는 인과 주장이다. "홈페이지"도
+                     남겨 블로그 지표와 구분한다. -->
+                <!-- 화살표를 유지한다(사용자 결정, 2026-08-08). 유입 증가와
+                     문의 3건을 잇는 표시다. FACTS.md 42행도 같은 날 갱신했다. -->
+                <i class="tail-arrow" aria-hidden="true">→</i>
+                <p class="signal-stat"><span>홈페이지 신규 문의 · 블로그 자동화 도입 시기</span><strong>3<span class="mult-unit">건</span></strong></p>
+              </div>
+            </div>
+            <dl class="ai-metrics">
+              <!-- 21.4% → 1.6%은 순방문자 기준이다. 같은 자료에 조회수 기준
+                   (51.3% → 1.9%)도 있어 분모를 안 밝히면 헷갈린다. 라벨에
+                   "순방문자"를 넣는다. 수치는 원본 그대로다 —
+                   순방문자수_월간_…_20260801_151844.xlsx: 2025-07 257 중 55,
+                   2026-07 495 중 8. -->
+              <div><dt>21.4% → 1.6%</dt><dd>서로이웃 순방문자 비중 · 2025년 7월 대비 2026년 7월</dd></div>
+              <div><dt>210 → 495</dt><dd>순방문자 136% 증가 · 같은 기간</dd></div>
+              <div><dt>62.2%</dt><dd>7월 네이버 통합검색 유입 비중 · PC 32.13% + 모바일 30.03%</dd></div>
+            </dl>
+            <!-- "2025년 하반기 조회수에는 서로이웃 유입이 최대 21%까지 섞여
+                 있었습니다. 그 비중이 2% 아래로 내려간 구간만 놓고
+                 비교했습니다." 문장을 뺐다. 아래 그래프가 2025년 11월부터만
+                 그리고 각 막대에 서로이웃 몫을 실선으로 깔아 같은 말을
+                 그림으로 한다. 문장까지 두면 같은 사실을 두 번 말한다
+                 (REFERENCE_GUIDE 규칙 5). 카드도 넘쳤다 — 낮은 화면에서
+                 이 문장이 카드 밖으로 잘렸다(실측 1254×568). -->
+
+            <!-- 유입에는 캡처가 없다. 네이버 블로그 통계 화면 캡처가 자산에
+                 없어서 네 장 중 이 장만 그림이 비었다. 대신 원본 수치로
+                 직접 그린다 — 이미지가 아니라 SVG라 어느 크기에서도
+                 선명하고 색을 페이지 토큰에서 받는다.
+
+                 값은 조회수_월간_2025-01-01_2026-07-31_20260801_123109.xlsx
+                 그대로다. 막대 아래 흐린 조각은 같은 파일의 서로이웃 열이다:
+                   11월 268/20 · 12월 238/13 · 1월 168/8 · 2월 162/13
+                   3월 210/16 · 4월 330/37 · 5월 266/22 · 6월 507/11 · 7월 702/13
+
+                 구간을 2025년 11월부터 끊은 이유: 그 앞은 서로이웃 비중이
+                 20~51%라 성격이 다른 구간이다. 11월부터 한 자릿수로 내려간다.
+                 서로이웃 조각을 지우지 않고 같이 그리는 것이 이 그래프의
+                 요점이다 — "품앗이가 아니다"를 말로 하지 않고 보이게 한다.
+
+                 자동화 시작선(5/18)은 점선 한 줄뿐이다. 5월이 4월보다 낮은
+                 것도 그대로 둔다. 가리면 그래프가 거짓말이 된다. -->
+            <figure class="evidence-stage evidence-stage--chart">
+              <svg class="traffic-chart" viewBox="0 0 640 420" role="img"
+                   aria-label="2025년 11월부터 2026년 7월까지 월간 조회수 — 268, 238, 168, 162, 210, 330, 266, 507, 702. 각 달의 서로이웃 조회수는 20, 13, 8, 13, 16, 37, 22, 11, 13으로 전체의 한 자릿수 비중입니다.">
+                <g class="traffic-chart__bars">
+                  <rect x="48"    y="221.7" width="40" height="118.3"/>
+                  <rect x="114.5" y="234.9" width="40" height="105.1"/>
+                  <rect x="181"   y="265.8" width="40" height="74.2"/>
+                  <rect x="247.5" y="268.5" width="40" height="71.5"/>
+                  <rect x="314"   y="247.3" width="40" height="92.7"/>
+                  <rect x="380.5" y="194.3" width="40" height="145.7"/>
+                  <rect x="447"   y="222.5" width="40" height="117.5"/>
+                  <rect x="513.5" y="116.1" width="40" height="223.9"/>
+                  <rect x="580"   y="30"    width="40" height="310"/>
+                </g>
+                <g class="traffic-chart__neighbour">
+                  <rect x="48"    y="331.2" width="40" height="8.8"/>
+                  <rect x="114.5" y="334.3" width="40" height="5.7"/>
+                  <rect x="181"   y="336.5" width="40" height="3.5"/>
+                  <rect x="247.5" y="334.3" width="40" height="5.7"/>
+                  <rect x="314"   y="332.9" width="40" height="7.1"/>
+                  <rect x="380.5" y="323.7" width="40" height="16.3"/>
+                  <rect x="447"   y="330.3" width="40" height="9.7"/>
+                  <rect x="513.5" y="335.1" width="40" height="4.9"/>
+                  <rect x="580"   y="334.3" width="40" height="5.7"/>
+                </g>
+                <line class="traffic-chart__base" x1="40" y1="340" x2="628" y2="340"/>
+                <line class="traffic-chart__marker" x1="434" y1="24" x2="434" y2="340"/>
+                <text class="traffic-chart__marker-label" x="440" y="20">자동화 시작 5/18</text>
+                <g class="traffic-chart__value">
+                  <text x="68"  y="213.7">268</text>
+                  <text x="134" y="226.9">238</text>
+                  <text x="201" y="257.8">168</text>
+                  <text x="267" y="260.5">162</text>
+                  <text x="334" y="239.3">210</text>
+                  <text x="400" y="186.3">330</text>
+                  <text x="467" y="214.5">266</text>
+                  <text x="533" y="108.1">507</text>
+                  <text x="600" y="22">702</text>
+                </g>
+                <g class="traffic-chart__month">
+                  <text x="68"  y="360">11월</text>
+                  <text x="134" y="360">12월</text>
+                  <text x="201" y="360">1월</text>
+                  <text x="267" y="360">2월</text>
+                  <text x="334" y="360">3월</text>
+                  <text x="400" y="360">4월</text>
+                  <text x="467" y="360">5월</text>
+                  <text x="533" y="360">6월</text>
+                  <text x="600" y="360">7월</text>
+                </g>
+                <g class="traffic-chart__legend">
+                  <rect class="is-total" x="40" y="388" width="11" height="11"/>
+                  <text x="58" y="397">전체 조회수</text>
+                  <rect class="is-neighbour" x="150" y="388" width="11" height="11"/>
+                  <text x="168" y="397">그중 서로이웃</text>
+                </g>
+              </svg>
+              <figcaption><span lang="en">MONTHLY VIEWS</span>2025년 11월 ~ 2026년 7월 월간 조회수와 그중 서로이웃 몫 · 네이버 블로그 통계</figcaption>
+            </figure>
+
+            <!-- "자동화를 시작한 5월은 266으로 4월 330보다 낮았고, 6월 507과
+                 7월 702로 두 달 연속 올랐습니다."를 뺐다. 옆 그래프가 5월 막대가
+                 4월보다 낮은 것과 6·7월이 오르는 것을 그대로 그린다 — 같은 사실을
+                 글로 한 번 더 말하면 각주가 3줄이 되어 그래프가 눌린다.
+                 내보내기 날짜(2026년 8월 1일)와 "자동화를 증가 원인으로 보지
+                 않습니다"도 뺐다. 날짜는 근거 파일 쪽 정보라 화면에서 할 일이
+                 없고, 뒷문장은 앞의 "관찰값"이 이미 담는 말이었다.
+                 다만 문장 자체를 없애지는 않는다 — EVIDENCE_MAP.md 55행
+                 Limit이 "remains a temporal observation, not a demonstrated
+                 cause"를 요구한다. 자동화 시작월은 330에서 266으로 오히려
+                 떨어졌고 상승은 6월부터라, 113%를 인과로 읽히게 두면 사실과
+                 어긋난다. "시점 전후 관찰값"이 그 조건을 최소 길이로 담는다. -->
+            <p class="metric-note"><em>네이버 블로그 월간 통계 기준.</em> 시점 전후를 비교한 관찰값입니다.</p>
+          </div>
+          </article>
+
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace" id="workspace" aria-labelledby="automation-title">
+        <div class="section-shell">
+          <div class="band-intro">
+            <div>
+              <p class="section-name" lang="en">AI WORKSPACE</p>
+              <h2 class="section-heading" data-split id="automation-title"><span>도구를 나열하지 않고,</span><strong>역할과 검수 기준으로 연결했습니다.</strong></h2>
+            </div>
+            <p class="section-lede reveal"><span>현재는 ChatGPT·Claude Code·Codex를 사용합니다.</span><span>프로젝트 지침과 검수 절차를 세팅해 반복 작업의 기준을 유지합니다.</span></p>
+          </div>
+
+          <div class="block reveal" id="tool-roles" aria-labelledby="tool-roles-title">
+            <div class="block__head">
+              <p class="section-name" lang="en">TOOL ROLES</p>
+              <h3 id="tool-roles-title">현재 사용하는 도구를 역할에 맞게 연결했습니다.</h3>
+            </div>
+            <div class="tool-roles">
+              <article><h4><img class="tool-logo" src="icons/openai-gpt.svg" alt="" width="26" height="26" loading="lazy">GPT</h4><p>이미지 제작과 콘텐츠별 단위 작업에 직접 활용합니다.</p></article>
+              <article><h4><img class="tool-logo" src="icons/claude.svg" alt="" width="26" height="26" loading="lazy">Claude Code</h4><p>블로그 작업 실행과 문맥 관리, 반복 검수를 담당합니다. 발행 이력과 사실 자료는 사용자 정의 검수 명령으로 확인합니다.</p></article>
+              <article><h4><img class="tool-logo" src="icons/openai.svg" alt="" width="26" height="26" loading="lazy">Codex</h4><p>프로젝트 구조와 콘텐츠 흐름을 기획하고, 사실 확인·처음 보는 사람의 이해도·디자인 검증을 작업별 스킬로 나눠 진행합니다.</p></article>
+            </div>
+          </div>
+
+          <div class="block reveal" id="workspace-setup" aria-labelledby="workspace-setup-title">
+            <div class="block__head">
+              <p class="section-name" lang="en">CONTEXT SETUP</p>
+              <h3 id="workspace-setup-title">긴 대화를 다시 읽지 않아도 필요한 문맥으로 작업을 이어갑니다.</h3>
+            </div>
+            <p class="block-copy">프로젝트마다 사실, 증거, 결정 사항과 작업 지침을 분리해 저장했습니다. Claude Code와 Codex에 프로젝트별 지침과 검수 절차를 세팅해 반복 작업의 기준을 유지합니다.</p>
+            <dl class="setup-grid">
+              <div><dt>프로젝트 지침</dt><dd>작업 범위와 문구 원본, 검수 기준을 분리합니다.</dd></div>
+              <div><dt>문맥 파일</dt><dd>사실·증거·결정 사항을 필요한 시점에 불러옵니다.</dd></div>
+              <div><dt>검수 명령</dt><dd>발행 이력과 사실 자료를 같은 기준으로 확인합니다.</dd></div>
+              <div><dt>작업별 스킬</dt><dd>사실 확인·이해도·디자인 검증을 나눠 반복합니다.</dd></div>
+            </dl>
+          </div>
+
+          <div class="block reveal" id="principles" aria-labelledby="principles-title">
+            <div class="block__head">
+              <p class="section-name" lang="en">SCOPE &amp; PRINCIPLES</p>
+              <h3 id="principles-title">어디까지 자동으로 두고, 어디부터 사람이 보는지 정해두었습니다.</h3>
+            </div>
+            <ol class="responsibility-flow" aria-label="AI 활용 원칙">
+              <li>AI 보조</li><li>직접 검토</li><li>수정·결정</li><li>직접 발행</li>
+            </ol>
+            <dl class="principle-list">
+              <div><dt>운영 범위</dt><dd>자동화는 블로그 반복 제작과 발행 전 검수에 한정했습니다. 다른 SNS는 AI 보조 또는 직접 제작으로 운영했습니다.</dd></div>
+              <div><dt>출처 확인</dt><dd>AI 결과물은 출처와 기존 발행 내용을 확인한 뒤 사용했습니다.</dd></div>
+              <!-- 문의 3건 행이 여기 있었다. 성과 밴드(03 SEARCH PERFORMANCE)
+                   끝으로 옮겼다 — 이 목록은 "결과를 어디까지만 주장하는가"를
+                   적는 자리이고 문의 건수는 결과 그 자체라 성격이 달랐다.
+                   이어하기.md 16행이 지정한 자리였으나, 그 자리가 페이지 맨
+                   아래 AI WORKSPACE 밴드라 성과를 보러 온 사람이 지나친다.
+                   두 군데에 두지 않는다. -->
+              <!-- "성과 해석" 항목을 뺐다(사용자 결정, 2026-08-08). 성과를
+                   세워놓고 바로 아래에서 물러서는 구조라 유입 113%와 문의
+                   3건을 잇는 표시와 한 화면 안에서 부딪혔다. -->
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <!-- profile.html의 .next-section과 같은 마감으로 맞췄다. 전에는 파란
+           전면 밴드에 왼쪽 정렬 목록형 링크였는데, 두 장이 나란히 놓이는
+           포트폴리오에서 마지막 화면만 서로 다른 문법을 쓰고 있었다.
+           흰 면 · 가운데 정렬 · 두 색 큰 제목 · 알약 버튼 둘.
+           문구는 그대로다. 링크도 같은 두 곳(홈 · 다음 프로젝트)이고,
+           profile이 쓰는 짧은 영문 라벨 형식만 따랐다. -->
+      <section class="closing" id="closing" aria-labelledby="closing-title">
+        <div class="section-shell">
+          <!-- "CLOSING"이었다. profile의 같은 자리와 맞춘다 — 이 섹션이
+               하는 일도 다음 장으로 넘기는 것이라 라벨이 역할을 말한다. -->
+          <p class="next-eyebrow reveal" lang="en">Next</p>
+          <h2 id="closing-title" class="reveal" style="--d: 80ms"><span class="next-l1"><span class="next-line">반복 업무는</span><span class="next-line">시스템으로 줄이고,</span></span><span class="next-l2"><span class="next-line">직접 내리는 판단은</span><span class="next-line">더 선명하게 남깁니다.</span></span></h2>
+          <p class="next-lede reveal" style="--d: 160ms">AI를 많이 쓰는 것보다 무엇을 맡기고 무엇을 남길지 가르는 일이<br>오래 굴러가는 콘텐츠 운영을 만든다고 봅니다.</p>
+          <div class="next-actions reveal" style="--d: 240ms">
+            <a class="next-btn next-btn--solid" href="hp-webinar.html">
+              <span lang="en">HP Webinar</span>
+              <span class="next-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a class="next-btn next-btn--ghost" href="index.html">
+              <span lang="en">Home</span>
+              <span class="next-arrow" aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="page-footer">
+      <a href="index.html">← Home</a>
+      <div class="footer-links">
+        <a href="mailto:sohee.lim.lsh@gmail.com">Email</a>
+        <a href="https://www.linkedin.com/in/sohee-lim-marketing/en/" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 스타일은 pillnav.css 한 곳에 있다(6장이 같은 버튼을 쓴다).
+       화살표와 TOP을 같은 칸에 겹쳐 두고 가리키면 맞바꾼다. 읽히는 이름은
+       aria-label이 맡으므로 두 겹 모두 보조기술에서 감춘다. -->
+  <a class="back-to-top" href="#top" aria-label="페이지 상단으로 이동">
+    <span class="back-to-top__arrow" aria-hidden="true">↑</span>
+    <span class="back-to-top__label" aria-hidden="true" lang="en">TOP</span>
+  </a>
+
+  <script src="assets/lenis.min.js"></script>
+  <script>
+    /* 키 프로젝트 드롭다운 + 스크롤 시 이름·직무 숨김. 6장이 같은 동작. */
+    (() => {
+      const header = document.querySelector(".site-header");
+      const toggle = document.querySelector(".pillnav__toggle");
+      const menu = document.getElementById("key-projects");
+      if (!header || !toggle || !menu) return;
+
+      const setOpen = (open) => {
+        toggle.setAttribute("aria-expanded", String(open));
+        menu.hidden = !open;
+      };
+      toggle.addEventListener("click", () => {
+        setOpen(toggle.getAttribute("aria-expanded") !== "true");
+      });
+      document.addEventListener("click", (event) => {
+        if (!event.target.closest(".pillnav__group")) setOpen(false);
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        setOpen(false);
+        toggle.focus();
+      });
+
+      const markHeader = () => header.classList.toggle("is-scrolled", window.scrollY > 120);
+      window.addEventListener("scroll", markHeader, { passive: true });
+      markHeader();
+    })();
+
+    /* 관성 스크롤 — 직접 구현을 버리고 검증된 Lenis(assets/lenis.min.js,
+       unpkg lenis@1.3.17, 17KB)로 교체했다. 직접 구현은 자기 스크롤 판별이
+       scroll 이벤트의 비동기 도착과 어긋나 활강이 매 프레임 잘리는 버그를
+       냈고(2026-07-31), 배율·터치패드 엣지도 남아 있었다. */
+    (() => {
+      if (typeof Lenis === "undefined") return;
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+      /* 인스턴스를 버리지 않고 잡아둔다. 전에는 `new Lenis(...)`만 하고
+         참조를 안 남겨서, Lenis가 매 프레임 스크롤 위치를 쓰는 동안
+         바깥에서 이동을 부탁할 방법이 없었다. */
+      const lenis = new Lenis({ autoRaf: true });
+      window.__lenis = lenis;
+
+      /* 맨 위로 버튼과 #앵커를 Lenis에게 넘긴다. 브라우저 기본 이동은
+         Lenis가 다음 프레임에 덮어써서 제자리로 돌아온다 — 그래서 눌러도
+         아무 일이 없었다(실측: 해시는 바뀌고 scrollY는 8965→8923, 관성뿐).
+         기본 동작을 막고 같은 목적지를 Lenis로 이동시킨다. */
+      /* Lenis에만 맡기지 않는다. Lenis는 부드러운 모드가 실제로 켜져 있을
+         때만 스크롤을 끌고 가는데(`isSmooth`), 탭이 가려져 rAF가 안 돌거나
+         라이브러리가 네이티브로 넘어간 상태에서는 scrollTo가 아무 일도 하지
+         않는다(실측: isSmooth=false일 때 L.scrollTo(0) 호출 후 1.5초간
+         5000px 그대로). 그때는 브라우저에 직접 부탁한다. */
+      const goTo = (y) => {
+        if (lenis.isSmooth) lenis.scrollTo(y);
+        else window.scrollTo({ top: y, behavior: "smooth" });
+      };
+      const yOf = (hash) => {
+        if (hash === "#top") return 0;
+        const el = document.querySelector(hash);
+        return el ? el.getBoundingClientRect().top + window.scrollY : null;
+      };
+
+      document.addEventListener("click", (e) => {
+        const a = e.target.closest && e.target.closest('a[href^="#"]');
+        if (!a) return;
+        const hash = a.getAttribute("href");
+        if (!hash || hash === "#") return;
+        const y = yOf(hash);
+        if (y === null) return;
+        e.preventDefault();
+        goTo(y);
+        history.pushState(null, "", hash);
+      });
+
+      /* 해시를 달고 들어온 경우. 공유받은 링크가 맨 위(=히어로)로 떨어지지
+         않게 해당 구간으로 바로 보낸다. */
+      if (location.hash && location.hash !== "#top") {
+        const y = yOf(location.hash);
+        if (y !== null) requestAnimationFrame(() => window.scrollTo({ top: y }));
+      }
+    })();
+
+    /* 히어로 활주로 — 제톤 홈 taglines(2026-07-31 실측).
+       실측 근거: 행 화면중심 Y가 2633/3068/3503 → 290/422(중앙)/910 →
+       -66/66/198로 움직인다. 즉 새 줄이 중앙에 도착하면 먼저 온 줄이
+       한 칸(pitch 132px = 행높이×1.1)씩 위로 밀린다 — 스택은 위로 쌓인다.
+       이동은 스크럽 1:1(이징 없음). 감촉은 Lenis가 맡는다.
+
+       순서는 킥커 → 제목 3줄 → 요약이다. 전에는 킥커가 p .10에 사라져
+       혼자 떴다 지는 것처럼 보였다. 이제 먼저 서서 끝까지 남는다.
+
+       p .00~.08  킥커 페이드인 (이후 계속 보인다)
+       p .00~.10  SCROLL 힌트만 페이드아웃
+       p .14~.74  제목 3줄이 0.20씩 차례로 도착, 먼저 온 줄은 위로 밀림
+       p .78~.90  요약·메타 페이드인
+       p .90~1    완성 화면 유지 후 sticky 해제 */
+    (() => {
+      const hero = document.querySelector(".ai-hero");
+      const stage = hero && hero.querySelector(".rows-stage");
+      const lines = hero ? [...hero.querySelectorAll(".hero-line")] : [];
+      const kicker = hero && hero.querySelector(".hero-kicker");
+      const detail = hero && hero.querySelector(".hero-detail");
+      if (!stage || !lines.length) return;
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (!matchMedia("(hover: hover) and (pointer: fine) and (min-width: 62rem)").matches) return;
+
+      document.documentElement.classList.add("js-actions");
+      const clamp01 = (v) => Math.min(Math.max(v, 0), 1);
+
+      let raf = 0;
+      const paint = () => {
+        raf = 0;
+        const rect = hero.getBoundingClientRect();
+
+        /* 히어로가 화면 밖이면 나간다. 이 함수는 .rows-stage에 커스텀 속성을
+           8개 쓰는데 그 아래에 글자 단위 스팬이 수백 개라 상속 무효화가 크다.
+           전에는 03 밴드를 스크롤하는 동안에도 매 프레임 돌았다. */
+        if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+
+        const range = rect.height - window.innerHeight;
+        if (range <= 0) return;
+        const p = clamp01(-rect.top / range);
+
+        /* 킥커는 처음부터 서 있다. 전에는 clamp01(p / .08)이라 스크롤 0에서
+           0이었고, 아래 첫 줄까지 0이라 데스크톱 첫 화면이 통째로 백지였다
+           (내비와 SCROLL만 보임 · 실측 1254×568, 1536×695 재현).
+           포트폴리오에서 가장 비싼 순간이라 빈 채로 열리면 안 된다. */
+        stage.style.setProperty("--kicker", 1);
+        // SCROLL 힌트는 제 역할이 끝나면 물러난다.
+        stage.style.setProperty("--cue", 1 - clamp01(p / .10));
+
+        const seg = .20;
+        const pitch = lines[0].getBoundingClientRect().height * 1.1
+          || parseFloat(getComputedStyle(lines[0]).fontSize) * 1.1;
+
+        /* 제목은 마지막 줄이 앵커(y=0)에 서고 먼저 온 줄이 pitch씩 위로
+           쌓인다. 그래서 블록은 앵커 기준 위로만 자라 화면 중앙에서 벗어난다.
+           CSS가 세 요소를 같은 기준으로 놓을 수 있게 두 값을 넘긴다.
+             --stack-shift  앵커를 내려 블록 중심을 화면 중앙에 맞추는 양
+             --block-half   블록 절반 높이 (킥커·요약이 피해야 할 거리)
+           글자는 height 0 위에 그려져 앵커 위아래로 각각 약 .6em 퍼진다(실측). */
+        const fs = parseFloat(getComputedStyle(lines[0]).fontSize);
+        const up = fs * .09;    // 앵커 위로 삐져나오는 글자 (실측 80px에서 7px)
+        const down = fs * 1.11; // 앵커 아래로 내려가는 줄상자 (실측 89px)
+        const span = (lines.length - 1) * pitch;
+
+        /* 킥커·제목·요약을 한 덩어리로 보고, 그 덩어리의 한가운데를
+           "머리말 아래 영역"의 한가운데에 맞춘다. 화면 정중앙을 기준으로
+           삼으면 위쪽이 머리말에 눌린다(실측: 킥커 top 40 vs 머리말 84).
+           세 값 모두 화면 중앙(top:50%) 기준 상대 px로 CSS에 넘긴다. */
+        const GAP_TOP = 26, GAP_BOTTOM = 32;
+        const kickerH = kicker ? kicker.getBoundingClientRect().height : 0;
+        const detailH = detail ? detail.getBoundingClientRect().height : 0;
+        const navH = document.querySelector(".site-header")?.getBoundingClientRect().height || 0;
+        const vh = window.innerHeight;
+
+        /* 정중앙에 맞추면 눈에는 조금 내려앉아 보인다 — 아래에 SCROLL 표시가
+           따로 서 있어 시선이 그쪽으로 끌리기 때문이다. 덩어리를 한 뼘 위로
+           당긴다. 화면이 낮으면 그만큼 줄여 위쪽이 머리말에 닿지 않게 한다.
+           실측(639px 화면): 위 60 / 아래 36 → 위 28 / 아래 68. */
+        const LIFT = Math.min(32, (vh - navH) * .06);
+
+        const groupH = kickerH + GAP_TOP + span + up + down + GAP_BOTTOM + detailH;
+        const groupTop = navH + (vh - navH) / 2 - groupH / 2 - LIFT;
+        const anchor = groupTop + kickerH + GAP_TOP + span + up;
+
+        stage.style.setProperty("--anchor-y", `${anchor - vh / 2}px`);
+        stage.style.setProperty("--block-top", `${anchor - span - up - vh / 2}px`);
+        stage.style.setProperty("--block-bottom", `${anchor + down - vh / 2}px`);
+        /* 첫 줄은 스크럽에서 뺀다. 전에는 세 줄 모두 `.14 + i * seg`부터
+           나타나서 p=0일 때 셋 다 0이었다 — 즉 열자마자 제목이 없었다.
+           0번은 1로 고정해 처음부터 서 있고, 나머지 두 줄만 순서대로 올라온다.
+           그만큼 구간이 하나 비므로 1·2번 시작점을 한 칸씩 당긴다
+           (1번 .14~.34, 2번 .34~.54). 쌓이는 동작과 총 길이는 그대로다. */
+        const locals = lines.map((_, i) =>
+          i === 0 ? 1 : clamp01((p - (.14 + (i - 1) * seg)) / seg)
+        );
+        lines.forEach((line, i) => {
+          const approach = (1 - locals[i]) * window.innerHeight * .7;
+          const push = locals.slice(i + 1).reduce((a, b) => a + b, 0) * pitch;
+          line.style.setProperty("--y", `${approach - push}px`);
+          line.style.setProperty("--o", locals[i] > 0 ? 1 : 0);
+        });
+
+        stage.style.setProperty("--detail", clamp01((p - .78) / .12));
+      };
+      const queue = () => { if (!raf) raf = requestAnimationFrame(paint); };
+      window.addEventListener("scroll", queue, { passive: true });
+      window.addEventListener("resize", queue, { passive: true });
+      paint();
+    })();
+
+    /* 스크롤 스택 — 제톤 about의 _scroll-stack 동작(2026-07-30 실측).
+       스크롤 구간을 패널 수-1로 나눠, 구간마다 맨 위 패널을 스크롤과 1:1로
+       걷어낸다. 바로 아래 패널은 같은 구간에서 4.6%만 미리 움직인다
+       (실측: s=732일 때 아래 패널 -34px). transform만 만지므로
+       관성 스크롤·IntersectionObserver와 충돌하지 않는다. */
+    (() => {
+      const stack = document.querySelector(".perf-stack");
+      if (!stack) return;
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (!matchMedia("(hover: hover) and (pointer: fine) and (min-width: 62rem)").matches) return;
+
+      const views = [...stack.querySelectorAll(".perf-stack__view")];
+      const slot = stack.querySelector(".perf-stack__slot");
+      stack.style.setProperty("--views", views.length);
+      views.forEach((v, i) => v.style.setProperty("--z", views.length - i));
+      document.documentElement.classList.add("js-stack");
+
+      /* 캡션 상자를 그림과 같은 폭으로 맞춘다. 그림 폭은 남는 높이에 비율을
+         곱해 나오는 값이라 CSS만으로는 캡션에 물려줄 수 없다. 그림이 실제로
+         그려진 뒤 폭을 읽어 --media-w로 넘긴다. */
+      const syncCaptionWidth = () => {
+        views.forEach((v) => {
+          const fig = v.querySelector(".evidence-stage");
+          const media = fig && fig.querySelector("img, .traffic-chart");
+          if (!fig || !media) return;
+          const w = Math.round(media.getBoundingClientRect().width);
+          /* 칸 폭은 건드리지 않는다. figure에 폭을 박았더니 SVG 그래프가
+             순환에 걸렸다 — 부모 폭이 자식 폭을 제한하는데 그 부모 폭을
+             자식에서 읽어 박으니, 초기 34px에 갇혀 0×97로 무너졌다(실측).
+             정렬은 figure의 align-items가 맡는다. */
+          if (w > 0) fig.style.setProperty("--media-w", `${w}px`);
+        });
+      };
+
+      if (typeof ResizeObserver === "function") {
+        const ro = new ResizeObserver(syncCaptionWidth);
+        views.forEach((v) => {
+          const media = v.querySelector(".evidence-stage img, .evidence-stage .traffic-chart");
+          if (media) ro.observe(media);
+        });
+      }
+      window.addEventListener("load", syncCaptionWidth);
+      syncCaptionWidth();
+
+      let raf = 0;
+      const paint = () => {
+        raf = 0;
+        const rect = stack.getBoundingClientRect();
+
+        /* 화면 밖이면 아무것도 쓰지 않는다. 전에는 페이지 어디를 스크롤하든
+           이 함수가 매 프레임 돌며 패널 3개에 transform을 썼다. */
+        if (rect.bottom < 0 || rect.top > window.innerHeight) {
+          if (document.documentElement.classList.contains("stack-pinned")) {
+            document.documentElement.classList.remove("stack-pinned");
+          }
+          return;
+        }
+
+        /* 카드가 걷혀 나가는 거리는 카드 높이다. 슬롯을 머리말 아래로 내리면서
+           카드가 100vh보다 낮아졌으므로 실제 높이를 읽는다 — 100vh로 두면
+           카드가 제 키보다 멀리 올라가 위쪽에 빈 띠가 생긴다. */
+        const seg = Math.round(views[0].getBoundingClientRect().height) || window.innerHeight;
+        const range = (views.length - 1) * seg;
+        const s = Math.min(Math.max(-rect.top, 0), range);
+        /* creep은 아래 패널이 올라오며 붙는 시차다. 전에는 0에서 -29.4px로
+           "빠져나가는" 방향이라, 패널이 제자리에 선 뒤에도 29px 위에 떠서
+           위쪽 22px이 슬롯 밖으로 잘렸다(실측: s=seg에서 own=0인데 creep=29.4).
+           방향을 뒤집는다 — 도착 전에는 그만큼 아래에 있다가 0으로 수렴한다. */
+        /* 제톤 법칙: 나가는 패널 하나만 움직인다.
+           제톤 about의 인라인 스타일 실측 —
+             맨 위 패널  "--index: 0; transform: translate3d(0px, 0px, 0px);"
+             아래 패널들 "--index:1;" / "--index:2;"  ← transform 자체가 없다
+           아래 패널은 제자리에 서 있고, 위 패널이 걷히면서 드러날 뿐이다.
+           우리는 creep으로 아래 패널까지 움직여, 읽으려는 글이 떠다녔다.
+           걷어낸다. 한 화면이 통째로 넘어가고 다음 화면은 가만히 있는다. */
+        /* 이전 카드는 구간 앞 EXIT 비율 안에서 화면 밖으로 완전히 빠진다.
+           그 뒤 남은 구간(55%)에는 다음 카드가 통째로 드러난 채 가만히 있다.
+           전에는 own이 구간 전체에 걸쳐 늘어나서, 이전 카드가 내내 위쪽을
+           덮고 있다가 다 빠지는 순간 바로 다음 카드가 나가기 시작했다.
+           그래서 다음 카드가 온전히 보이는 시점이 한 순간뿐이었다. */
+        const EXIT = .45;
+        views.forEach((v, i) => {
+          const t = Math.min(Math.max((s - i * seg) / seg, 0), 1);
+          const own = Math.min(t / EXIT, 1) * seg;
+          v.style.transform = `translate3d(0, ${-own}px, 0)`;
+        });
+
+        /* 머리말은 sticky top:0 · 84px · z-index 210이고 카드는 top:10px다.
+           그대로 두면 카드 위 74px이 머리말에 깔려 패널 제목이 통째로
+           가려진다(실측). 제톤 about은 메뉴가 화면 아래에 있어 이 충돌이
+           없다. 카드가 고정돼 있는 동안만 머리말을 물러나게 한다. */
+        /* sticky 구간과 정확히 같아야 한다. bottom > innerHeight로 잡으면
+           끝자락 10px에서 머리말이 먼저 돌아와 마지막 카드 위를 덮는다
+           (슬롯은 bottom이 slotH + 10까지 붙어 있다). */
+        const slotH = slot ? slot.getBoundingClientRect().height : window.innerHeight - 20;
+        const pinned = rect.top <= 10 && rect.bottom >= slotH + 10;
+        document.documentElement.classList.toggle("stack-pinned", pinned);
+      };
+      const queue = () => { if (!raf) raf = requestAnimationFrame(paint); };
+      window.addEventListener("scroll", queue, { passive: true });
+      window.addEventListener("resize", queue, { passive: true });
+      paint();
+    })();
+
+    /* 스크롤 등장 — 제목은 글자, 나머지는 덩어리.
+       js-motion은 head에서 이미 걸렸다. 여기서 실패하면 다시 벗겨
+       제목이 영영 안 보이는 일이 없게 한다. */
+    (() => {
+      const root = document.documentElement;
+      if (!root.classList.contains("js-motion")) return;
+
+      try {
+        /* 어절로 먼저 묶고 그 안에서만 글자를 쪼갠다. 어절 사이 공백은
+           텍스트 노드로 남겨 줄바꿈 기회와 자간을 건드리지 않는다.
+           <br>과 <strong>은 텍스트 노드만 훑기 때문에 그대로 살아남는다. */
+        const split = (root) => {
+          const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+          const nodes = [];
+          for (let n = walker.nextNode(); n; n = walker.nextNode()) nodes.push(n);
+
+          let i = 0;
+          for (const node of nodes) {
+            const frag = document.createDocumentFragment();
+            for (const token of node.data.split(/(\s+)/)) {
+              if (!token) continue;
+              if (!token.trim()) { frag.append(token); continue; }
+              const word = document.createElement("span");
+              word.className = "w";
+              for (const ch of token) {
+                const cell = document.createElement("span");
+                cell.className = "c";
+                // 글자마다 조금씩 늦게 선다. 한 줄이 물결처럼 올라온다.
+                // 16ms였을 때 23자 제목의 마지막 글자가 352ms에야 출발해
+                // 총 732ms가 걸렸다(실측). 8ms로 꼬리를 절반으로 줄인다.
+                cell.style.setProperty("--cd", `${i++ * 8}ms`);
+                cell.textContent = ch;
+                word.append(cell);
+              }
+              frag.append(word);
+            }
+            node.replaceWith(frag);
+          }
+        };
+
+        const heads = document.querySelectorAll("[data-split]");
+        heads.forEach((el) => { split(el); el.classList.add("is-split"); });
+
+        const io = new IntersectionObserver((entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            entry.target.classList.add("is-in");
+            io.unobserve(entry.target);
+          }
+          /* 전에는 rootMargin -12% / threshold .15였다. 요소가 15% 들어온 뒤에야
+             시작해서, 다 서기 전에 화면을 지나갔다(실측). 바닥보다 조금 일찍
+             걸고 문턱도 없애 미리 세운다. */
+        }, { rootMargin: "0px 0px 8% 0px", threshold: 0 });
+
+        const targets = document.querySelectorAll("[data-split], .reveal");
+        targets.forEach((el) => io.observe(el));
+
+        /* 숨은 탭에서는 IntersectionObserver가 콜백을 주지 않는다
+           (profile.html 2026-07-29 실측). 되살아났을 때 이미 지나친 요소가
+           영영 안 보이지 않도록 위치를 직접 재는 길을 남긴다. */
+        /* `rect.bottom > 0` 조건이 있어서, 한 번에 멀리 뛰면 이미 화면 위로
+           지나간 블록은 건너뛰고 영영 안 나타났다(실측: 10700px로 점프하면
+           지나친 14개가 전부 opacity 0). 지나친 것도 보여야 하므로 윗선
+           조건만 남긴다. */
+        const sweep = () => {
+          const limit = window.innerHeight * .88;
+          targets.forEach((el) => {
+            if (el.classList.contains("is-in")) return;
+            if (el.getBoundingClientRect().top < limit) {
+              el.classList.add("is-in");
+              io.unobserve(el);
+            }
+          });
+        };
+        /* 숨은 탭일 때만 돌리던 조건을 걷는다. 빠르게 스크롤하면
+           IntersectionObserver 콜백이 따라오지 못해, 지나친 자리에 글이
+           안 나타난 빈 구간이 남았다(실측: 한 번에 내렸을 때 MANUAL
+           OPERATION·EXPORT VOUCHER 블록이 opacity 0 그대로).
+           sweep은 이미 is-in인 것을 건너뛰고 위치만 재므로 매 스크롤에
+           돌려도 부담이 적다. */
+        window.addEventListener("scroll", sweep, { passive: true });
+        document.addEventListener("visibilitychange", sweep);
+      } catch (error) {
+        root.classList.remove("js-motion");
+      }
+    })();
+    /* 상단으로 — 6장이 같은 동작. 화면 절반을 지나면 나타난다.
+       Lenis를 쓰는 페이지에서도 window.scrollY는 갱신되므로 그대로 읽는다. */
+    (() => {
+      const topButton = document.querySelector(".back-to-top");
+      if (!topButton) return;
+      /* 바닥에 닿으면 감춘다. 폰에서 이 버튼이 마지막 화면의 `Home ↗`
+         버튼 위에 겹쳐 앉아 그 버튼의 69%를 가렸다(실측 390×844).
+         마감 화면에는 이미 갈 곳이 두 개 있어서 이 버튼이 할 일도 없다.
+         페이지 끝 한 화면 안에 들어오면 물러난다. */
+      const toggleTopButton = () => {
+        const y = window.scrollY;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const atBottom = max - y < window.innerHeight * .9;
+        topButton.classList.toggle("is-visible", y > window.innerHeight * .5 && !atBottom);
+      };
+      window.addEventListener("scroll", toggleTopButton, { passive: true });
+      toggleTopButton();
+    })();
+
+  </script>
+</body>
+</html>

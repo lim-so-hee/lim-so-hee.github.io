@@ -1,0 +1,318 @@
+/* tokens-v8.css
+   정본: .re0/iteration/v7-spec-first-home/SPEC.local.md
+   이 파일은 그 문서의 전사본이다. 값을 바꾸려면 SPEC에서 바꾸고 다시 전사한다.
+
+   여기에는 폰트 임포트, 토큰, 리셋, 전역 프리미티브만 둔다.
+   페이지 섹션 셀렉터를 넣지 말 것 — tokens-v6.css가 Hero/Origin/System 셀렉터를
+   담는 바람에 새 스타일시트가 자기 규칙을 쓰기도 전에 옛 실루엣을 상속했다.
+   그 실패는 반복하지 않는다. */
+
+/* ─ 폰트 ────────────────────────────────────────────────────────────
+   npm 경로를 쓴다. gh 경로(`cdn.jsdelivr.net/gh/orioncactus/...`)는 403이다.
+   2026-07-27 크롬에서 직접 fetch 확인 — gh 403 / npm 200 (2009KB).
+   지운 tokens.css·tokens-v6.css·profile.html·home-concept.html이 전부 403 URL을
+   쓰고 있었고, 그 페이지들은 Pretendard 없이 시스템 폰트로 렌더되고 있었다.
+
+   게이트 G1 — document.fonts 상태가 'loaded'인지 확인하기 전에는 타이포를 판정하지 않는다.
+   document.fonts.check()는 "선언됐다"만 알려주므로 쓰지 않는다. */
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/woff2/PretendardVariable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&display=swap");
+
+:root {
+  /* ─ 면 ──────────────────────────────────────────────────────────
+     순백을 쓴다. "순백 배경 금지" 게이트는 폐기됐다 —
+     실측 3곳(김유경 91.95% · Duwy 55.63% · All Good)이 순백이었고 전제가 거짓이었다.
+
+     면은 두 개뿐이다. 검은 면 반전은 쓰지 않는다. 검정은 글자에만. */
+  --ground: #ffffff;
+  --ground-alt: var(--accent-tint);   /* 섹션 교차는 회색이 아니라 액센트 틴트로 */
+
+  /* ─ 잉크 ────────────────────────────────────────────────────────
+     회색을 여러 개 만들지 않는다. 잉크 하나를 알파로 내린다. */
+  --ink: #0a0a0a;
+  --muted: #6b6b6b;
+  --rule: rgba(0, 0, 0, 0.08);
+  --rule-strong: rgba(0, 0, 0, 0.14);
+  --on-ink: #ffffff;
+
+  /* ─ 액센트 ──────────────────────────────────────────────────────
+     실측(캔버스, 2026-07-27):
+       --accent 흰 바탕 4.95 / 검정 4.00 / --muted 1.08
+
+     역할은 "여기가 핵심"이다. 핵심 문구와 수치를 표시한다.
+     링크에는 쓰지 않는다 — 누를 수 있는 것과 없는 것이 같은 파랑이면 안 된다.
+
+     --muted와 대비가 1.08이라 색만으로는 구분되지 않는다.
+     액센트로 표시하는 모든 것에 색 아닌 두 번째 단서(굵기·밑줄)를 함께 준다.
+
+     면으로 크게 써도 된다. 이전의 "첫 화면 5% 이하" 상한은 폐기됐다 —
+     Jeton은 액센트 면적이 흰 바탕 대비 약 29%다. */
+  --accent: #3163f6;          /* h225 s92 l58 — 핵심 문구·수치 */
+  --accent-face: #6288f8;     /* h225 s91 l68 — 검은 글자를 얹는 면. +검정 6.03 */
+  --accent-tint: #eff2fb;     /* h225 s60 l96 — 칩·카드용. 흰 바탕 대비 1.12 */
+  --on-accent: #ffffff;       /* --accent 면 위의 글자. 검정은 4.00으로 미달 */
+
+  /* --accent-tint는 섹션 면이 될 수 없다. 흰 바탕과 대비 1.12라
+     경계가 눈에 안 잡힌다(실측 2026-07-28). 명도를 내려 따로 만든다.
+     흰색에 액센트를 섞는 방식으로는 안 된다 — #3163f6이 밝은 파랑이라
+     22%까지 섞어도 1.36에 그친다. 채도를 유지한 채 명도만 내렸다. */
+  --accent-veil: #c9d3f2;     /* h225 s55 l87 — 섹션 면. 흰 바탕 1.49 / +잉크 13.28 */
+
+  /* --muted는 --accent-veil 위에서 3.57로 본문 4.5에 미달한다.
+     면이 밝을수록 회색이 묻힌다. 틴트 면에서만 이걸 쓴다. */
+  --muted-strong: #4e5666;    /* 흰 바탕 7.38 / --accent-veil 4.95 */
+
+  /* 배경이 바뀌어도 보이도록 고정색. currentColor를 쓰면
+     액센트 면 위 흰 글씨에서 흰 아웃라인이 된다. */
+  --focus: #0b3f7a;
+
+  /* ─ 서체 2종 ────────────────────────────────────────────────────
+     Pretendard가 한글 전부 + 영문 산세리프를 겸한다.
+     세리프는 영문이 자기 블록으로 설 때만. 한글이 든 줄에는 절대 안 들어간다.
+     한글 문장 속 영어 단어도 Pretendard다. */
+  --font-ko: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+  --font-en-serif: "Source Serif 4", Georgia, serif;
+
+  /* ─ 굵기: 이 둘만 ───────────────────────────────────────────────
+     크롬 실측(Pretendard Variable, 64px 한글) 근거:
+       450은 400과 구분 불가 — 한글은 획이 많아 50 단위 차이가 흡수된다
+       500은 400과 겨우 구분 — 3단계가 필요해지면 이것만 후보
+       700은 획 사이가 좁아진다 — 지운 아카이브가 이 값이었고 페이지가 단조로웠다
+     한글은 굵기 단계가 붕괴한다. 100 이상 벌어져야 구분된다.
+
+     위계는 크기와 굵기 둘 다로 만든다. */
+  --w-body: 400;
+  --w-display: 600;
+
+  /* ─ 타이포 역할 ─────────────────────────────────────────────────── */
+  --t-display: clamp(2.75rem, 7.2vw, 5.125rem);   /* 44 → 82px */
+  --t-h2: clamp(1.75rem, 4.4vw, 3.25rem);         /* 28 → 52px */
+  --t-h3: clamp(1.125rem, 2.6vw, 1.875rem);       /* 18 → 30px */
+  --t-lead: 1.0625rem;    /* 17px — 디스플레이 아래 리드 */
+  --t-body: 1.0625rem;    /* 17px */
+  --t-caption: 0.875rem;  /* 14px */
+  --t-label: 0.75rem;     /* 12px, 대문자 라벨 */
+
+  /* ─ 자간 ────────────────────────────────────────────────────────
+     한글과 영문이 다르다. 가져온 스펙의 -0.07em은 라틴 전용이다.
+     한글 디스플레이는 -0.025em이 하한이고, 더 좁히면 받침이 뭉친다. */
+  --ls-display: -0.025em;
+  --ls-display-en: -0.07em;
+  --ls-en-serif: -0.08em;
+  --ls-h2: -0.02em;
+  --ls-body: -0.015em;
+  --ls-label: 0.14em;
+
+  /* ─ 행간 ────────────────────────────────────────────────────────
+     캔버스 실측(2026-07-27, Pretendard 600/400, 60px, HOME_COPY 전 문장 + 쌍받침 최악):
+       잉크 높이 = ascent 48 + descent 13 = 61px
+       필요한 최소 행간 = 1.017
+       1.00 충돌 / 1.08 통과(여유 6.2%) / 1.15 통과
+
+     SPEC §6이 주장하던 "한글은 1.15 아래로 못 내려간다"는 사실이 아니었다.
+     실측 하한은 1.017이고, 그 값은 측정 없이 이어져 온 것이었다. */
+  --lh-display: 1.08;
+  --lh-h2: 1.2;
+  --lh-body: 1.45;
+  --lh-body-long: 1.7;   /* 긴 한글 문단 */
+
+  /* ─ 공간 ────────────────────────────────────────────────────────── */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --space-4xl: 9rem;
+
+  /* 최대폭 1200px — 실측 5곳이 1078~1280px에 몰려 있다.
+     지운 tokens.css는 1600px, tokens-v6.css는 1440px로 어느 레퍼런스보다 넓었다.
+     한글 본문은 라틴보다 줄을 짧게 잡아야 읽힌다. */
+  --content-max: 75rem;   /* 1200px */
+  --page-gutter: clamp(1.25rem, 3vw, 2.25rem);
+  --section-gap: 5rem;    /* 80px — Jeton·Awesomic·Drive Capital 하한이 모두 80px */
+  --rule-hair: 1px;
+
+  /* ─ 모션 ────────────────────────────────────────────────────────
+     쓰는 속성은 opacity와 transform 둘만.
+     상시 실행 애니메이션은 0개다. 마퀴·회전 씰·깜빡이는 점은 폐기됐다. */
+  --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --dur-micro: 120ms;
+  --dur-hover: 220ms;
+  --dur-enter: 500ms;
+  --enter-shift: 14px;   /* 스크롤 등장: translateY(14px) → 0 */
+
+  --z-base: 1;
+  --z-raised: 10;
+  --z-sticky: 200;
+}
+
+/* ─ 브레이크포인트 규약 ──────────────────────────────────────────────
+     min-width: 62rem   (992px)  데스크톱 — 히어로가 한 화면
+     max-width: 61.99rem (991px) 한 화면 고정 해제, 세로로 흐름
+     max-width: 47.99rem (768px) 모바일 가로
+     max-width: 31.99rem (512px) 모바일 세로
+
+   html/body에 min-width를 걸지 않는다. v3가 min-width:1024px를 걸어서
+   375px 뷰포트에서 innerWidth가 1024로 강제됐고, 본문이 실효 5.5px로 렌더됐다.
+   모든 단일 컬럼 그리드 트랙은 minmax(0, 1fr) — 한글은 grid min-content를
+   밀어올려 scrollWidth가 정상이어도 제목이 삐져나간다. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+html {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-ko);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  font-size: var(--t-body);
+  font-weight: var(--w-body);
+  line-height: var(--lh-body);
+  letter-spacing: var(--ls-body);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─ 한글 조판 ────────────────────────────────────────────────────────
+   이전 사이클에서 얻은 자산이다. 롤백으로 원본 파일이 한 번 사라졌다.
+   지우지 말 것. */
+:where(h1, h2, h3, h4) {
+  margin: 0;
+  overflow-wrap: normal;
+  word-break: keep-all;
+  line-break: strict;
+  text-wrap: balance;
+  font-weight: var(--w-display);
+}
+
+:where(p, li, dt, dd) {
+  overflow-wrap: break-word;
+  word-break: keep-all;
+  line-break: strict;
+  text-wrap: pretty;
+}
+
+/* ─ 이탤릭 금지 ──────────────────────────────────────────────────────
+   한글에 이탤릭을 쓰지 않는다. Pretendard에는 진짜 이탤릭 자체가 없어서
+   브라우저가 글자를 기울여 그리는 가짜 이탤릭(faux italic)이 된다.
+   획 굵기가 무너지고 받침이 어긋난다.
+
+   em·i·cite·dfn·var·address는 브라우저 기본이 이탤릭이라 한글에 그대로 걸린다.
+   전부 normal로 되돌린다. 강조는 굵기(--w-display)와 액센트 색이 맡는다.
+
+   지운 파일들에 italic 선언이 24건 있었다 —
+   profile.html 9 · home-v6.css 5 · home-concept.html 4 · ai-project.css 3 · case.css 3.
+   home-v6.css의 .wordmark는 세리프 이탤릭인데 내용이 "임소희"라 한글에 걸렸다. */
+:where(em, i, cite, dfn, var, address) {
+  font-style: normal;
+}
+
+/* 이탤릭은 영문이 자기 블록으로 설 때만. 이 클래스를 명시적으로 붙인 곳에서만 허용한다.
+   한글이 한 글자라도 섞이면 이 클래스를 쓰지 않는다. */
+.en-serif {
+  font-family: var(--font-en-serif);
+  font-style: italic;
+  letter-spacing: var(--ls-en-serif);
+}
+
+/* ─ 링크 ─────────────────────────────────────────────────────────────
+   링크는 액센트를 쓰지 않는다. 검정 + 밑줄이다.
+   액센트가 "여기가 핵심"을 뜻하므로, 누를 수 있는 것과 겹치면 안 된다. */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:where(a[href]) {
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 1px;
+  font-weight: var(--w-display);
+  transition: border-color var(--dur-hover) var(--ease-out);
+}
+
+:where(a[href]):hover,
+:where(a[href]):focus-visible {
+  border-bottom-color: var(--accent);
+}
+
+a:focus-visible,
+button:focus-visible,
+:where([tabindex]):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.25rem;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  color: var(--on-accent);
+  background: var(--accent);
+}
+
+/* ─ 스크롤 등장 프리미티브 ───────────────────────────────────────────
+   opacity + transform 둘만 쓴다. 페이지 쪽에서 .is-in을 붙인다. */
+.enter {
+  opacity: 0;
+  transform: translateY(var(--enter-shift));
+}
+
+.enter.is-in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--dur-enter) var(--ease-out),
+    transform var(--dur-enter) var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .enter {
+    opacity: 1;
+    transform: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

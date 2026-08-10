@@ -1,0 +1,1547 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="콘텐츠 마케터 임소희의 업무 가치, 협업 방식, 경력과 사용 도구">
+  <title>Profile | 임소희</title>
+  <!-- 알약 네비는 5장 공용이다. 이 페이지만 같은 규칙을 인라인으로 복사해 갖고
+       있어서 한쪽만 고치면 어긋났다 — 실제로 모바일 블록이 여기만 빠져 있었다.
+       공용 파일을 쓰고, 이름이 다른 토큰만 :root에서 이어준다. -->
+  <link rel="stylesheet" href="pillnav.css?v=6">
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Space+Grotesk:wght@300..700&display=swap");
+
+    @font-face {
+      font-family: "Pretendard";
+      /* gh/orioncactus 경로는 죽었다(403, 2026-07-28 확인).
+         이 컴퓨터엔 Pretendard가 깔려 있어 정상으로 보였을 뿐,
+         폰트가 없는 방문자에겐 대체 서체로 떨어진다. npm 경로로 바꾼다. */
+      src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/woff2/PretendardVariable.woff2") format("woff2");
+      font-weight: 100 900;
+      font-display: swap;
+    }
+
+    :root {
+      --paper: #ffffff;
+      --surface: #f4f4f4;
+      --ink: #0d0d0d;
+      --body: #5a5851;
+      --muted: #767369;
+      --line: rgba(13, 13, 13, 0.1);
+      /* 홈(tokens-v8.css)의 액센트로 맞춘다. 이전 하늘색 #50b4fb는
+         흰 바탕 대비 2.27로 글자에 못 쓰는 색이었다. #3163f6은 4.95다.
+         이름이 --lime인 건 더 옛날 팔레트의 잔재다. 참조가 7곳이라 그대로 둔다. */
+      --lime: #3163f6;
+      --page-x: clamp(40px, 5vw, 76px);
+      --ease-out: cubic-bezier(.16, 1, .3, 1);
+
+      /* pillnav.css가 쓰는 이름으로 이어준다. 이 페이지의 토큰 이름이 홈·케이스
+         페이지와 달라서, 공용 파일을 그대로 쓰려면 다리를 놓아야 한다. */
+      --color-accent: var(--lime);
+      --color-ink: var(--ink);
+      --color-ink-2: var(--body);
+      --color-on-ink: var(--paper);
+      --font-en: "Pretendard", sans-serif;
+      --font-accent-en: "Source Serif 4";
+      --page-gutter: var(--page-x);
+      --text-sm: 14px;
+      --text-xs: 12px;
+
+      /* ─ 타입 사다리 ─────────────────────────────────────────────
+         이전에는 크기 17단·굵기 10단·행간 11단이었다. 계단이 1~3px씩이라
+         눈에는 같아 보이고 위계를 못 만들었다.
+         jeton.com 재실측(2026-07-29, 1280×720 · 앞선 2026-07-28 메모의 수치는 틀렸다):
+           서체 1종(Sequel Sans)
+           굵기 450(149곳) / 500(50곳) — 사실상 2단
+           크기 12 · 14 · 16 / 22 · 32 · 41 / 67 · 97 · 140
+           행간 제목 1.0(96.95px / 97px) · 본문 1.25~1.5
+         여기서는 홈(tokens-v8.css)의 사다리에 이 비율을 얹는다. */
+      /* 홈과 같은 역할별 굵기다. 본문 400, 제목·라벨 600을 기본으로 쓰고
+         히어로의 핵심 문장만 800으로 벌려 첫 화면의 위계를 분명히 한다. */
+      --w-body: 400;
+      --w-mid: 600;
+      --w-display: 600;
+
+      --t-2xs: 12px;
+      --t-xs: 14px;
+      --t-sm: 17px;
+      --t-base: 18px;
+      --t-md: 20px;
+      --t-lg: 22px;
+      --t-xl: 24px;
+      --t-2xl: 32px;
+      --t-3xl: clamp(30px, 4.6vw, 64px);
+      /* 히어로 제목. jeton.com 실측 104.57px@1280(=8.17vw).
+         한글은 같은 px에서 라틴보다 글자폭이 커서 8.17vw면 제목이 네 줄이 된다.
+         6.6vw까지만 따라간다 — 1280에서 84px, 상한 96px. */
+      --t-hero: clamp(34px, 6.6vw, 96px);
+
+      /* jeton.com 제목 행간은 정확히 1.0이다(실측: 96.95px / 97px). 그대로 옮겼더니
+         84px 제목의 줄 간격이 0px가 되어 "이해하고," 의 쉼표가 아랫줄 "결"에 닿았다.
+         Jeton은 라틴 문자다 — 한글은 받침과 쉼표가 아래로 뻗어 1.0을 못 쓴다.
+         실측값을 그대로 옮기면 안 되는 자리다.
+         1.1로 올렸더니 글자는 안 닿지만(여유 6.9px) 여전히 답답했다. 1.2면
+         84px에서 여유 15.4px다. 한글 제목은 라틴보다 행간이 더 필요하다. */
+      --lh-tight: 1.2;
+      --lh-body: 1.5;     /* 본문 — Jeton과 동일 */
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      /* 행간을 여기서 한 번 정해 상속시킨다. 이게 없으면 선언 안 한 요소가
+         브라우저 기본 normal(≈1.2)로 떨어져 사다리 밖 값이 27곳 생겼다. */
+      line-height: var(--lh-body);
+      scroll-behavior: smooth;
+      /* scroll-snap-type: y mandatory 였다. 섹션 단위로 스크롤이 끊겨서
+         히어로의 sticky 무대가 중간 위치에 머물 수 없었다. 둘은 같이 못 쓴다. */
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      overflow-x: clip;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--ink);
+      outline-offset: 5px;
+    }
+
+    .page {
+      width: 100%;
+      padding: 0 var(--page-x) 0;
+    }
+
+    /* 알약 네비 규칙은 pillnav.css로 옮겼다 — 5장이 한 파일을 본다. */
+    /* 좌우 직무·이름의 서체와 1200px 중심축은 홈 masthead와 맞춘다. */
+    /* 100vw는 세로 스크롤막대 폭까지 세는데 가운데 정렬은 막대를 뺀 폭을
+       기준으로 잡는다. 1200px보다 좁은 화면에서 머리말이 막대 폭의 절반만큼
+       (실측 8px) 왼쪽으로 밀려 있었다. 이 장은 부모 .page가 좌우 --page-x
+       여백을 갖고 있어 100%가 화면 폭이 아니다 — 그 여백을 되돌려 더한 값이
+       곧 막대를 뺀 화면 폭이다. 여백 밖으로 넓어지는 동작은 그대로 둔다. */
+    .site-header {
+      width: min(calc(100% + 2 * var(--page-x)), 75rem);
+      margin: 0 0 0 50%;
+      padding-inline: clamp(1.25rem, 3vw, 2.25rem);
+      transform: translateX(-50%);
+    }
+
+    .header-role {
+      letter-spacing: -.08em;
+    }
+
+    .brand {
+      letter-spacing: -.02em;
+    }
+
+    /* ─ 히어로 무대 ─ jeton.com 실측(2026-07-29, 1280×720):
+       바깥 컨테이너 2517px(3.5화면) 안에 .sticky-slot이 sticky top:0 · 100vh로 박힌다.
+       가장 단순한 형태는 바깥 200vh + 안쪽 100vh다(Jeton의 .relative > .sticky-slot이 정확히 1440/720).
+       그동안은 min-height: calc(100vh - 72px)여서 첫 화면이 0.89화면밖에 안 됐다 —
+       첫 화면을 못 채우면 그 인상이 페이지 전체로 번진다. */
+    .profile-hero {
+      position: relative;
+      height: 200vh;
+      /* 알약 네비가 sticky라 흐름에서 5.25rem을 차지한다. 그만큼 무대가 아래로
+         밀려 첫 화면에서 제목 중심이 화면 중심보다 140px 아래였다(실측 2026-07-29).
+         네비를 덮어쓰도록 끌어올린다 — 네비는 z-index 210이라 위에 그대로 뜬다. */
+      margin-top: -5.25rem;
+      padding: 0 var(--page-x);
+      border-bottom: 1px solid var(--ink);
+    }
+
+    /* 제목과 사진이 여기 붙잡혀 있는 동안 작업물이 그 위를 지나간다.
+       jeton.com의 무대는 `.title.h-full.flex.place-center.text-center` — 가로세로
+       모두 가운데다. 이미지가 사방에서 정중앙으로 모이는 동작이므로 제목이
+       한쪽에 치우쳐 있으면 모이는 지점과 어긋난다. 왼쪽 정렬 2단 그리드였다. */
+    .hero-stage {
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(24px, 2.6vw, 38px);
+      min-height: 100vh;
+      min-height: 100svh;
+      /* 위아래를 같게 둬야 내용이 화면 한가운데에 온다. 위 89.6 / 아래 43.5로
+         어긋나 있어 제목이 아래로 치우쳤다. 위 여백은 알약 네비(5.25rem)를
+         피할 만큼은 돼야 한다. */
+      padding: 5.25rem 0;
+      text-align: center;
+    }
+
+
+    .hero-copy {
+      max-width: 760px;
+    }
+
+    /* ─ 히어로를 덮는 직무 키워드 칩 ─────────────────────────────────
+       jeton.com HeroIntroduction 컴포넌트 원본(`BkA5Dvhd.js`, 2026-07-29 확보):
+
+         e.fromTo(r, {scale: width > sm ? 2 : 1}, {duration:2, scale:.3}, 0)
+         e.to(r, {duration:.1, opacity:0}, 1.6)
+         e.fromTo(t.element, {x:getOffsets("viewport").x, y:getOffsets("viewport").y},
+                             {duration:2, ease:"power1.inOut",
+                              x:getOffsets("center").x, y:getOffsets("center").y}, 0)
+
+       즉 아래에서 위로 올라오는 게 아니라 **무대 가장자리에서 정중앙으로 모여
+       쌓인다**. getOffsets("viewport")는 무대 중앙에서 각 요소로 그은 선이
+       무대 테두리와 만나는 교점이다(선분-사각형 교차 함수 V/L).
+       처음엔 아래→위로 만들었다가 원본을 읽고 고쳤다.
+
+       모이는 것도 사진이 아니라 글자가 읽히는 UI 카드다(.snippet). 우리도
+       작업물 사진에서 직무 키워드 칩으로 바꿨다 — 사진은 잘려서 못 읽혔다. */
+    .hero-covers {
+      position: absolute;
+      z-index: 5;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .hero-chip {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: grid;
+      place-items: center;
+      width: auto;
+      min-inline-size: clamp(300px, 20vw, 380px);
+      padding: 28px 54px;
+      border-radius: 999px;
+      /* 서체만 Newsreader로 바꾸고 스타일·굵기를 안 맞춰서 이 페이지의 다른
+         영문과 달라 보였다. 섹션 라벨·헤더 직무·경력 경로·Direct/Collaboration·
+         Tools 제목·Next가 전부 이탤릭 400이다(실측 2026-07-29). 같은 값으로 간다. */
+      font-family: "Newsreader", serif;
+      font-size: clamp(22px, 1.45vw, 28px);
+      font-style: italic;
+      font-weight: var(--w-body);
+      color: var(--paper);
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
+      /* 따로 떠 있을 때는 위치를 읽을 수 있는 그림자를 남기고, 중앙에 겹칠수록
+         농도와 번짐을 줄인다. 열 겹의 그림자가 한꺼번에 진해지는 것을 막는다. */
+      box-shadow:
+        0
+        calc(14px - 8px * var(--pe, 0))
+        calc(30px - 16px * var(--pe, 0))
+        rgb(13 13 13 / calc(.1 - .088 * var(--pe, 0)));
+      /* --p는 JS가 무대 진행도(0→1)로 채운다. 0이면 가장자리 바깥·투명이라
+         제목이 먼저 온전히 보이고, 스크롤을 시작해야 모여든다. */
+      opacity: clamp(0, calc(var(--p, 0) * 5), 1);
+      transform:
+        translate(-50%, -50%)
+        translate3d(
+          calc(var(--sx) * (1 - var(--pe, 0)) + var(--fx) * var(--pe, 0)),
+          calc(var(--sy) * (1 - var(--pe, 0)) + var(--fy) * var(--pe, 0)),
+          0)
+        rotate(calc(
+          var(--rot) * (1 - var(--pe, 0))
+          + var(--stack-rot, 0deg) * var(--pe, 0)
+        ))
+        scale(calc(1 + var(--stack-grow, .25) * var(--pe, 0)));
+      will-change: transform, opacity;
+    }
+
+    /* --dx/--dy는 출발 방향만 정한다. 실제 --sx/--sy는 JS가 각 칩 크기와
+       현재 뷰포트를 재서 칩 전체가 화면 밖에 놓이도록 계산한다. 마지막에는
+       모두 정확히 같은 중앙점에 도착해 하나의 더미가 된다. */
+    .hero-chip:nth-child(1)  { z-index: 8; --stack-grow: .38; --stack-rot: 5deg; --dx:  1; --dy:  .75; --fx: 0px; --fy: 0px; --rot: -7deg;
+      background: #FF5C34; color: #fff; }
+    .hero-chip:nth-child(2)  { z-index: 10; --stack-grow: .22; --stack-rot: -2deg; --dx:  0; --dy:  1; --fx: 0px; --fy: 0px; --rot:  5deg;
+      background: #3163F6; color: #fff; }
+    .hero-chip:nth-child(3)  { z-index: 4; --stack-grow: .42; --stack-rot: -5.5deg; --dx: -1; --dy:  .75; --fx: 0px; --fy: 0px; --rot: -4deg;
+      background: #FFD15F; color: #0d0d0d; }
+    .hero-chip:nth-child(4)  { z-index: 5; --stack-grow: .46; --stack-rot: 4deg; --dx:  1; --dy: -.3; --fx: 0px; --fy: 0px; --rot:  8deg;
+      background: #C7EA46; color: #0d0d0d; }
+    .hero-chip:nth-child(5)  { z-index: 1; --stack-grow: .52; --stack-rot: -4deg; --dx:  1; --dy:  .3; --fx: 0px; --fy: 0px; --rot: -3deg;
+      background: #2BFFC6; color: #0d0d0d; }
+    .hero-chip:nth-child(6)  { z-index: 9; --stack-grow: .30; --stack-rot: 3deg; --dx: -1; --dy: -.3; --fx: 0px; --fy: 0px; --rot:  4deg;
+      background: #0095B6; color: #fff; }
+    .hero-chip:nth-child(7)  { z-index: 7; --stack-grow: .46; --stack-rot: -6deg; --dx: -1; --dy:  .3; --fx: 0px; --fy: 0px; --rot: -8deg;
+      background: #48DBFB; color: #0d0d0d; }
+    .hero-chip:nth-child(8)  { z-index: 6; --stack-grow: .50; --stack-rot: 5.5deg; --dx:  .9; --dy: -1; --fx: 0px; --fy: 0px; --rot:  3deg;
+      background: #F368E0; color: #0d0d0d; }
+    .hero-chip:nth-child(9)  { z-index: 3; --stack-grow: .44; --stack-rot: -3.5deg; --dx:  0; --dy: -1; --fx: 0px; --fy: 0px; --rot: -5deg;
+      background: #6F2DA8; color: #fff; }
+    .hero-chip:nth-child(10) { z-index: 2; --stack-grow: .48; --stack-rot: 4.5deg; --dx: -.9; --dy: -1; --fx: 0px; --fy: 0px; --rot:  7deg;
+      background: #B57BFF; color: #0d0d0d; }
+
+    /* 제목·사진은 물러난다. Jeton은 제목을 scale 2 → .3으로 줄이는데, 넓은 화면에서만
+       2로 시작하고 작은 화면에서는 1로 시작한다(`width > breakpoints.sm ? 2 : 1`).
+       우리 제목은 한글 스무 자가 넘어 2배(192px)면 다섯 줄이 된다. 그래서 Jeton이
+       스스로 쓰는 작은 화면 분기값 1 → .3을 그대로 따른다. */
+    /* 제목만 줄고 아래 문구는 그대로였다. 이미지가 덮는 동안 문구는 크기 그대로
+       버티다가 진행도 0.80~0.85의 5% 구간에서 툭 사라져 "숨는" 느낌이 안 났다.
+       둘 다 줄이되 제목이 더 많이 줄어 위계를 유지한다. */
+    .hero-heading {
+      transform: scale(calc(1 - .7 * var(--p, 0)));
+      /* 무대가 가운데 정렬이라 축소 기준점도 가운데여야 이미지가 모이는 지점과 맞는다. */
+      transform-origin: center;
+    }
+
+    .hero-copy {
+      transform: scale(calc(1 - .45 * var(--p, 0)));
+      transform-origin: center top;
+    }
+
+    /* Jeton은 타임라인 2 중 1.6 지점에서 0.1 동안 툭 끈다(진행도 0.80→0.85).
+       그건 제목이 이미 scale .3까지 줄어 사라지기 직전이라 성립하는 처리다.
+       여기서는 이미지가 모이기 시작할 때부터 서서히 물러나야 덮이는 게 보인다.
+       0.25에서 옅어지기 시작하니 칩이 닿기도 전에 사라졌다. 0.55까지 온전히
+       버티다가 0.9에 사라진다 — 그 사이가 덮이는 구간이다. */
+    .hero-heading,
+    .hero-copy {
+      opacity: clamp(0, calc((.9 - var(--p, 0)) / .35), 1);
+      /* 겹치는 구간에서 초점이 빠져야 뒤로 물러난 것으로 읽힌다.
+         절반을 지나서부터만 걸어 초반 가독성은 지킨다. */
+      filter: blur(calc(max(0, var(--p, 0) - .45) * 14px));
+    }
+
+    /* 작은 화면에서는 제목 위에 사진이 겹치면 글자를 읽을 수 없다.
+       채용담당자가 폰으로 여는 경우가 흔해서 여기서는 덮개를 걷는다.
+       덮개만 걷고 무대(200vh)를 두면 아무 일도 안 일어나는 빈 스크롤이 한 화면
+       생긴다. 무대까지 같이 풀어 히어로를 한 화면짜리 보통 섹션으로 되돌린다. */
+    @media (max-width: 720px) {
+      .hero-covers {
+        display: none;
+      }
+
+      .profile-hero {
+        height: auto;
+      }
+
+      .hero-stage {
+        position: static;
+      }
+
+      /* --p가 안 도니 제목·사진이 줄거나 사라지면 안 된다. */
+      .hero-heading,
+      .hero-copy {
+        opacity: 1;
+        transform: none;
+        filter: none;
+      }
+    }
+
+    /* ─ 스크롤 등장 ─ JS가 붙는 .js-motion 아래에서만 숨긴다.
+       CSS에 바로 opacity: 0을 걸면 JS가 죽었을 때 내용이 영영 안 보인다. */
+    .js-motion .reveal {
+      opacity: 0;
+      /* 22px 이동만으로는 이미 보고 있는 요소에서 티가 안 났다. 살짝 눌러뒀다 편다. */
+      transform: translateY(56px) scale(.97);
+      transition:
+        opacity 760ms var(--ease-out) var(--d, 0ms),
+        transform 760ms var(--ease-out) var(--d, 0ms);
+    }
+
+    .js-motion .reveal.is-in {
+      opacity: 1;
+      transform: none;
+    }
+
+
+    h1 {
+      max-width: none;
+      margin: 0;
+      font-size: var(--t-hero);
+      line-height: var(--lh-tight);
+      letter-spacing: -.03em;
+      /* white-space: nowrap 이었다. 375px 화면에서 제목이 241px 넘쳤고
+         body의 overflow-x:clip 때문에 스크롤도 못 하고 잘렸다(실측 2026-07-28).
+         jeton.com의 히어로 제목도 nowrap이 아니라 normal이다. */
+      text-wrap: balance;
+      word-break: keep-all;
+    }
+
+    /* 홈 히어로와 같은 방식 — 윗줄은 물러서고 아랫줄이 주장한다.
+       형광펜을 쓰던 자리다. 홈에는 형광펜이 없어 두 페이지의 강조 문법이
+       달랐다. 굵기와 색으로만 강약을 준다. */
+    .hero-l1,
+    .hero-l2 {
+      display: block;
+    }
+
+    /* 홈 히어로와 같은 400 → 800 대비를 실제 선택자에 직접 건다. */
+    .hero-l1 {
+      font-weight: 400;
+    }
+
+    .hero-l2 {
+      font-weight: 800;
+    }
+
+    h1 b {
+      color: var(--lime);
+      font-weight: inherit;
+    }
+
+    /* 32px이었다 — 소개문(18px)보다 1.8배 커서 위계가 뒤집혀 있었다.
+       채용담당자가 먼저 읽어야 할 건 "무슨 일을 하는가"지 경력 경로가 아니다. */
+    .career-path {
+      margin: 0;
+      font-family: "Newsreader", serif;
+      font-style: italic;
+      font-weight: var(--w-body);
+      color: var(--muted);
+      font-size: var(--t-md);
+      line-height: var(--lh-tight);
+      letter-spacing: -.015em;
+    }
+
+    /* 소개문이 히어로에서 제목 다음으로 강해야 한다. 18 → 22px.
+       640px에서 "…콘텐츠 마케터입 / 니다."로 낱말 가운데가 끊겼다 —
+       한글은 word-break: keep-all이 없으면 아무 데서나 끊는다. */
+    .introduction {
+      max-width: 720px;
+      margin: 18px auto 0;
+      color: var(--body);
+      font-size: var(--t-lg);
+      line-height: var(--lh-body);
+      letter-spacing: -.01em;
+      word-break: keep-all;
+      text-wrap: pretty;
+    }
+
+    /* 여백이 106px이었다. Jeton은 섹션 여백을 180~400px로 쓴다(실측).
+       높이를 min-height로 늘리는 대신 여기를 키워 숨 쉬는 공간을 만든다. */
+    .content-section {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(96px, 13vw, 200px) var(--page-x);
+      border-bottom: 1px solid var(--ink);
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: clamp(150px, 14vw, 210px) minmax(0, 1fr);
+      gap: clamp(32px, 4vw, 64px);
+      margin-bottom: clamp(48px, 4.5vw, 66px);
+    }
+
+    .section-name {
+      margin: 7px 0 0;
+      font-family: "Newsreader", serif;
+      font-style: italic;
+      font-weight: var(--w-body);
+      color: #5a5851;
+      font-size: var(--t-lg);
+      line-height: var(--lh-tight);
+      white-space: nowrap;
+    }
+
+    .section-copy h2 {
+      max-width: none;
+      margin: 0;
+      font-size: var(--t-3xl);
+      font-weight: var(--w-display);
+      line-height: var(--lh-tight);
+      letter-spacing: -.025em;
+      word-break: keep-all;
+      text-wrap: balance;
+    }
+
+    .section-copy p {
+      max-width: none;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: var(--t-sm);
+      line-height: var(--lh-body);
+      text-wrap: pretty;
+    }
+
+    .intro-line {
+      display: block;
+    }
+
+    @media (min-width: 1180px) {
+      .section-copy .single-line-desktop {
+        white-space: nowrap;
+      }
+    }
+
+    /* ─ 역량과 역할, 한 격자 ────────────────────────────────────────
+       위 3칸(역량) + 아래 2칸(책임 범위)이 하나의 표처럼 이어진다.
+       원래 아래 2칸은 자체 제목을 단 별도 파란 패널(.scope-panel)이었다.
+
+       REFERENCE_GUIDE.md 근거:
+       · 58줄 Profile 권장 흐름 — "가치 중심 소개 → 검증된 역량과 역할 →
+         선택한 경험 요약 → 링크". 역량과 역할이 한 단계다.
+       · 32줄 직접 관찰된 사실 — "직접 수행과 협업의 구분이 두 참고 사례에
+         공통으로 보이는 구조라고 판단할 근거는 없다."
+       · 48줄 규칙 4 — "두 참고 사례의 공통 형식인 것처럼 일반화하지 않는다."
+       내용은 사실 근거가 있으니 남기되 별도 섹션 지위만 없앴다.
+
+       두 행의 첫 칸 글자가 같은 x에서 시작해야 한 격자로 읽힌다.
+       그래서 파란 행은 화면 끝까지 깔고 안쪽 여백을 page-x로 되돌린다. */
+    .capability-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border-top: 1px solid var(--ink);
+    }
+
+    /* 220px이었다. 32px 제목 + 두 줄 본문이 들어가면 숨 쉴 자리가 70px밖에 안 남아
+       세로로 얇은 띠였다. jeton.com의 대응 블록(article)은 1280×720 — 한 화면 통째다.
+       3칸을 나란히 두는 구조라 그 절반인 반 화면(360px)을 기준으로 잡는다.
+       제목은 위, 본문은 아래로 밀어 칸 안에서도 위아래가 벌어지게 한다. */
+    .capability-item {
+      display: flex;
+      flex-direction: column;
+      min-height: clamp(280px, 50vh, 380px);
+      padding: 40px clamp(24px, 3vw, 46px) 44px;
+    }
+
+    /* 아이콘이 칸 맨 위, 제목은 그 아래, 본문은 바닥으로 — 셋이 붙어 있으면
+       칸을 키운 의미가 없다. 제목을 밀어내는 건 아이콘이 아니라 이 auto다. */
+    .capability-item h3 {
+      margin-top: auto;
+    }
+
+    /* reicon 아이콘. 색은 currentColor를 따라 액센트로 간다.
+       꾸밈이지 정보가 아니라서 aria-hidden이고, 크기는 제목보다 작게 둔다. */
+    .capability-icon {
+      width: 30px;
+      height: 30px;
+      color: var(--lime);
+      stroke-width: 1.5;
+    }
+
+    .capability-item:first-child {
+      padding-left: 0;
+    }
+
+    .capability-item + .capability-item {
+      border-left: 1px solid var(--line);
+    }
+
+    /* 굵기 선언이 없어 브라우저 기본 700으로 떨어져 있었다 — 사다리 밖 값이다. */
+    .capability-item h3 {
+      margin: 28px 0 24px;
+      font-size: var(--t-xl);
+      font-weight: var(--w-mid);
+      line-height: var(--lh-tight);
+      letter-spacing: -.015em;
+    }
+
+    .capability-item p {
+      max-width: 360px;
+      margin: 0;
+      color: var(--body);
+      font-size: var(--t-base);
+      line-height: var(--lh-body);
+      word-break: keep-all;
+      overflow-wrap: break-word;
+      text-wrap: pretty;
+    }
+
+    /* 파란 면을 화면 끝까지 깔고 있었다. 폭이 1280 대 1152로 다르고 배경만
+       파랗다 보니 "한 격자의 마지막 행"이 아니라 별도의 파란 띠로 읽혔다.
+       3칸과 2칸은 세로 격자선이 애초에 안 맞는다(441·825 대 633) — 그 상태에서
+       색면까지 다르면 두 덩어리로 보일 수밖에 없다.
+       색면을 걷고 폭·배경·테두리를 위 행과 똑같이 맞춘다. 한 표의 둘째 행이다.
+       색은 제목 글자가 맡는다(면이 아니라 글자로). */
+    .scope-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border-top: 1px solid var(--line);
+    }
+
+    /* 150px이었다 — .capability-item과 같은 이유로 얇았다. 2칸이라 조금 더 여유를 준다. */
+    .scope-item {
+      display: flex;
+      flex-direction: column;
+      min-height: clamp(220px, 36vh, 280px);
+      padding: 40px clamp(24px, 3vw, 46px) 44px;
+    }
+
+    .scope-item:first-child {
+      padding-left: 0;
+    }
+
+    .scope-item + .scope-item {
+      border-left: 1px solid var(--line);
+    }
+
+    .scope-item .capability-icon {
+      flex: 0 0 auto;
+    }
+
+    /* 위의 작업 방식 카드와 같은 아이콘·제목 위계를 사용한다. */
+    .scope-item h3 {
+      margin: 28px 0 24px;
+      font-weight: var(--w-mid);
+      color: var(--ink);
+      font-size: var(--t-xl);
+      line-height: var(--lh-tight);
+      letter-spacing: -.015em;
+    }
+
+    .scope-item p {
+      max-width: 560px;
+      margin: 0;
+      color: var(--body);
+      font-size: var(--t-base);
+      line-height: var(--lh-body);
+      word-break: keep-all;
+      text-wrap: pretty;
+    }
+
+    @media (min-width: 1180px) {
+      .scope-item p.single-line-desktop {
+        max-width: none;
+        white-space: nowrap;
+      }
+    }
+
+    /* 3칸·2칸 그리드에 모바일 분기가 없어 390px에서 칸 폭이 103px까지 눌렸다
+       (실측 2026-07-29). 세로를 키워도 이쪽이 남으면 "좁다"는 그대로다. */
+    @media (max-width: 860px) {
+      .capability-grid,
+      .scope-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      /* 라벨 칸(150px) + 제목 칸으로 나뉘어 있어 390px에서 제목이 128px만 받았다. */
+      .section-heading,
+      .scope-heading {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+
+      .capability-item,
+      .scope-item {
+        min-height: 0;
+      }
+
+      .capability-item:first-child {
+        padding-left: clamp(24px, 3vw, 46px);
+      }
+
+      .capability-item + .capability-item {
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+
+      .scope-item:first-child {
+        padding-left: clamp(24px, 3vw, 46px);
+      }
+
+      .scope-item + .scope-item {
+        padding-top: 34px;
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+    }
+
+    /* ─ 한 화면에 맞추기 ─ Capabilities 1.60화면 · Experience 1.48화면이라
+       두 섹션 다 스크롤해야 끝이 보였다. 높이를 100vh로 못박고, 제목이 쓰고 남은
+       공간을 격자가 비율대로 나눠 갖게 한다. 칸 높이를 숫자로 박으면 화면 크기가
+       조금만 달라져도 다시 넘치거나 남는다. min-height도 풀어야 flex가 줄일 수 있다.
+       스냅은 걸지 않는다(요청). 좁은 화면에서는 내용이 안 들어가니 그대로 흐른다. */
+    /* 높이를 100vh로 못박았더니, 왼쪽 경력 칸은 줄어들어도 오른쪽 교육·도구
+       칸은 아이콘 10개가 제 높이를 그대로 들고 있어 아래 경계선을 넘어
+       삐져나왔다(실측). 최소 높이로 바꾼다 — 한 화면을 채우되, 내용이 더
+       길면 섹션이 따라 늘어난다. */
+    @media (min-width: 861px) and (min-height: 760px) {
+      .content-section {
+        min-height: 100vh;
+        padding-top: clamp(40px, 5vw, 72px);
+        padding-bottom: clamp(40px, 5vw, 72px);
+      }
+
+      .capability-grid {
+        flex: 3 1 0;
+      }
+
+      .scope-grid {
+        flex: 2 1 0;
+      }
+
+      /* 남은 높이에 억지로 밀어 넣던 규칙을 걷는다. 칸 높이를 1fr로 잘라두면
+         교육·도구 칸처럼 줄지 않는 내용이 칸 밖으로 넘어 아래 경계선을
+         뚫는다. 두 칸 다 내용 높이대로 서고, 서로 같은 높이로 늘어나게 한다
+         (.experience-layout의 align-items: stretch). */
+      .experience-layout {
+        flex: 1 1 auto;
+        grid-template-rows: auto;
+      }
+
+      .career-list {
+        grid-template-rows: auto repeat(4, auto);
+      }
+
+
+      .capability-item,
+      .scope-item {
+        min-height: 0;
+      }
+
+      .section-heading {
+        flex: none;
+      }
+    }
+
+    .experience-section {
+      background: var(--paper);
+    }
+
+    .experience-layout {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(54px, 7vw, 106px);
+      align-items: stretch;
+    }
+
+    .career-list,
+    .credentials {
+      height: 100%;
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .career-list {
+      display: grid;
+      grid-template-rows: auto repeat(4, minmax(0, 1fr));
+    }
+
+    .credentials {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .experience-column-title {
+      margin: 0;
+      padding: 24px 0 22px;
+      border-bottom: 1px solid var(--line);
+      font-family: "Newsreader", serif;
+      font-style: italic;
+      font-weight: var(--w-body);
+      color: #5a5851;
+      font-size: var(--t-xl);
+      line-height: var(--lh-tight);
+    }
+
+    .career-row {
+      display: grid;
+      grid-template-columns: minmax(126px, .34fr) minmax(0, 1fr);
+      gap: clamp(26px, 3vw, 48px);
+      align-items: center;
+      padding: 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .career-row:last-child,
+    .credential-group:last-child {
+      border-bottom: 0;
+    }
+
+    .career-period,
+    .credential-period {
+      color: var(--muted);
+      font-size: var(--t-2xs);
+      font-weight: var(--w-mid);
+    }
+
+    .career-company {
+      display: block;
+      margin-bottom: 8px;
+      font-size: var(--t-md);
+      font-weight: var(--w-mid);
+      letter-spacing: -.015em;
+    }
+
+    .career-role {
+      display: block;
+      color: var(--body);
+      font-size: var(--t-xs);
+      line-height: var(--lh-body);
+    }
+
+    .credential-group {
+      padding: 24px 0 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .credential-group:last-child {
+      flex: 1;
+    }
+
+    .credential-group h3 {
+      margin: 0 0 22px;
+      font-family: "Newsreader", serif;
+      font-style: italic;
+      font-weight: var(--w-body);
+      color: #5a5851;
+      font-size: var(--t-xl);
+    }
+
+    .credential-item {
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      gap: 18px;
+      align-items: baseline;
+    }
+
+    .credential-item + .credential-item {
+      margin-top: 18px;
+    }
+
+    .credential-item p {
+      margin: 0;
+      color: var(--body);
+      font-size: var(--t-xs);
+      font-weight: var(--w-mid);
+      line-height: var(--lh-body);
+    }
+
+    .tool-group-label {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: var(--t-2xs);
+      font-weight: var(--w-mid);
+      letter-spacing: .04em;
+    }
+
+    .tool-group-label + .tool-icon-grid + .tool-group-label {
+      margin-top: 24px;
+    }
+
+    .tool-icon-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px 18px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .tool-item {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      min-height: 34px;
+      color: var(--body);
+      font-size: var(--t-xs);
+      font-weight: var(--w-mid);
+      line-height: var(--lh-tight);
+    }
+
+    .tool-item img {
+      flex: 0 0 28px;
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+
+    /* ─ 마무리 CTA ─ jeton.com 마지막 섹션(_extra-bold-hero) 실측(2026-07-28):
+       흰 면 · 가운데 정렬 · 제목 140px/500을 액센트색으로 · 상하 여백 191.6px ·
+       그 아래 버튼 두 개(높이 48px · radius 12px · 좌우 24px · 16px/400).
+       Jeton의 붉은 제목 #f73b20은 흰 바탕 대비 3.4로 본문엔 못 쓰는 색이다.
+       크기가 커서 통과할 뿐이라, 여기서는 4.95인 --lime을 쓴다.
+       칸 2개짜리 링크 카드였던 자리다. 설명은 두 칸 내용을 한 문장에 합쳤다. */
+    .next-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(112px, 14vw, 192px) var(--page-x);
+      border-bottom: 1px solid var(--ink);
+      text-align: center;
+    }
+
+    .next-eyebrow {
+      margin: 0 0 22px;
+      font-family: "Newsreader", serif;
+      font-style: italic;
+      font-weight: var(--w-body);
+      color: #5a5851;
+      font-size: var(--t-lg);
+    }
+
+    /* 네 줄의 문맥 단위가 먼저 읽히도록 줄바꿈을 고정한다. 히어로보다 한 단계
+       작은 크기와 조밀한 행간으로 마지막 섹션이 화면을 과하게 점유하지 않게 한다. */
+    .next-section h2 {
+      max-width: none;
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(36px, 6.3vw, 88px);
+      font-weight: var(--w-body);
+      line-height: 1.08;
+      letter-spacing: -.04em;
+      word-break: keep-all;
+    }
+
+    .next-l1,
+    .next-l2,
+    .next-line {
+      display: block;
+    }
+
+    .next-l1 {
+      color: var(--lime);
+      font-weight: 800;
+    }
+
+    .next-l2 {
+      color: var(--ink);
+      font-weight: 400;
+    }
+
+    .next-lede {
+      max-width: 640px;
+      margin: 26px 0 0;
+      color: var(--body);
+      font-size: var(--t-sm);
+      line-height: var(--lh-body);
+      text-wrap: pretty;
+      word-break: keep-all;
+    }
+
+    .next-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 38px;
+    }
+
+    .next-btn {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      min-height: 48px;
+      padding: 0 24px;
+      border: 1px solid var(--lime);
+      border-radius: 12px;
+      font-size: var(--t-base);
+      font-weight: var(--w-mid);
+      transition: background-color 220ms var(--ease-out), color 220ms var(--ease-out);
+    }
+
+    /* 흰 글자 on --lime = 4.95. */
+    .next-btn--solid {
+      background: var(--lime);
+      color: var(--paper);
+    }
+
+    .next-btn--solid:hover,
+    .next-btn--solid:focus-visible {
+      background: #2c57d5;
+    }
+
+    /* --lime 글자 on 흰 면 = 4.95. */
+    .next-btn--ghost {
+      background: var(--paper);
+      color: var(--lime);
+    }
+
+    .next-btn--ghost:hover,
+    .next-btn--ghost:focus-visible {
+      background: var(--lime);
+      color: var(--paper);
+    }
+
+    .next-arrow {
+      font-size: var(--t-base);
+      line-height: 1;
+      transition: transform 220ms var(--ease-out);
+    }
+
+    .next-btn:hover .next-arrow,
+    .next-btn:focus-visible .next-arrow {
+      transform: translate(3px, -3px);
+    }
+
+    /* 레이아웃·타이포는 pillnav.css의 공용 .page-footer가 맡는다(5장 공통).
+       이 페이지는 부모 .page가 이미 좌우 여백을 갖고 있어 여기서 되돌린다. */
+    .page-footer {
+      padding-inline: 0;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 28px;
+    }
+
+    .page-footer a:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 4px;
+    }
+
+    /* 이 버튼의 형태·동작은 pillnav.css 한 곳으로 옮겼다 — 6장이 같은 것을
+       쓰는데 여기만 따로 두면 한쪽만 고쳐져 어긋난다. 이 페이지는 토큰 이름이
+       달라(--ink / --paper / --lime) 색만 여기서 이어 준다. */
+    .back-to-top {
+      /* 선은 연한 회색. 다른 5장의 --color-rule-strong와 같은 값이다. */
+      border-color: rgba(13, 13, 13, .1);
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    /* 진파랑 면 위에서는 #5a5851이 1.44로 무너진다. hover에서 글자를 뒤집는다. */
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--lime);
+      color: var(--paper);
+    }
+
+    /* min-height: 100svh 를 모든 섹션에 걸고 있었다. 내용이 적은 섹션까지
+       한 화면으로 늘어나 죽은 공간이 생겼다 — Next 섹션은 71%가 빈 공간이었다.
+       jeton.com 실측(2026-07-28): 섹션 7개 전부 빈 공간 비율 0. 섹션이 큰 건
+       내용이 큰 것이고, 숨 쉬는 공간은 padding(180~400px)으로 준다.
+       그래서 높이는 내용이 정하게 두고, 여백만 Jeton 수준으로 키운다. */
+    main > section {
+      width: 100vw;
+      margin-right: calc(50% - 50vw);
+      margin-left: calc(50% - 50vw);
+      padding-right: var(--page-x);
+      padding-left: var(--page-x);
+    }
+    /* 첫 화면만 한 화면을 채운다 — .profile-hero 규칙에 min-height가 이미 있다. */
+
+    /* 경력과 교육·도구 영역을 50:50으로 맞추면서 오른쪽 칸도 충분한 폭을 얻었다.
+       데스크톱에서만 3열·22px로 압축하던 규칙을 걷고 2열·32px로 읽기 쉽게 키운다. */
+    @media (min-width: 861px) {
+      .tool-icon-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px 24px;
+      }
+
+      .tool-item {
+        min-height: 42px;
+        font-size: var(--t-sm);
+      }
+
+      .tool-item img {
+        flex: 0 0 32px;
+        width: 32px;
+        height: 32px;
+      }
+
+      .credential-group {
+        padding: 22px 0 26px;
+      }
+
+      .credential-group h3 {
+        margin-bottom: 18px;
+        font-size: 28px;
+      }
+
+      .tool-group-label {
+        margin-bottom: 10px;
+        font-size: var(--t-xs);
+      }
+
+      .credential-item + .credential-item {
+        margin-top: 16px;
+      }
+
+      .credential-item {
+        grid-template-columns: 126px minmax(0, 1fr);
+        gap: 20px;
+      }
+
+      .credential-period {
+        font-size: var(--t-xs);
+      }
+
+      .credential-item p {
+        font-size: var(--t-sm);
+      }
+    }
+
+    /* 경력 3fr + 교육·도구 2fr이 390px에서 154/102로 갈려 도구 칸이 42px이 됐다.
+       위쪽 max-width 블록에 넣었더니 .experience-layout 기본 규칙이 뒤에 있어 밀렸다. */
+    @media (max-width: 860px) {
+      .experience-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        transition-duration: .01ms !important;
+      }
+
+      /* 움직임을 끄되 내용은 남긴다 — 등장 대상은 처음부터 보이게,
+         덮개는 아예 걷는다(움직이지 않는 덮개는 제목만 가린다). */
+      .js-motion .reveal {
+        opacity: 1;
+        transform: none;
+      }
+
+      .hero-covers {
+        display: none;
+      }
+
+      /* 모바일과 같은 이유 — 덮개가 없으면 무대는 빈 스크롤일 뿐이다. */
+      .profile-hero {
+        height: auto;
+      }
+
+      .hero-stage {
+        position: static;
+      }
+
+      .hero-heading,
+      .hero-copy {
+        opacity: 1;
+        transform: none;
+        filter: none;
+      }
+    }
+  </style>
+</head>
+<body id="top">
+  <div class="page">
+    <header class="site-header">
+      <span class="header-role" lang="en">Content Marketer</span>
+      <nav class="pillnav" aria-label="주요 메뉴">
+        <ul class="pillnav__list">
+          <!-- jeton.com처럼 홈은 글자 없이 집 아이콘만. 이름은 aria-label로 남긴다. -->
+          <li><a class="pillnav__home" href="index.html" aria-label="홈">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none"
+                 stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 10.2 12 3.5l9 6.7V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>
+            </svg>
+          </a></li>
+          <li><a href="profile.html" aria-current="page" lang="en">Profile</a></li>
+          <li><a href="ai-project.html" lang="en">AI Project</a></li>
+          <li class="pillnav__group">
+            <button type="button" class="pillnav__toggle" aria-expanded="false" aria-controls="key-projects" lang="en">
+              Key Projects<span class="pillnav__caret" aria-hidden="true">↓</span>
+            </button>
+            <ul class="pillnav__menu" id="key-projects" hidden>
+              <li><a href="hp-webinar.html" lang="en">HP Co-hosted Webinar</a></li>
+              <li><a href="exhibition.html" lang="en">KOREA MAT Exhibition</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <a class="brand" href="index.html" lang="en">Lim Sohee</a>
+    </header>
+
+    <main>
+      <section class="profile-hero" aria-labelledby="profile-title">
+       <div class="hero-stage">
+        <div class="hero-heading">
+          <h1 id="profile-title"><span class="hero-l1">콘텐츠 기획과 제작을</span><span class="hero-l2"><b>함께 맡아 왔습니다.</b></span></h1>
+        </div>
+        <div class="hero-copy">
+          <p class="career-path" lang="en">Service Operations → Web Design → Content Marketing</p>
+          <p class="introduction"><span class="intro-line">SNS·SEO 콘텐츠와 사업계획서·제안서를 만들고,</span><span class="intro-line">영상 편집과 전시 콘텐츠 기획도 담당했습니다.</span></p>
+        </div>
+        <!-- 작업물 사진 5장이었다. 160×120 박스에 4:3으로 맞추느라 세로 이미지는
+             47%, 가로 이미지도 25~28%가 잘려 무엇인지 알아볼 수 없었다(실측).
+             jeton.com이 모으는 것도 사진이 아니라 글자가 읽히는 UI 카드다.
+             문구는 바로 아래 소개문에 이미 있는 말만 쓴다 — 새 주장을 만들지 않는다.
+             소개문과 같은 내용을 되풀이하므로 보조기술에는 숨긴다. -->
+        <!-- 링크드인 스킬 키워드 방식(영어 10개).
+             처음엔 이 페이지 본문 문장에서만 뽑았더니 정작 가장 센 자산이
+             하나도 안 들어갔다. 자산일람표(임소희_자산일람표_20260514.md)를
+             기준으로 다시 뽑는다 — 괄호가 근거 자산 번호다.
+               Grant Proposal Writing ← 단독 #1·2·3 (APEC 56p·수출바우처 4,500만 선정·혁신바우처)
+               B2B Content Marketing  ← 단독 #4·5 (HP 웨비나 콘티·적용사례 4건)
+               Copywriting            ← 단독 #4 (콘티 1시간 docx 단독 라이팅)
+               Social Media Marketing ← 단독 #8 (블로그·유튜브·인스타·LinkedIn 4채널)
+               Lead Generation        ← 단독 #13 (인바운드 리드 6건 발생)
+               Marketing Automation   ← 면접카드 8 (Claude Code 블로그 자동화 파이프라인)
+               Exhibition Management  ← 단독 #12 (인터몰드·물류산업대전 종합 운영)
+               Video Production       ← 단독 #14 (촬영+편집 단독)
+               Vendor Management      ← 외주 PM O1~O8 (브로슈어·홈페이지 리뉴얼·3D 영상)
+               Graphic Design         ← 단독 #7·16·17 (명함 41건·안전수칙·캠페인 이미지)
+
+             일람표의 사용금지 33건을 피해서 고른 표현이다. "리드 발생"은 사실이지만
+             수주·계약은 금지(#12), 브로슈어·로고 단독 표기 금지(#14·16)라
+             그쪽은 Vendor Management로만 쓴다. -->
+        <div class="hero-covers" aria-hidden="true">
+          <span class="hero-chip" lang="en">Grant Proposal Writing</span>
+          <span class="hero-chip" lang="en">B2B Content Marketing</span>
+          <span class="hero-chip" lang="en">Copywriting</span>
+          <span class="hero-chip" lang="en">Social Media Marketing</span>
+          <span class="hero-chip" lang="en">Lead Generation</span>
+          <span class="hero-chip" lang="en">Marketing Automation</span>
+          <span class="hero-chip" lang="en">Exhibition Management</span>
+          <span class="hero-chip" lang="en">Video Production</span>
+          <span class="hero-chip" lang="en">Vendor Management</span>
+          <span class="hero-chip" lang="en">Graphic Design</span>
+        </div>
+       </div>
+      </section>
+
+
+
+      <section class="content-section" aria-labelledby="capabilities-title">
+        <div class="section-heading">
+          <p class="section-name" lang="en">How I Work</p>
+          <div class="section-copy">
+            <h2 id="capabilities-title">할 일과 책임 범위를 먼저 나눕니다.</h2>
+            <p class="single-line-desktop">직접 만드는 일과 외부 제작이 필요한 일을 구분하고, 각 단계의 기준과 일정을 정합니다.</p>
+          </div>
+        </div>
+        <!-- 단어 스택(sticky 100vh × 3)을 넣으려던 자리다. 단어 여섯 개를 읽히는 데
+             스크롤 300vh를 쓰게 되고, 그 구간에서 이탈하면 아래 경력·작업물이 안 보인다.
+             Jeton은 붙잡아두는 게 목적이지만 포트폴리오는 반대라 순차 등장으로 바꿨다. -->
+        <div class="capability-grid">
+          <!-- 아이콘은 reicon.dev(MIT). assets/images/icons/에 받아둔 세 개를 인라인으로
+               넣는다 — img로 넣으면 currentColor를 못 따라 색이 굳는다.
+               출처와 원래 이름은 assets/images/icons/SOURCE.md에 적혀 있다. -->
+          <article class="capability-item reveal">
+            <svg class="capability-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <g transform="scale(1.33333)"><path d="M3.83549 10.25H3.25C2.422 10.25 1.75 10.922 1.75 11.75C1.75 12.578 2.422 13.25 3.25 13.25H14.75C15.578 13.25 16.25 13.922 16.25 14.75C16.25 15.578 15.578 16.25 14.75 16.25H12.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.75 10.25C6.75 10.25 9.0838 10.1662 9.909 9.34101L14.784 4.46601C15.4053 3.84471 15.4053 2.83731 14.784 2.21601C14.1627 1.59471 13.1553 1.59471 12.534 2.21601L7.659 7.09101C6.8809 7.86911 6.75 10.25 6.75 10.25Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></g>
+            </svg>
+            <h3>내용을 정리합니다</h3>
+            <!-- <br>이 "이미지와 / 발행 흐름"을 갈라 의미 단위를 끊었다.
+                 강제 줄바꿈을 빼고 word-break: keep-all에 맡긴다 — 낱말은 안 쪼개지고
+                 칸에 맞으면 한 줄로 간다. -->
+            <p>자료를 확인하고 독자에게 필요한 정보와 순서를 정합니다.</p>
+          </article>
+          <article class="capability-item reveal" style="--d: 150ms">
+            <svg class="capability-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M21 7V17C21 20 19.5 22 16 22H8C4.5 22 3 20 3 17V7C3 4 4.5 2 8 2H16C19.5 2 21 4 21 7Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.5 4.5V6.5C14.5 7.6 15.4 8.5 16.5 8.5H18.5" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 13H12" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 17H16" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h3>형식에 맞춰 만듭니다</h3>
+            <p>콘텐츠, 사업계획서·제안서, 영상, 전시에 맞게 내용과 제작 단계를 구성합니다.</p>
+          </article>
+          <article class="capability-item reveal" style="--d: 300ms">
+            <svg class="capability-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M17.29 4.13999L17.22 7.92997C17.21 8.44997 17.54 9.13999 17.96 9.44999L20.44 11.33C22.03 12.53 21.77 14 19.87 14.6L16.64 15.61C16.1 15.78 15.53 16.37 15.39 16.92L14.62 19.86C14.01 22.18 12.49 22.41 11.23 20.37L9.46999 17.52C9.14999 17 8.39 16.61 7.79 16.64L4.45003 16.81C2.06003 16.93 1.38002 15.55 2.94002 13.73L4.92 11.43C5.29 11 5.46 10.2 5.29 9.65998L4.28005 6.42997C3.69005 4.52997 4.75004 3.47999 6.64004 4.09999L9.59005 5.06999C10.09 5.22999 10.84 5.11998 11.26 4.80998L14.34 2.58998C16 1.38998 17.33 2.08999 17.29 4.13999Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M21.91 22L18.88 18.97" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h3>검수하고 결정합니다</h3>
+            <p>AI 결과와 외부 제작물은 그대로 쓰지 않고 출처와 최종 내용을 확인합니다.</p>
+          </article>
+        </div>
+        <!-- 같은 격자의 마지막 행. 별도 제목을 단 패널이었던 것을 행으로 내렸다. -->
+        <div class="scope-grid">
+          <article class="scope-item reveal" style="--d: 110ms">
+            <svg class="capability-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3L14.1 7.9L19 10L14.1 12.1L12 17L9.9 12.1L5 10L9.9 7.9L12 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M18.5 16L19.4 18.1L21.5 19L19.4 19.9L18.5 22L17.6 19.9L15.5 19L17.6 18.1L18.5 16Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+            <h3>직접 하는 일</h3>
+            <p class="single-line-desktop">기획, 카피, 사업계획서·제안서 작성, 이미지·영상 편집, 최종 발행 판단을 맡습니다.</p>
+          </article>
+          <article class="scope-item reveal" style="--d: 230ms">
+            <svg class="capability-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M8.5 12C10.433 12 12 10.433 12 8.5C12 6.567 10.433 5 8.5 5C6.567 5 5 6.567 5 8.5C5 10.433 6.567 12 8.5 12Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M14.5 11C16.157 11 17.5 9.657 17.5 8C17.5 6.343 16.157 5 14.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M3 19C3.6 15.9 5.433 14.35 8.5 14.35C11.567 14.35 13.4 15.9 14 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M15.2 14.4C17.9 14.65 19.5 16.183 20 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <h3>함께 만드는 일</h3>
+            <p>3D, 인쇄, 전시 제작은 외부 파트너와 진행하고 일정과 결과물을 확인합니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-section experience-section" aria-labelledby="experience-title">
+        <div class="section-heading">
+          <!-- 프로필 사진이 있던 자리다. 정면 증명사진(검은 정장·살구색 배경)은
+               마케터 포트폴리오에서 오히려 감점 요소라 뺐다. 사진 자체가 문제는
+               아니므로(외부 자료는 전문 헤드샷을 권장한다) 제대로 찍은 사진이
+               생기면 다시 넣는다. 원본은 assets/images/profile/profile-photo.jpg. -->
+          <p class="section-name" lang="en">Experience &amp; Background</p>
+          <div class="section-copy">
+            <!-- "결과물의 앞뒤를 이해하는 경력을 쌓았습니다."였다.
+                 "앞뒤"가 시간 순서인지 공정인지 안 드러나 뜻이 통하지 않았고,
+                 아래 경력 목록(서비스→웹디자인→콘텐츠 마케팅)과도 연결되지 않았다.
+                 무엇에서 무엇으로 왔는지를 그대로 쓴다. -->
+            <h2 id="experience-title">서비스와 디자인 경험을 콘텐츠 기획에 연결합니다.</h2>
+          </div>
+        </div>
+        <div class="experience-layout">
+          <div class="career-list" aria-label="경력">
+            <h3 class="experience-column-title" lang="en">Experience</h3>
+            <div class="career-row reveal">
+              <span class="career-period">2024.06–현재</span>
+              <div>
+                <strong class="career-company">주식회사 더프라임그룹</strong>
+                <span class="career-role">콘텐츠 마케팅 · SNS·SEO 콘텐츠, 영상, 전시, 사업 문서</span>
+              </div>
+            </div>
+            <div class="career-row reveal" style="--d: 130ms">
+              <span class="career-period">2022.11–2023.11</span>
+              <div>
+                <strong class="career-company">주식회사 푸딩</strong>
+                <span class="career-role">그래픽팀 · 웹디자인 및 그래픽 제작</span>
+              </div>
+            </div>
+            <div class="career-row reveal" style="--d: 260ms">
+              <span class="career-period">2021.04–2022.04</span>
+              <div>
+                <strong class="career-company">대구사이버대학교</strong>
+                <span class="career-role">기획정보팀 · 웹디자인 및 디자인 실무</span>
+              </div>
+            </div>
+            <div class="career-row reveal" style="--d: 390ms">
+              <span class="career-period">2014.05–2019.10</span>
+              <div>
+                <strong class="career-company">투썸플레이스 대구 영남대점</strong>
+                <span class="career-role">매장 운영 · 고객 응대와 서비스 운영</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="credentials" aria-label="교육과 사용 도구">
+            <div class="credential-group reveal" style="--d: 130ms">
+              <h3 lang="en">Training &amp; Education</h3>
+              <div class="credential-item">
+                <span class="credential-period">2020.06–2020.12</span>
+                <p>SBS컴퓨터아카데미 · 스마트기기 UI/UX 웹디자인 양성과정</p>
+              </div>
+              <div class="credential-item">
+                <span class="credential-period">2008.03–2010.02</span>
+                <p>수성대학교 · 호텔조리과 졸업</p>
+              </div>
+            </div>
+            <!-- 도구 10개를 한 줄로 나열만 하고 있었다. 나열은 근거가 아니다.
+                 무엇에 쓰는지로 묶어 판단할 거리를 준다. 묶음 기준은
+                 위 Capabilities에 이미 적힌 문장을 그대로 따랐다 —
+                 "조사·초안·구조화에 AI를 활용하고", "영상·전시 결과물까지 연결". -->
+            <div class="credential-group reveal" style="--d: 280ms">
+              <h3 lang="en">Tools</h3>
+              <!-- "조사와 초안"이었다. 본문은 "조사·초안·구조화"라 라벨이 한 단계를
+                   빠뜨리고 도구의 쓰임을 좁게 만들었다. -->
+              <p class="tool-group-label">조사·초안·구조화</p>
+              <ul class="tool-icon-grid">
+                <li class="tool-item"><img src="assets/tools/gpt.svg" alt=""><span>GPT</span></li>
+                <li class="tool-item"><img src="assets/tools/perplexity.svg" alt=""><span>Perplexity</span></li>
+                <li class="tool-item"><img src="assets/tools/gemini.svg" alt=""><span>Gemini</span></li>
+                <li class="tool-item"><img src="assets/tools/notebooklm.svg" alt=""><span>NotebookLM</span></li>
+                <li class="tool-item"><img src="assets/tools/claude-code.svg" alt=""><span>Claude Code</span></li>
+                <li class="tool-item"><img src="assets/tools/codex.svg" alt=""><span>Codex</span></li>
+              </ul>
+              <p class="tool-group-label">디자인과 영상</p>
+              <ul class="tool-icon-grid">
+                <li class="tool-item"><img src="assets/tools/photoshop.svg" alt=""><span>Photoshop</span></li>
+                <li class="tool-item"><img src="assets/tools/illustrator.svg" alt=""><span>Illustrator</span></li>
+                <li class="tool-item"><img src="assets/tools/figma.svg" alt=""><span>Figma</span></li>
+                <li class="tool-item"><img src="assets/tools/premiere-pro.svg" alt=""><span>Premiere Pro</span></li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- jeton.com 마지막 섹션 구조 — 제목 하나, 설명 하나, 버튼 두 개.
+           두 칸 카드에 나뉘어 있던 설명은 지우지 않고 한 문장에 합쳤다. -->
+      <section class="next-section" aria-labelledby="next-title">
+        <!-- "Selected Work"였다. 실제로는 작업 목록이 아니라 다음 장으로 가는
+             링크 두 개라 라벨과 내용이 어긋났다. -->
+        <p class="next-eyebrow reveal" lang="en">Next</p>
+        <!-- "다음 작업을 확인해 보세요."였다. 안내문이지 결론이 아니라
+             REFERENCE_GUIDE 규칙 2(서술형 목차보다 결론이 드러나는 제목)에 걸렸다.
+             다음 장에서 무엇을 보게 되는지를 제목이 말하게 한다. -->
+        <h2 id="next-title" class="reveal" style="--d: 80ms"><span class="next-l1"><span class="next-line">대표 프로젝트와</span><span class="next-line">AI 활용 과정을</span></span><span class="next-l2"><span class="next-line">이어서 볼 수</span><span class="next-line">있습니다.</span></span></h2>
+        <p class="next-lede reveal" style="--d: 160ms">Home에는 대표 프로젝트를, AI Project에는 콘텐츠 자동화 과정과 검수 기준을 정리했습니다.</p>
+        <div class="next-actions reveal" style="--d: 240ms">
+          <a class="next-btn next-btn--solid" href="ai-project.html">
+            <span lang="en">AI Project</span>
+            <span class="next-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="next-btn next-btn--ghost" href="index.html">
+            <span lang="en">Home</span>
+            <span class="next-arrow" aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="page-footer">
+      <a href="index.html">← Home</a>
+      <div class="footer-links">
+        <a href="mailto:sohee.lim.lsh@gmail.com">Email</a>
+        <a href="https://www.linkedin.com/in/sohee-lim-marketing/en/" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+      </div>
+    </footer>
+  </div>
+  <a class="back-to-top" href="#top" aria-label="페이지 상단으로 이동">
+    <span class="back-to-top__arrow" aria-hidden="true">↑</span>
+    <span class="back-to-top__label" aria-hidden="true" lang="en">TOP</span>
+  </a>
+  <script>
+
+    /* 키 프로젝트 드롭다운 + 스크롤 시 이름·직무 숨김. 홈과 같은 동작. */
+    (() => {
+      const header = document.querySelector(".site-header");
+      const toggle = document.querySelector(".pillnav__toggle");
+      const menu = document.getElementById("key-projects");
+      if (!header || !toggle || !menu) return;
+
+      const setOpen = (open) => {
+        toggle.setAttribute("aria-expanded", String(open));
+        menu.hidden = !open;
+      };
+      toggle.addEventListener("click", () => {
+        setOpen(toggle.getAttribute("aria-expanded") !== "true");
+      });
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".pillnav__group")) setOpen(false);
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        setOpen(false);
+        toggle.focus();
+      });
+
+      const mark = () => header.classList.toggle("is-scrolled", window.scrollY > 120);
+      window.addEventListener("scroll", mark, { passive: true });
+      mark();
+    })();
+
+    /* ─ 히어로를 덮는 작업물 ─ jeton.com은 바깥 200vh로 스크롤을 벌지만
+       여기는 히어로가 화면에서 빠져나가는 비율만 읽는다. 문서 높이는 그대로다.
+
+       숨은 탭에서는 스크롤 이벤트 자체가 발송되지 않는다(2026-07-28 실측).
+       그래서 visibilitychange에서 한 번 더 직접 계산한다. */
+    (() => {
+      const hero = document.querySelector(".profile-hero");
+      const covers = document.querySelector(".hero-covers");
+      if (!hero || !covers) return;
+
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) return;
+
+      let ticking = false;
+      const chips = [...covers.querySelectorAll(".hero-chip")];
+
+      /* 칩의 중심이 아니라 바깥 테두리가 뷰포트 끝에서 들어오게 한다.
+         크기가 서로 다르고 반응형으로 변하므로 px 출발점은 매번 다시 잰다. */
+      const setStartOffsets = () => {
+        const edgeGap = 48;
+        chips.forEach((chip) => {
+          const style = getComputedStyle(chip);
+          const dx = Number(style.getPropertyValue("--dx")) || 0;
+          const dy = Number(style.getPropertyValue("--dy")) || 0;
+          const length = Math.hypot(dx, dy) || 1;
+          const nx = dx / length;
+          const ny = dy / length;
+          const tx = nx
+            ? (window.innerWidth / 2 + chip.offsetWidth / 2 + edgeGap) / Math.abs(nx)
+            : Infinity;
+          const ty = ny
+            ? (window.innerHeight / 2 + chip.offsetHeight / 2 + edgeGap) / Math.abs(ny)
+            : Infinity;
+          const distance = Math.min(tx, ty);
+          chip.style.setProperty("--sx", `${nx * distance}px`);
+          chip.style.setProperty("--sy", `${ny * distance}px`);
+        });
+      };
+
+      const apply = () => {
+        ticking = false;
+        /* 무대가 붙잡혀 있는 구간 = 바깥 높이 - 한 화면. 200vh 무대면 정확히 100vh다.
+           히어로가 문서 맨 위에 없더라도 맞도록 화면 기준으로 잰다. */
+        const span = hero.offsetHeight - window.innerHeight;
+        if (span <= 0) return;
+        const p = Math.min(1, Math.max(0, -hero.getBoundingClientRect().top / span));
+        /* 초반부터 크게 이동하던 ease-out 때문에 칩이 화면 중간에서 생겨 보였다.
+           power1.inOut에 해당하는 quadratic in-out으로 가장자리에 잠시 머문 뒤
+           가운데 구간에서 속도를 내고, 중앙 더미 앞에서 다시 감속한다. */
+        const pe = p < .5
+          ? 2 * p * p
+          : 1 - Math.pow(-2 * p + 2, 2) / 2;
+        hero.style.setProperty("--p", p.toFixed(4));
+        hero.style.setProperty("--pe", pe.toFixed(4));
+      };
+
+      const request = () => {
+        if (ticking) return;
+        ticking = true;
+        /* 숨은 탭에서는 rAF도 안 돈다. 그때는 즉시 계산한다. */
+        if (document.hidden) apply();
+        else requestAnimationFrame(apply);
+      };
+
+      window.addEventListener("scroll", request, { passive: true });
+      window.addEventListener("resize", () => {
+        setStartOffsets();
+        request();
+      }, { passive: true });
+      document.addEventListener("visibilitychange", () => {
+        apply();
+      });
+      setStartOffsets();
+      apply();
+    })();
+
+    /* ─ 스크롤 등장 ─ 스크롤 높이를 늘리지 않는 효과만 쓴다.
+       .js-motion을 여기서 붙이므로 JS가 죽으면 내용은 그냥 다 보인다. */
+    (() => {
+      const targets = document.querySelectorAll(".reveal");
+      if (!targets.length) return;
+
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.documentElement.classList.add("js-motion");
+
+      if (reduced || !("IntersectionObserver" in window)) {
+        targets.forEach((el) => el.classList.add("is-in"));
+        return;
+      }
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          show(entry.target);
+        });
+      }, { rootMargin: "0px 0px -12% 0px", threshold: .15 });
+
+      const pending = new Set(targets);
+
+      const show = (el) => {
+        el.classList.add("is-in");
+        io.unobserve(el);
+        pending.delete(el);
+      };
+
+      /* 숨은 탭에서는 IntersectionObserver가 콜백을 주지 않는다(2026-07-29 실측:
+         문서 끝까지 스크롤해도 14개 전부 미발화). 그 사이 사용자가 탭을 되살리면
+         이미 지나친 요소가 영영 안 보일 수 있으니, 위치를 직접 재는 길을 남긴다. */
+      const sweep = () => {
+        if (!pending.size) return;
+        const limit = window.innerHeight * .88;
+        [...pending].forEach((el) => {
+          const rect = el.getBoundingClientRect();
+          if (rect.top < limit && rect.bottom > 0) show(el);
+        });
+      };
+
+      targets.forEach((el) => io.observe(el));
+      window.addEventListener("scroll", () => { if (document.hidden) sweep(); }, { passive: true });
+      document.addEventListener("visibilitychange", sweep);
+    })();
+
+    const topButton = document.querySelector(".back-to-top");
+    const toggleTopButton = () => {
+      topButton.classList.toggle("is-visible", window.scrollY > window.innerHeight * .5);
+    };
+
+    window.addEventListener("scroll", toggleTopButton, { passive: true });
+    toggleTopButton();
+  </script>
+</body>
+</html>
