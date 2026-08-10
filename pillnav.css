@@ -231,16 +231,12 @@
 }
 
 /* ── 맨 아래 푸터 ─────────────────────────────────────────────────
-   전에는 profile만 .page-footer(← Home | Email·LinkedIn), 나머지 넷은
-   .site-footer(우측 정렬 Home·Email·LinkedIn)로 서로 달랐다.
-   profile 실측값을 정본으로 삼아 5장을 한 규칙으로 모은다:
-     grid 1fr auto · min-height 94px · 14px/600 · 잉크색 · 링크 간격 28px
-   좌우 여백은 페이지마다 기준선이 달라 --stage-x를 쓴다. profile은
-   부모 .page가 이미 여백을 갖고 있어 그쪽에서 0으로 되돌린다. */
+   홈 이동은 상단 네비게이션에 있으므로 푸터에는 연락처만 남긴다.
+   Email·LinkedIn을 페이지 중앙에 두고 전 페이지에서 같은 기준을 쓴다. */
 .page-footer {
-  display: grid;
-  grid-template-columns: 1fr auto;
+  display: flex;
   align-items: center;
+  justify-content: center;
   min-height: 94px;
   /* 기준선 이름이 페이지마다 다르다 — ai-project·apec-caravan·exhibition은
      --stage-x, hp-webinar는 --case-gutter, home은 --page-gutter를 쓴다.
@@ -255,6 +251,8 @@
 
 .footer-links {
   display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 28px;
 }
 
@@ -276,8 +274,6 @@
 
 @media (max-width: 47rem) {
   .page-footer {
-    grid-template-columns: 1fr;
-    row-gap: .75rem;
     padding-block: 1.5rem;
     min-height: 0;
   }

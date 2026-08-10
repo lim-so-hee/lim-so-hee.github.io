@@ -582,8 +582,10 @@
 .colophon__contact {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: var(--space-lg) var(--space-3xl);
   margin: var(--space-xl) 0 0;
+  text-align: center;
 }
 
 .colophon__item dt {
