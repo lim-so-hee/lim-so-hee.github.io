@@ -432,7 +432,9 @@
 
 /* --t-h3의 하한 18px은 액센트 수치에 못 미친다. 하한을 20px로 올린다. */
 .lead {
-  max-width: 26ch;
+  /* 문장은 HTML에서 의미 단위로 두 줄을 나눴다. 26ch 상한이 첫 줄을 다시
+     접어 데스크톱에서도 세 줄이 되었으므로 텍스트 열 전체를 사용한다. */
+  max-width: none;
   margin: var(--space-xl) 0 0;
   font-size: clamp(1.25rem, 2.6vw, 1.875rem);
   font-weight: var(--w-body);
@@ -526,7 +528,7 @@
 
 @media (min-width: 62rem) {
   .ai__grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.6fr);
     align-items: center;
     gap: var(--space-4xl);
   }
