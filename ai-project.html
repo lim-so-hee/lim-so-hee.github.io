@@ -165,17 +165,19 @@
 
     .case-summary__header {
       display: grid;
-      grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr);
-      gap: clamp(1.5rem, 5vw, 5rem);
+      grid-template-columns: minmax(0, 1fr);
+      gap: clamp(1.5rem, 3vw, 2.5rem);
       align-items: end;
+      padding-block-start: clamp(1.25rem, 2.2vw, 2rem);
+      border-block-start: 2px solid var(--color-ink);
     }
 
     .case-summary h2 {
-      max-inline-size: 18ch;
-      margin-block-start: clamp(1rem, 2vw, 1.5rem);
-      font-size: clamp(2rem, 4.4vw, 4.75rem);
-      line-height: 1.02;
-      letter-spacing: -.045em;
+      max-inline-size: 24ch;
+      margin-block-start: clamp(.75rem, 1.4vw, 1.25rem);
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 1.08;
+      letter-spacing: -.035em;
     }
 
     .case-summary__header > p:last-child {
@@ -187,13 +189,13 @@
     .case-summary__facts {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      margin-block-start: clamp(2rem, 4vw, 4rem);
+      margin-block-start: clamp(2.5rem, 5vw, 4rem);
       border-block: 1px solid var(--color-rule-strong);
     }
 
     .case-summary__facts > div {
       min-width: 0;
-      padding: clamp(1.25rem, 2.5vw, 2rem);
+      padding: clamp(1.25rem, 2.4vw, 2rem) clamp(1rem, 1.6vw, 1.5rem);
     }
 
     .case-summary__facts > div + div {
@@ -2745,6 +2747,10 @@
         grid-template-columns: minmax(0, .6fr) minmax(0, .4fr);
       }
 
+      .case-summary__header {
+        grid-template-columns: minmax(0, .6fr) minmax(0, .4fr);
+      }
+
       .block__head--with-note {
         grid-template-columns: minmax(0, .54fr) minmax(0, .46fr);
       }
@@ -2828,6 +2834,22 @@
         --section-y: clamp(4rem, 8vw, 6rem);
       }
 
+      .case-summary__facts {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .case-summary__facts > div + div {
+        border-inline-start: 0;
+      }
+
+      .case-summary__facts > div:nth-child(2n) {
+        border-inline-start: 1px solid var(--color-rule-strong);
+      }
+
+      .case-summary__facts > div:nth-child(n + 3) {
+        border-block-start: 1px solid var(--color-rule-strong);
+      }
+
       .hero-stage {
         grid-template-columns: 1fr;
         grid-template-rows: auto auto 1fr auto;
@@ -2882,6 +2904,10 @@
       .case-summary__facts > div + div {
         border-inline-start: 0;
         border-block-start: 1px solid var(--color-rule-strong);
+      }
+
+      .case-summary__facts > div:nth-child(2n) {
+        border-inline-start: 0;
       }
 
       .section-heading,
