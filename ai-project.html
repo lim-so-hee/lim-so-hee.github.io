@@ -2574,6 +2574,20 @@
       }
     }
 
+    /* 새 AI 브리핑 캡처는 검색창까지 담아 이전 크롭보다 세로 비율이 크다.
+       공용 오른쪽 여백 28px을 그대로 두면 증거 묶음이 왼쪽에 남으므로,
+       넓은 화면에서 이미지·캡션을 함께 오른쪽으로 옮긴다. */
+    @media (min-width: 75rem) {
+      .js-stack .perf-stack__view #ai-search-results > .evidence-stage {
+        translate: 1rem 0;
+      }
+
+      .js-stack .perf-stack__view #ai-search-results > .evidence-stage img,
+      .js-stack .perf-stack__view #ai-search-results > .evidence-stage > figcaption {
+        margin-inline-end: 0;
+      }
+    }
+
     /* ── TRAFFIC 그래프 ─────────────────────────────────────────────
        유입에는 캡처가 없어 원본 수치로 직접 그렸다. 이미지가 아니라
        SVG라 어느 크기에서도 선명하고 색을 페이지 토큰에서 받는다. */
@@ -3456,28 +3470,13 @@
                    됩니다"라고 적혀 있어 매일 바뀌는 값이다. -->
               <div><dt>7.9K</dt><dd>AI 브리핑 누적 인용</dd></div>
             </dl>
-            <!-- 2026-08-01 캡처로 교체. 옛 -0723은 'agv amr차이' 검색이었고
-                 이건 '무인지게차 가격'이다. 둘 다 출처 4건 중 2건이지만
-                 새 것이 크롭이 깨끗하고 출처 패널의 블로그명이 읽힌다.
-                 -crop으로 다시 교체. 원본 1400×910에서 위쪽 검색바·탭줄과
-                 그 아래 잘린 카드 조각(스크롤 위치가 남긴 "니보기 →")이
-                 195px을 먹고, 좌우로도 쓰지 않는 여백이 있었다. 그만큼이
-                 증거가 아니면서 그림 높이를 차지했다 — 1290×705로 잘라
-                 비율이 1.54에서 1.83이 되고, 높이가 폭을 정하는 이 칸에서는
-                 그만큼 그림이 가로로 커진다. 원본 파일은 그대로 둔다.
-                 더불어 출처 패널의 더프라임그룹 2건에 강조 상자를 그려
-                 넣었다. 캡션이 "출처 4건 중 2건"이라고 주장하는데 그림에서
-                 어느 2건인지 짚을 수 없었다 — 상자가 그 대응을 만든다.
-                 CSS 겹침이 아니라 이미지에 구워 넣은 이유는, 이 칸의 그림
-                 크기가 남는 높이에서 계산돼 나오는 값이라 겹침 좌표를
-                 CSS만으로 따라가게 할 수 없기 때문이다(캡션이 --media-w를
-                 JS로 받아 쓰는 것과 같은 사정). 모바일 단일 열에서도 함께
-                 간다. -->
+            <!-- 2026.08.10 재캡처. 검색창의 'amr agv 차이', AI 브리핑 답변,
+                 출처 6건 패널과 더프라임그룹 글 2건이 한 화면에 함께 보인다. -->
             <figure class="evidence-stage">
-              <a class="evidence-open" href="assets/blog/blog-evidence-ai-cite-0801-crop.png" target="_blank" rel="noreferrer" aria-label="원본 크기로 열기">
-                              <img src="assets/blog/blog-evidence-ai-cite-0801-crop.png" width="1290" height="705" alt="네이버 '무인지게차 가격' 검색의 AI 브리핑 — 오른쪽 출처 4건 패널에서 더프라임그룹 네이버 블로그 글 2건이 강조 표시됨" loading="lazy">
+              <a class="evidence-open" href="assets/blog/blog-evidence-ai-cite-0810.png" target="_blank" rel="noreferrer" aria-label="원본 크기로 열기">
+                              <img src="assets/blog/blog-evidence-ai-cite-0810.png" width="1213" height="925" alt="네이버 'amr agv 차이' 검색창과 AI 브리핑 답변, 출처 6건 패널 — 더프라임그룹 네이버 블로그 글 2건이 보임" loading="lazy">
                             </a>
-              <figcaption><span lang="en">AI BRIEFING</span>'무인지게차 가격' AI 브리핑 답변과 출처 패널 — 출처 4건 중 2건이 블로그 글 · 2026.08 캡처</figcaption>
+              <figcaption><span lang="en">AI BRIEFING</span>'amr agv 차이' 검색의 AI 브리핑과 출처 패널 — 출처 6건 중 더프라임그룹 블로그 글 2건 · 2026.08.10 캡처</figcaption>
             </figure>
             <!-- "AI 브리핑 인용수는 콘텐츠가 생성형 AI 검색 답변의 출처로
                  사용된 횟수입니다."를 뺐다 — 바로 위 6.7K에 "AI 브리핑 누적
