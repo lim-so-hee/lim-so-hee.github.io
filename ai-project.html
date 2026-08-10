@@ -1387,6 +1387,7 @@
 
     .rank-grid__summary {
       display: block;
+      order: -1;
     }
 
     .rank-grid__summary dt {
@@ -2202,9 +2203,9 @@
         grid-column: 1;
       }
 
-      /* 순위 격자는 2칸이 맞다 — 알약 줄이 폭을 쓰고 두 요약 수치가 나란히 선다. */
+      /* 순위 요약과 메인 키워드를 위아래로 읽는다. */
       .js-stack .perf-stack__view .block > .rank-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: minmax(0, 1fr);
       }
 
       /* 칸에 걸린 안쪽 여백을 걷는다. 칸 경계는 44px로 같은데 글자가 칸 안에서
@@ -2266,36 +2267,33 @@
         --stack-col-gap: clamp(1.5rem, 3vw, 2.75rem);
       }
 
-      /* 1열을 알약 폭으로 고정한다. fr로 두면 열만 넓게 남아 ②가 오른쪽에
-         머물고 ①→② 간격이 200px로 벌어졌고(1열 440px인데 알약은 368px),
-         auto로 두면 반대로 알약이 내용 폭까지 쪼그라들어 롱테일보다 177px
-         짧아졌다(실측). 23rem은 롱테일 알약이 세 개씩 접히는 폭이다. */
+      /* 가로 비율이 큰 전체 검색 캡처로 교체해도 왼쪽 정보가 눌리지 않도록
+         RANKINGS 카드의 두 열 폭을 명시한다. 왼쪽은 넓힌 알약 폭을 확보하고,
+         오른쪽은 검색창까지 포함한 전체 캡처를 원본 비율로 보여준다. */
+      .js-stack .perf-stack__view #search-results {
+        grid-template-columns: minmax(28rem, .8fr) minmax(0, 1.2fr);
+      }
+
+      /* 작은 순위 요약을 먼저 읽고, 넓은 메인 키워드 알약이 그 아래에서
+         순위를 구체적으로 보여준다. */
       .js-stack .perf-stack__view .block > .rank-grid {
-        grid-template-columns: 23rem minmax(0, 1fr);
-        /* start여야 두 덩어리가 같은 윗선에서 시작한다. center면 알약 묶음이
-           아래로 내려앉아 라벨이 요약 수치보다 89px 밑에 놓였다(실측). */
+        grid-template-columns: minmax(0, 1fr);
         align-items: start;
-        /* start를 쓴다. space-between으로 그림 높이(373px)에 맞춰 늘렸더니
-           왼쪽 내용이 215px뿐이라 두 요약 수치가 187px 떨어져 한 묶음으로
-           안 읽혔다(실측). 내용량이 다른 건 결함이 아니므로 높이를 억지로
-           같게 만들지 않는다 — 제톤도 크기가 3배 차이 나는 두 이미지의
-           밑선만 맞췄지 높이를 같게 하지는 않았다(원본 실측: 밑선 59px 일치). */
         align-content: start;
-        column-gap: var(--stack-col-gap);
-        row-gap: clamp(1.25rem, 2.4vh, 2rem);
+        row-gap: clamp(.85rem, 1.6vh, 1.15rem);
       }
 
       .js-stack .perf-stack__view .rank-grid__keywords {
         grid-column: 1;
-        grid-row: 1 / span 2;
+        grid-row: 2;
       }
 
       /* 두 개의 큰 분수형 수치를 한 줄 요약으로 묶는다. 제목의 10개 노출과
          같은 무게로 경쟁하지 않고, 메인 키워드 순위의 보조 결과로 읽힌다. */
       .js-stack .perf-stack__view #search-results .rank-grid__summary {
-        grid-column: 2;
+        grid-column: 1;
         grid-row: 1;
-        align-self: center;
+        align-self: start;
         justify-self: start;
         text-align: start;
       }
@@ -2336,11 +2334,14 @@
         border: 0;
       }
 
-      /* 알약 묶음 폭을 아래 롱테일 키워드 줄에 맞춘다. 열 폭을 다 쓰면
-         562에서 끝나 롱테일(449)보다 113px 길어, 두 묶음의 오른쪽 끝이
-         어긋났다(실측). 롱테일 알약이 세 개씩 접히는 폭과 같은 값으로 묶는다. */
+      /* 메인 키워드 알약은 요약보다 시각적으로 우선하므로 기존 23rem보다
+         넓힌다. 왼쪽 콘텐츠 칸을 넘지 않도록 폭 상한도 함께 둔다. */
+      .js-stack .perf-stack__view .rank-grid__keywords {
+        inline-size: min(100%, 32rem);
+      }
+
       .js-stack .perf-stack__view .rank-grid__keywords dt {
-        max-inline-size: 23rem;
+        max-inline-size: 32rem;
       }
 
       /* 제목 오른쪽에 붙던 기준 표기가 그림 칸 위로 넘어가 캡션처럼 보였다
@@ -3417,15 +3418,15 @@
                  그것과 알약만 옮기고 캡처는 '무인지게차' 한 장으로 줄였다
                  (REFERENCE_GUIDE 규칙 5). -->
             <div class="longtail">
-              <p class="eyebrow" lang="en">OTHER TRACKED KEYWORDS</p>
-              <ul class="keyword-list"><li>AMR 뜻</li><li>AMR·AGV 비교</li><li>무인지게차 도입 비용</li><li>도입 체크리스트</li><li>안전 기준</li><li>5톤 무인지게차</li><li>더프라임그룹</li></ul>
+              <p class="eyebrow" lang="en">TRACKED KEYWORDS · 10</p>
+              <ul class="keyword-list"><li>AMR</li><li>무인지게차</li><li>AGV</li><li>AMR 뜻</li><li>AMR·AGV 비교</li><li>무인지게차 도입 비용</li><li>도입 체크리스트</li><li>안전 기준</li><li>5톤 무인지게차</li><li>더프라임그룹</li></ul>
             </div>
 
             <figure class="evidence-stage">
-              <a class="evidence-open" href="assets/blog/blog-evidence-rank-main-0801.png" target="_blank" rel="noreferrer" aria-label="원본 크기로 열기">
-                              <img src="assets/blog/blog-evidence-rank-main-0801.png" width="890" height="730" alt="네이버 '무인지게차' 통합검색 비즈니스·경제 인기글 — 더프라임그룹 블로그 글이 첫 번째로 노출됨" loading="lazy">
+              <a class="evidence-open" href="assets/blog/blog-evidence-rank-main-full-0723.png" target="_blank" rel="noreferrer" aria-label="원본 크기로 열기">
+                              <img src="assets/blog/blog-evidence-rank-main-full-0723.png" width="1920" height="1032" alt="네이버 '무인지게차' 검색창과 통합검색 비즈니스·경제 인기글 — 더프라임그룹 블로그 글이 첫 번째로 노출됨" loading="lazy">
                             </a>
-              <figcaption><span lang="en">MAIN SEARCH</span>'무인지게차' 통합검색 비즈니스·경제 인기글 첫 번째 · 2026.08 캡처</figcaption>
+              <figcaption><span lang="en">MAIN SEARCH</span>'무인지게차' 검색창과 통합검색 비즈니스·경제 인기글 첫 번째 · 2026.07.23 캡처</figcaption>
             </figure>
           </div>
           </article>
