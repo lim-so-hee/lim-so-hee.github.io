@@ -240,7 +240,7 @@
       el.style.setProperty('--chip-line', p.line);
       el.style.setProperty('--chip-ink', p.ink);
       el.innerHTML =
-        `<img src="../../assets/images/tools/${file}.svg" alt="" width="34" height="34"><span>${label}</span>`;
+        `<img src="assets/tools/${file}.svg" alt="" width="34" height="34"><span>${label}</span>`;
       field.appendChild(el);
 
       const w = el.offsetWidth, h = el.offsetHeight;
