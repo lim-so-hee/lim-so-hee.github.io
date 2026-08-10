@@ -111,7 +111,7 @@
       text-wrap: balance;
     }
 
-    /* 4열 흐름 표의 셀 안쪽 여백. 원래 왼쪽이 0이라 2·3·4번 칸의 글자가
+    /* 흐름 표의 셀 안쪽 여백. 원래 왼쪽이 0이라 뒤쪽 칸의 글자가
        바로 왼쪽 칸의 세로선에 붙어 있었다. 좌우를 같게 주고, 줄의 첫 칸만
        0으로 되돌려 섹션 왼쪽 기준선과 어긋나지 않게 한다. */
     :is(.process-row, .automation-flow, .responsibility-flow) > li:first-child {
@@ -1126,7 +1126,7 @@
 
     .automation-flow {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       margin-block-start: clamp(2.5rem, 5vw, 4rem);
       padding: 0;
       border-block: 1px solid var(--color-rule-strong);
@@ -1167,15 +1167,15 @@
       line-height: 1.6;
     }
 
-    /* 이 페이지에는 4칸짜리 테두리 줄이 네 개 있고(단계·채널·산출물·이 흐름)
+    /* 이 페이지에는 테두리 흐름 표가 여러 개 있고(단계·채널·산출물·이 흐름)
        모두 같은 모양이라, 뜻이 다른데 눈에는 같은 가구로 보였다.
        이 줄만은 구분한다 — 여기가 "AI가 하고 사람이 끊는다"는 이 페이지의
        논지이기 때문이다.
        ① 칸 사이에 화살표를 넣어 목록이 아니라 흐름으로 읽히게 하고,
        ② 사람이 개입하는 칸(FINAL REVIEW)에 색면과 굵은 왼쪽 선을 줘서
-          네 칸 중 어디가 사람 몫인지 한눈에 보이게 한다. */
+          여러 단계 중 어디가 사람 몫인지 한눈에 보이게 한다. */
     /* FINAL REVIEW 칸을 따로 표시하려고 화살표·색면·세로선을 얹어봤으나
-       전부 걷었다. 네 칸이 같은 무게로 나란히 서는 지금이 이 밴드의
+       전부 걷었다. 각 단계가 같은 무게로 나란히 서는 지금이 이 밴드의
        원래 문법이고, 사람이 확인하는 지점은 라벨(FINAL REVIEW)과 본문이
        이미 말한다. */
 
@@ -1360,7 +1360,7 @@
 
     /* 세 칸의 설명 줄(dd)을 같은 높이에 맞춘다. 왼쪽 칸은 dt가 알약 3줄,
        나머지 둘은 숫자 한 줄이라 그냥 두면 설명이 75px씩 어긋나 격자가
-       깨져 보였다(실측: 10/10·6/10 설명 y=290 vs 메인 키워드 순위 y=365).
+       깨져 보였다(실측: 요약 수치 설명 y=290 vs 메인 키워드 순위 y=365).
        1fr로 dt를 늘려 dd를 바닥에 붙인다. */
     .rank-grid > div {
       display: grid;
@@ -1410,7 +1410,7 @@
       background: rgb(255 255 255 / .07);
     }
 
-    /* 14px은 옆 칸 10/10(52px)에 견주면 라벨처럼 읽혔다. 키워드 자체가
+    /* 14px은 옆 칸 요약 수치(52px)에 견주면 라벨처럼 읽혔다. 키워드 자체가
        이 카드의 주어이므로 순위 숫자와 비슷한 무게로 올린다. */
     .rank-kw b {
       color: rgb(255 255 255 / .92);
@@ -2060,8 +2060,8 @@
         font-size: clamp(1.125rem, 3.4vh, 2rem);
         line-height: 1.15;
         /* 24ch는 '0' 글자 폭 기준이라 한글에서는 훨씬 좁게 잡힌다. 카드 안
-           제목이 311px에 갇혀 "추적 키워드의 검색 / 노출을 확인했습니다."로
-           끊겼다(실측). 카드 안에서는 글자 수 대신 칸 폭에 맡긴다. */
+           제목이 311px에 갇혀 여러 줄로 과도하게 끊겼다(실측).
+           카드 안에서는 글자 수 대신 칸 폭에 맡긴다. */
         max-inline-size: none;
       }
 
@@ -2167,7 +2167,7 @@
         grid-column: 1;
       }
 
-      /* 순위 격자는 2칸이 맞다 — 알약 줄이 폭을 쓰고 10/10·6/10이 나란히 선다. */
+      /* 순위 격자는 2칸이 맞다 — 알약 줄이 폭을 쓰고 두 요약 수치가 나란히 선다. */
       .js-stack .perf-stack__view .block > .rank-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -2214,14 +2214,14 @@
       /* 알약 줄은 자기 행을 통째로 쓰되 폭만 첫 칸에 맞춘다.
          26rem 상한일 때는 알약이 502에서 끝나는데 칸은 908까지라 오른쪽
          406px이 선으로 둘러싸인 빈 상자가 됐고, 그 선(908)이 아래
-         10/10·6/10 사이 선(497)과 어긋났다(실측).
-         grid-column을 1로 좁히면 10/10이 옆에 붙고 6/10이 아래로 밀린다.
+         두 요약 수치 사이 선(497)과 어긋났다(실측).
+         grid-column을 1로 좁히면 첫 수치가 옆에 붙고 둘째 수치가 아래로 밀린다.
          행은 그대로 두고 dt만 50%로 잘라 오른쪽 끝을 497에 맞춘다. */
       .js-stack .perf-stack__view .rank-grid__keywords {
         grid-column: 1 / -1;
       }
 
-      /* 알약 묶음을 왼쪽 열에 두고, 10/10·6/10을 그 오른쪽 열에 세로로
+      /* 알약 묶음을 왼쪽 열에 두고, 두 요약 수치를 그 오른쪽 열에 세로로
          쌓는다. 전에는 알약 아래에 가로 2칸으로 깔려 세로가 두 층이 됐다.
          옆에 세우면 "무엇이 몇 위인가"와 "전체 중 몇 개인가"가 한 눈에
          나란히 읽히고, 카드 세로도 그만큼 줄어 그림이 커진다. */
@@ -2238,10 +2238,10 @@
       .js-stack .perf-stack__view .block > .rank-grid {
         grid-template-columns: 23rem minmax(0, 1fr);
         /* start여야 두 덩어리가 같은 윗선에서 시작한다. center면 알약 묶음이
-           아래로 내려앉아 라벨이 10/10보다 89px 밑에 놓였다(실측). */
+           아래로 내려앉아 라벨이 요약 수치보다 89px 밑에 놓였다(실측). */
         align-items: start;
         /* start를 쓴다. space-between으로 그림 높이(373px)에 맞춰 늘렸더니
-           왼쪽 내용이 215px뿐이라 10/10과 6/10이 187px 떨어져 한 묶음으로
+           왼쪽 내용이 215px뿐이라 두 요약 수치가 187px 떨어져 한 묶음으로
            안 읽혔다(실측). 내용량이 다른 건 결함이 아니므로 높이를 억지로
            같게 만들지 않는다 — 제톤도 크기가 3배 차이 나는 두 이미지의
            밑선만 맞췄지 높이를 같게 하지는 않았다(원본 실측: 밑선 59px 일치). */
@@ -2256,7 +2256,7 @@
       }
 
       /* 오른쪽 두 칸은 내용 높이만 쓴다. 알약 칸(215px)에 맞춰 늘어나면
-         10/10과 6/10이 183px 떨어져 한 묶음으로 안 읽혔다(실측).
+         두 요약 수치가 183px 떨어져 한 묶음으로 안 읽혔다(실측).
          칸 안에서는 가운데에 놓는다. 왼쪽에 붙이면 알약과 44px밖에 안 떨어져
          붙어 보였고, 오른쪽 끝으로 밀면 반대로 225px이 벌어졌다(실측).
          가운데면 양쪽이 나뉜다. 숫자와 그 아래 설명이 함께 중앙에 선다.
@@ -2268,7 +2268,7 @@
         text-align: center;
       }
 
-      /* 라벨은 알약 묶음 위로 올린다 — 오른쪽 자리는 10/10이 가져갔다. */
+      /* 라벨은 알약 묶음 위로 올린다 — 오른쪽 자리는 요약 수치가 가져갔다. */
       .js-stack .perf-stack__view .rank-grid__keywords dd {
         order: -1;
         margin-block-start: 0;
@@ -2422,7 +2422,7 @@
         grid-column: 1 / -1;
       }
 
-      /* 방문 문장도 위 10/10·6/10과 한 덩어리라 같은 축에 세운다. 다만
+      /* 피드백 문장도 위 요약 수치와 한 덩어리라 같은 축에 세운다. 다만
          글자는 왼쪽에 맞춘다 — 세 줄짜리 문장이라 가운데 정렬하면 줄 끝이
          들쭉날쭉해 읽는 흐름이 끊긴다. 상자만 가운데, 글은 왼쪽. */
       .js-stack .perf-stack__view .longtail .result-note {
@@ -2901,6 +2901,15 @@
         border-block-end: 1px solid var(--color-rule-strong);
       }
 
+      .automation-flow li:nth-child(3),
+      .automation-flow li:nth-child(4) {
+        border-block-end: 1px solid var(--color-rule-strong);
+      }
+
+      .automation-flow li:last-child {
+        grid-column: 1 / -1;
+      }
+
       /* 2열이 되면 3번 칸이 새 줄의 첫 칸이다. 그 칸도 왼쪽 여백을 뺀다. */
       :is(.process-row, .automation-flow, .responsibility-flow) > li:nth-child(2n + 1) {
         padding-inline-start: 0;
@@ -3062,13 +3071,13 @@
               <p class="section-name" lang="en">CASE SUMMARY</p>
               <h2 id="case-summary-title"><strong>역할과 결과</strong>를 먼저 요약했습니다.</h2>
             </div>
-            <p>수동 AI 활용에서 시작해 반복 제작을 워크플로로 연결했습니다. 생성 원고는 제가 블로그 검수 스킬을 실행해 1차 점검하고, 출처와 사실관계를 직접 대조해 수정한 뒤 2차 검수로 최종본을 확정했습니다.</p>
+            <p>수동 AI 활용에서 시작해 반복 제작을 워크플로로 연결했습니다. 생성 원고는 제가 블로그 검수 스킬을 실행해 1차 점검하고, 직접 2차 검수했습니다. 발행 후에는 검색 순위를 수집해 다음 주제 선정에 반영했습니다.</p>
           </div>
           <dl class="case-summary__facts">
             <div><dt>기간</dt><dd>2024.06–현재</dd></div>
-            <div><dt>담당 범위</dt><dd>워크플로 구축·운영, 검수 스킬 실행, 출처 확인·원고 수정, 최종 검수</dd></div>
+            <div><dt>담당 범위</dt><dd>워크플로 구축·운영, 검수 스킬 실행, 출처 확인·원고 수정, 최종 검수, SEO 피드백 운영</dd></div>
             <div><dt>제작 시간</dt><dd>약 4–5시간(추정)에서 약 2시간(1회 관찰)으로 변화</dd></div>
-            <div><dt>검색·유입 관찰</dt><dd>추적 키워드 10개 모두 5위 이내(2026.07) · 월간 조회수 330→702(4월·7월 비교)</dd></div>
+            <div><dt>검색·유입 관찰</dt><dd>7월 말 10개 모두 노출·9개 5위 이내·5개 1위 · 월간 조회수 330→702(4월·7월 비교)</dd></div>
           </dl>
         </div>
       </section>
@@ -3154,7 +3163,7 @@
               <p class="section-name" lang="en">BLOG AUTOMATION</p>
               <h2 class="section-heading" data-split id="system-title"><span>AI로 초안 제작을 효율화하고,</span><strong>1·2차 검수를 거쳐 최종본을 확정했습니다.</strong></h2>
             </div>
-            <p class="section-lede reveal"><span>주제와 키워드를 입력해 원고를 생성한 뒤, 제가 블로그 검수 스킬을 실행해 1차 검수를 진행했습니다.</span><span>이후 출처와 사실관계를 직접 대조해 내용을 수정하고, 2차 검수로 최종본을 확정했습니다.</span></p>
+            <p class="section-lede reveal"><span>주제와 키워드를 입력해 원고를 생성한 뒤, 제가 블로그 검수 스킬을 실행해 1차 검수를 진행했습니다.</span><span>이후 출처와 사실관계를 직접 대조해 내용을 수정하고, 2차 검수로 최종본을 확정했습니다.</span><span>발행 후에는 매주 금요일 검색 순위를 수집해 다음 콘텐츠의 주제 선정에 반영했습니다.</span></p>
           </div>
 
           <!-- 블록 라벨은 부모 밴드 이름의 확장 문자열을 피한다.
@@ -3183,6 +3192,7 @@
               <li><span lang="en">AI + SKILL</span><strong>원고 생성·1차 검수</strong><p>원고 생성 뒤 블로그 검수 스킬을 실행해 1차로 점검합니다.</p></li>
               <li><span lang="en">FINAL REVIEW</span><strong>직접 확인·수정·2차 검수</strong><p>출처와 사실관계를 대조해 내용을 수정하고 최종본을 확정합니다.</p></li>
               <li><span lang="en">OUTPUT</span><strong>검수를 마친 최종본</strong><p>1·2차 검수를 마친 원고를 발행 단계로 넘깁니다.</p></li>
+              <li><span lang="en">SEO FEEDBACK</span><strong>금요일 순위 수집·다음 주제 반영</strong><p>10개 키워드 순위를 누적해 약한 키워드는 보강하고, 안정 키워드는 중복을 줄입니다.</p></li>
             </ol>
           </div>
 
@@ -3270,25 +3280,25 @@
             <div class="block__head block__head--with-note">
               <div>
                 <p class="section-name" lang="en">RANKINGS</p>
-                <h3 id="search-results-title">추적 키워드 10개 모두 검색 5위 안에 노출됐습니다.</h3>
+                <h3 id="search-results-title">7월 마지막 측정에서 10개 키워드 모두 검색에 노출됐습니다.</h3>
               </div>
-              <p>네이버 검색 순위 · 2026.07 확인</p>
+              <p>네이버 블로그탭 순위 · 2026.07.31</p>
             </div>
             <dl class="rank-grid">
               <!-- 도입부 KEYWORD MAP에 있던 메인 키워드 알약을 여기로 합쳤다.
                    키워드와 그 순위는 같은 사실이라 두 군데서 말할 이유가 없다.
                    라벨을 "핵심"에서 "메인"으로 맞춘 건 도입부 리드가
                    "메인 키워드로 설정하고"라고 쓰기 때문이다 — 다른 집합으로
-                   읽히면 안 된다. 순위 숫자는 원본 그대로다. -->
-              <div class="rank-grid__keywords"><dt><span class="rank-kw"><b>AMR</b><i>1<em>위</em></i></span><span class="rank-kw"><b>무인지게차</b><i>1<em>위</em></i></span><span class="rank-kw"><b>AGV</b><i>4<em>위</em></i></span></dt><dd>메인 키워드 순위</dd></div>
-              <div><dt>10/10</dt><dd>추적한 키워드 10개 모두 5위 이내</dd></div>
-              <div><dt>6/10</dt><dd>그중 6개는 검색 1위</dd></div>
+                   읽히면 안 된다. 순위 숫자는 2026.07.31 KPI 측정값이다. -->
+              <div class="rank-grid__keywords"><dt><span class="rank-kw"><b>AMR</b><i>4<em>위</em></i></span><span class="rank-kw"><b>무인지게차</b><i>1<em>위</em></i></span><span class="rank-kw"><b>AGV</b><i>2<em>위</em></i></span></dt><dd>메인 키워드 순위</dd></div>
+              <div><dt>9/10</dt><dd>추적 키워드 9개가 검색 5위 이내</dd></div>
+              <div><dt>5/10</dt><dd>추적 키워드 5개가 검색 1위</dd></div>
             </dl>
-            <p class="metric-note">메인 키워드 3개와 세부 검색 키워드 7개, 총 10개의 2026.07 네이버 검색 순위입니다.</p>
+            <p class="metric-note">매주 금요일 추적하도록 구성한 10개 키워드의 2026.07.31 네이버 블로그탭 측정 결과입니다.</p>
 
-            <!-- LONG-TAIL 카드를 여기로 합치고 없앴다. 두 장이 겹쳤다:
-                   (1) 위 10/10·6/10의 "추적 키워드"는 10개이고 메인 3개와
-                       롱테일이 그 안에 함께 들어 있다. 롱테일 성과가 이미
+            <!-- 세부 키워드 카드를 여기로 합치고 없앴다. 두 장이 겹쳤다:
+                   (1) 위 요약 수치의 "추적 키워드"는 10개이고 메인 3개와
+                       나머지 추적 키워드가 그 안에 함께 들어 있다. 해당 성과가 이미
                        이 카드에서 집계되는데 다음 장이 같은 키워드를 이름만
                        다시 나열했다.
                    (2) 캡처 두 장이 모두 "네이버 통합검색 상위 노출"이라는
@@ -3297,11 +3307,11 @@
                  그것과 알약만 옮기고 캡처는 '무인지게차' 한 장으로 줄였다
                  (REFERENCE_GUIDE 규칙 5). -->
             <div class="longtail">
-              <p class="eyebrow" lang="en">LONG-TAIL KEYWORDS</p>
-              <ul class="keyword-list"><li>AMR 뜻</li><li>AMR·AGV 비교</li><li>무인지게차 도입 비용</li><li>도입 체크리스트</li><li>안전 기준</li><li>5톤 무인지게차</li><li>AMR 지게차 업체</li></ul>
+              <p class="eyebrow" lang="en">OTHER TRACKED KEYWORDS</p>
+              <ul class="keyword-list"><li>AMR 뜻</li><li>AMR·AGV 비교</li><li>무인지게차 도입 비용</li><li>도입 체크리스트</li><li>안전 기준</li><li>5톤 무인지게차</li><li>더프라임그룹</li></ul>
               <!-- 알약 아래가 아니라 옆에 둔다. 이 문장은 롱테일 키워드가
                    무엇을 데려왔는지 설명하므로 알약 묶음과 한 줄로 읽혀야 한다. -->
-              <p class="result-note">정보 탐색형 키워드부터<br>업체와 도입 정보를 찾는 구체적인 검색어까지<br>방문이 확인됐습니다.</p>
+              <p class="result-note">4위 이하 키워드는 다음 콘텐츠에서 보강하고,<br>1~3위 키워드는 중복 발행을 줄이도록<br>다음 주제 선정에 반영했습니다.</p>
             </div>
 
             <figure class="evidence-stage">
