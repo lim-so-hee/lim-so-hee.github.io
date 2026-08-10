@@ -1374,7 +1374,7 @@
 
     <footer class="page-footer">
       <div class="footer-links">
-        <a href="mailto:sohee.lim.lsh@gmail.com">Email</a>
+        <button class="email-copy" type="button" data-copy-email="sohee.lim.lsh@gmail.com" aria-label="이메일 주소 sohee.lim.lsh@gmail.com 복사">Email <span class="email-copy__cue" aria-hidden="true">복사</span></button>
         <a href="https://www.linkedin.com/in/sohee-lim-mkt" target="_blank" rel="noreferrer">LinkedIn ↗</a>
       </div>
     </footer>
@@ -1543,5 +1543,6 @@
     window.addEventListener("scroll", toggleTopButton, { passive: true });
     toggleTopButton();
   </script>
+  <script src="footer-copy.js" defer></script>
 </body>
 </html>
