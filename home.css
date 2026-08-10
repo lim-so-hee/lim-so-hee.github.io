@@ -1,0 +1,577 @@
+/* home.css — 홈 한 장, 3개 섹션
+   토큰은 tokens-v8.css. 여기서 토큰을 재정의하지 않는다.
+   정본은 .re0/iteration/v7-spec-first-home/SPEC.local.md
+
+   구조 (2026-07-28 개편)
+     ① 히어로   — 제목 + 떨어져 쌓이는 도구 알약
+     ② 작업     — 사례 5건(제목만, 설명은 사례 페이지에) + 하는 일 4갈래
+     ③ AI 활용  — 자동화가 줄인 시간 + 판단은 사람 + 흐름
+     푸터       — 연락처
+
+   면은 흰색과 --accent 둘만 쓴다. 검은 면은 없다.
+   액센트는 "여기가 핵심". 링크에는 쓰지 않는다.
+   상시 애니메이션 0. min-width 선언 0. 한글에 이탤릭 0. */
+
+:root {
+  /* pillnav.css의 .site-header는 min-height 5.25rem이다. 히어로가
+     calc(100svh - var(--masthead-h))로 첫 화면을 잡으므로 같이 올린다. */
+  --masthead-h: 5.25rem;
+  --pad-section: clamp(4.5rem, 9vw, 8.5rem);
+}
+
+/* ─ 네비 토큰 브리지 ───────────────────────────────────────────────
+   머리말은 5장과 같은 pillnav.css를 쓴다. 그 파일은 tokens.css 이름으로
+   쓰여 있고 이 페이지는 tokens-v8.css를 쓴다. 값이 같은 것은 그대로 잇고,
+   tokens-v8에 없는 영문 서체 둘만 여기서 정한다(2026-07-31 실측 대조):
+     --color-accent  #3163f6 = --accent   #3163f6   같음
+     --color-on-ink  #ffffff = --on-accent #ffffff  같음
+     --text-sm       0.875rem = --t-caption 0.875rem 같음
+     --text-xs       0.75rem  = --t-label   0.75rem  같음
+   토큰 재정의가 아니라 이름만 잇는 것이라 홈의 다른 규칙은 건드리지 않는다. */
+:root {
+  --color-accent: var(--accent);
+  --color-on-ink: var(--on-accent);
+  --color-ink-2: var(--muted);
+  --text-sm: var(--t-caption);
+  --text-xs: var(--t-label);
+  --font-en: "Space Grotesk", "Pretendard", sans-serif;
+  --font-accent-en: "Newsreader", Georgia, serif;
+}
+
+/* 토큰의 :where(a[href])가 모든 링크에 검은 밑줄을 깐다. 파란 알약 위에서는
+   보이지도 않고 모양을 깨뜨린다. pillnav.css는 tokens.css 전제라 이 규칙이
+   없다 — 이 페이지에서만 끈다. */
+.pillnav a,
+.site-header .brand {
+  border-bottom: 0;
+}
+
+.shell {
+  width: min(100%, var(--content-max));
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+
+/* ═ ① 히어로 ══════════════════════════════════════════════════════ */
+.hero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  align-content: center;
+  padding-block: var(--space-3xl) var(--space-4xl);
+}
+
+/* 히어로는 가운데 정렬한다. 왼쪽 정렬에 max-width를 걸면 제목 블록이
+   화면 어디에도 맞지 않는 자리에 서서 애매해진다. */
+.hero__copy {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+}
+
+/* 두 줄의 굵기를 다르게 준다. 윗줄은 물러서고 아랫줄이 주장한다 —
+   "반복되는 일은 운영 체계로"가 이 포트폴리오의 논지라서다.
+   80px 실측: 800의 필요 최소 행간 1.025로 현재 1.08을 통과한다.
+   앞서 "700 이상은 획이 뭉친다"고 본 것은 64px 기준이었고 큰 크기에서는 뒤집힌다. */
+.hero__title {
+  max-width: 22ch;
+  margin-inline: auto;
+  font-size: var(--t-display);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+}
+
+.hero__l1,
+.hero__l2 {
+  display: block;
+}
+
+.copy-line {
+  display: block;
+}
+
+.hero__l1 {
+  font-weight: 400;
+}
+
+.hero__l2 {
+  font-weight: 800;
+}
+
+.hero__title b {
+  color: var(--accent);
+  font-weight: inherit;
+}
+
+.hero__lede {
+  max-width: 34em;
+  margin: var(--space-xl) auto 0;
+  color: var(--muted);
+  font-size: var(--t-lead);
+  line-height: var(--lh-body-long);
+  text-wrap: pretty;
+}
+
+@media (min-width: 62rem) {
+  .hero {
+    min-height: calc(100svh - var(--masthead-h));
+    padding-block: 0 var(--space-4xl);
+  }
+}
+
+/* 낙하 구역 — 히어로 안. 물리는 hero-drop.js.
+   3섹션에 두었더니 흐름 카드와 겹쳐 지저분했다. 히어로로 되돌렸다.
+   알약은 제목 **앞**으로 나온다(z-index 5 > 제목 3).
+   바닥은 히어로 아래로 넘겨 더미가 잘리게 한다 — 딱 맞춰 세우면 붕 떠 보인다. */
+.field {
+  position: absolute;
+  inset-block-start: 0;
+  /* 바닥은 히어로 경계에 정확히 맞춘다.
+     -110px으로 넘겼더니 다음 섹션(파란 면) 밑으로 잠겼고,
+     -24px으로 줄여도 아랫줄이 여전히 파란 면에 물렸다. 0이면 딱 맞게 선다. */
+  inset-block-end: 0;
+  /* 바닥은 화면 전체다. 한때 20%씩 좁혀 층을 만들었지만 알약이 가운데로 몰려
+     양옆이 비었다. 층은 바닥을 줄여서가 아니라 알약을 키워서 만든다. */
+  inset-inline: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.chip {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(0.4rem, 1vw, 0.7rem);
+  padding:
+    clamp(0.65rem, 1.75vw, 1.65rem)
+    clamp(0.9rem, 2.7vw, 3rem);
+  /* 알약마다 그 도구의 브랜드 색을 쓴다. 임의 배색이 아니라 로고에서 뽑은 값이다.
+     --chip-face(옅은 배경) · --chip-line(테두리) · --chip-ink(글자)는 hero-drop.js가
+     대비 4.5를 만족하도록 계산해 넣는다. 값이 없으면 검정으로 떨어진다. */
+  border: clamp(2px, 0.2vw, 3px) solid var(--chip-line, var(--ink));
+  border-radius: 999px;
+  background: var(--chip-face, var(--ground));
+  color: var(--chip-ink, var(--ink));
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.9),
+    0 3px 6px rgb(13 13 13 / 0.12);
+  font-size: clamp(0.875rem, 2.1vw, 2.25rem);
+  font-weight: var(--w-display);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.chip img {
+  flex: 0 0 auto;
+  inline-size: clamp(1.125rem, 2.5vw, 2.75rem);
+  block-size: clamp(1.125rem, 2.5vw, 2.75rem);
+}
+
+@media (max-width: 61.99rem) {
+  .hero {
+    min-height: calc(100svh - var(--masthead-h));
+  }
+
+  /* 좁은 화면에서는 알약이 제목을 스쳐도 본문을 가리지 않는다.
+     크기 또한 글자·아이콘·패딩이 함께 줄어 물리 충돌 크기와 화면 크기가 맞는다. */
+  .hero__copy {
+    z-index: 6;
+  }
+
+  .chip {
+    gap: clamp(0.35rem, 1vw, 0.55rem);
+    padding:
+      clamp(0.5rem, 1.4vw, 0.9rem)
+      clamp(0.75rem, 2.2vw, 1.5rem);
+    font-size: clamp(0.75rem, 2.1vw, 1.25rem);
+  }
+
+  .chip img {
+    inline-size: clamp(1rem, 2.2vw, 1.5rem);
+    block-size: clamp(1rem, 2.2vw, 1.5rem);
+  }
+}
+
+/* ═ 섹션 공통 ═════════════════════════════════════════════════════
+   면은 흰색과 진한 파랑 둘뿐이다. 흰 → 파랑 → 흰으로 세 섹션이 나뉜다.
+   틴트(--accent-tint)는 면으로 쓰지 않는다 — 흰색과 대비 1.12로 경계가 안 보인다. */
+
+/* 진한 액센트 면 위에서는 규칙이 두 번 뒤집힌다.
+   ① 바탕이 이미 액센트라 강조를 파랑으로 줄 수 없다. 굵기만 남긴다.
+   ② 보조 텍스트 계층을 만들 수 없다 — 반투명 흰색이 4.5를 넘으려면 알파 0.95가
+      필요한데 순백과 구분되지 않는다. 글자는 전부 순백, 위계는 크기와 굵기가 만든다. */
+.band--accent {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.band--accent .case__no,
+.band--accent .case__title,
+.band--accent .scope__item dt,
+.band--accent .scope__item dd {
+  color: var(--on-accent);
+}
+
+/* 파랑 위에서는 강조를 파랑으로 줄 수 없다. 굵기만 남긴다. */
+.band--accent .case__title b {
+  color: var(--on-accent);
+}
+
+/* 헤어라인도 흰색 계열로 뒤집는다. 검은 선은 파랑 위에서 안 보인다. */
+.band--accent .case,
+.band--accent .scope__item {
+  border-top-color: rgb(255 255 255 / 0.35);
+}
+
+.band--accent .section__title b {
+  color: var(--on-accent);
+}
+
+/* 섹션마다 한 화면에 담는다. 내용이 넘치면 스크롤되도록 min-height만 준다. */
+.work,
+.ai {
+  min-block-size: 100svh;
+  display: grid;
+  align-content: center;
+  padding-block: var(--pad-section);
+}
+
+/* 파랑 면은 이 페이지의 구획 신호다. 다른 섹션보다 넉넉하게 준다. */
+.work.band--accent {
+  padding-block: calc(var(--pad-section) * 1.2);
+}
+
+/* 면은 흰 → 진한 파랑 → 옅은 파랑 3단이다. 세 번째가 이 규칙이다.
+   틴트(#eff2fb)가 아니라 --accent-veil을 쓴다. 틴트는 흰 바탕과 1.12라
+   섹션 경계가 안 보인다. veil은 1.49다. */
+/* 면은 흰색으로 되돌린다. 이 섹션의 색은 아래 흐름 5칸이 맡는다 —
+   틴트 면 위에 그라데이션 칸을 올리면 두 파랑이 서로를 죽인다. */
+.ai {
+  background: var(--ground);
+}
+
+/* 취소선이 이미 "이전 값"을 말한다. 투명도까지 겹치면 --muted가 3.06까지
+   내려가 큰 글자 기준 3.0에 아슬아슬하게 걸린다. 투명도는 빼고 취소선만 남긴다. */
+.ai .metric__from {
+  opacity: 1;
+}
+
+.section__title {
+  max-width: 20ch;
+  font-size: var(--t-h2);
+  font-weight: var(--w-display);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+.section__title b {
+  color: var(--accent);
+  font-weight: inherit;
+}
+
+.prose {
+  max-width: 44em;
+  margin: var(--space-lg) 0 0;
+  color: var(--muted);
+  line-height: var(--lh-body-long);
+}
+
+/* ═ ② 작업 ════════════════════════════════════════════════════════
+   설명을 싣지 않는다. 사례 페이지에 이미 있다. 홈은 목차다. */
+.cases {
+  margin: var(--space-2xl) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 두 수치의 근거 강도가 다르다는 각주. AI 프로젝트 페이지의 같은 자리와
+   문구를 맞춘다 — 홈에서만 단정으로 읽히면 뒤에서 뒤집힌다. */
+.metric-note {
+  margin-block-start: var(--space-sm);
+  color: var(--muted);
+  font-size: var(--t-label);
+  line-height: 1.6;
+}
+
+/* 사례가 글자로만 있어 눌러도 아무 일이 없었다. 줄 전체를 링크로 만든다 —
+   격자는 li에서 a로 옮긴다. 그래야 번호와 제목이 한 링크 안에 들어간다. */
+.case {
+  border-top: var(--rule-hair) solid var(--rule-strong);
+}
+
+.case > a {
+  display: grid;
+  grid-template-columns: minmax(0, 3.5rem) minmax(0, 1fr);
+  gap: var(--space-md);
+  align-items: baseline;
+  padding-block: var(--space-lg);
+  border-bottom: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 누를 수 있다는 표시. 제목만 액센트로 바뀐다 — 줄 전체를 칠하면
+   목록의 결이 흐트러진다. */
+.case > a:hover .case__title,
+.case > a:focus-visible .case__title {
+  color: var(--accent);
+}
+
+.case > a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.case__no {
+  font-family: var(--font-en-serif);
+  font-size: var(--t-h3);
+  font-weight: var(--w-body);
+  letter-spacing: -0.02em;
+  color: var(--accent);
+}
+
+.case__title {
+  font-size: clamp(1.25rem, 2.4vw, 2rem);
+  font-weight: var(--w-display);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+.case__title b {
+  color: var(--accent);
+  font-weight: inherit;
+}
+
+.scope {
+  margin: var(--space-3xl) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.scope__item {
+  display: grid;
+  gap: var(--space-2xs);
+  padding-top: var(--space-md);
+  border-top: var(--rule-hair) solid var(--rule);
+}
+
+.scope__item dt {
+  font-weight: var(--w-display);
+  letter-spacing: -0.02em;
+}
+
+.scope__item dd {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--t-caption);
+  line-height: var(--lh-body);
+}
+
+@media (min-width: 62rem) {
+  .case {
+    grid-template-columns: minmax(0, 5rem) minmax(0, 1fr);
+    gap: var(--space-2xl);
+  }
+
+  .scope {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-xl);
+  }
+}
+
+/* ═ ③ AI 활용 ═════════════════════════════════════════════════════ */
+.ai__grid {
+  display: grid;
+  gap: var(--space-2xl);
+}
+
+/* --t-h3의 하한 18px은 액센트 수치에 못 미친다. 하한을 20px로 올린다. */
+.lead {
+  max-width: 26ch;
+  margin: var(--space-xl) 0 0;
+  font-size: clamp(1.25rem, 2.6vw, 1.875rem);
+  font-weight: var(--w-body);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+/* 수치는 이 섹션의 핵심이다. 액센트 + 가장 굵은 값으로 세운다.
+   이 규칙이 없으면 <b>가 브라우저 기본 700으로 떨어져 굵기가 한 종 늘어난다. */
+.lead b {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.metric {
+  margin: 0;
+  display: grid;
+  justify-items: start;
+  gap: var(--space-sm);
+}
+
+.metric__from {
+  color: var(--muted);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: var(--w-body);
+  line-height: 1;
+  letter-spacing: var(--ls-h2);
+  opacity: 0.72;
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+
+.metric__to {
+  color: var(--accent);
+  font-size: clamp(4rem, 13vw, 11rem);
+  font-weight: var(--w-display);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+}
+
+.flow {
+  display: grid;
+  gap: var(--space-sm);
+  margin: var(--space-3xl) auto 0;
+  padding-inline: var(--page-gutter);
+  list-style: none;
+}
+
+.flow__step {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border: 1.5px solid var(--rule-strong);
+  border-radius: 4px;
+  background: var(--ground);
+  font-size: clamp(1.125rem, 1.8vw, 1.375rem);
+  font-weight: var(--w-display);
+  letter-spacing: var(--ls-h2);
+}
+
+/* ─ 다섯 칸의 그라데이션 ───────────────────────────────────────────
+   장식이 아니다. 리서치 → 구조화 → 출처 확인 → 직접 수정 → 최종 결정은
+   뒤로 갈수록 사람이 더 깊이 개입하는 순서다. 색이 진해지는 게 그 이야기다.
+   실측(2026-07-28): 이웃 칸 구분 1.37 / 1.42 / 1.45 / 1.44 — 다섯이 또렷이 나뉜다.
+   글자 대비는 1~4번 검정(16.35 · 11.92 · 8.41 · 5.78), 5번만 흰색(4.95). */
+.flow__step:nth-child(1) { background: #e3e9fd; border-color: #e3e9fd; }
+.flow__step:nth-child(2) { background: #b6c8fb; border-color: #b6c8fb; }
+.flow__step:nth-child(3) { background: #8aa6fa; border-color: #8aa6fa; }
+.flow__step:nth-child(4) { background: #5e84f8; border-color: #5e84f8; }
+
+.flow__n {
+  font-family: var(--font-en-serif);
+  /* 숫자를 키운다. --t-caption(14px)으로는 몇 번째 단계인지가 안 읽혔다. */
+  font-size: clamp(1.5rem, 2.6vw, 2.25rem);
+  font-weight: var(--w-display);
+  line-height: 1;
+  color: var(--ink);
+}
+
+/* 마지막 단계가 이 섹션의 논지다 — 판단은 사람이 한다. */
+.flow__step--last {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.flow__step--last .flow__n {
+  color: var(--on-accent);
+}
+
+@media (min-width: 62rem) {
+  .ai__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+    align-items: center;
+    gap: var(--space-4xl);
+  }
+
+  .metric {
+    justify-items: end;
+    text-align: right;
+  }
+
+  .flow {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .flow__step {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xl);
+    padding-block: var(--space-lg);
+  }
+}
+
+/* ═ 푸터 — 연락처는 여기에만 있다 ══════════════════════════════════
+   위 섹션과 같은 흰 바탕이라 경계가 없었다. 실선으로 끊는다. */
+.colophon {
+  margin-top: var(--pad-section);
+  border-top: 2px solid var(--ink);
+  padding-block: var(--space-2xl) var(--space-xl);
+}
+
+/* 한 줄로 세운다. 폭 제한을 걸면 두세 줄로 접혀 문장이 흩어진다. */
+.colophon__cta {
+  max-width: none;
+  margin: 0;
+  font-size: clamp(1.375rem, 3.4vw, 2.75rem);
+  font-weight: 800;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  text-wrap: nowrap;
+}
+
+@media (max-width: 47.99rem) {
+  /* 좁은 화면에서는 한 줄을 고집하지 않는다. 넘치면 깨진다. */
+  .colophon__cta {
+    text-wrap: balance;
+  }
+}
+
+.colophon__contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg) var(--space-3xl);
+  margin: var(--space-xl) 0 0;
+}
+
+.colophon__item dt {
+  margin-bottom: var(--space-2xs);
+  color: var(--muted);
+  font-size: var(--t-caption);
+}
+
+.colophon__item dd {
+  margin: 0;
+}
+
+/* 다른 5장의 푸터 링크(pillnav.css .page-footer a)와 눈금을 맞춘다.
+   여기만 17px에 1.6px 밑줄이라 같은 자리의 같은 링크가 달라 보였다(실측). */
+.colophon__item dd a {
+  border-bottom: 0;
+  font-size: var(--t-caption);
+  font-weight: var(--w-display);
+  text-decoration: none;
+}
+
+.colophon__item dd a:hover {
+  color: var(--accent);
+}
+
+.colophon__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin: var(--space-2xl) 0 0;
+  padding-top: var(--space-md);
+  border-top: var(--rule-hair) solid var(--rule);
+  color: var(--muted);
+  font-size: var(--t-caption);
+}
