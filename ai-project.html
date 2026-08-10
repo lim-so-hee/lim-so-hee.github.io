@@ -157,6 +157,74 @@
       padding-inline: var(--stage-x);
     }
 
+    /* 긴 사례를 끝까지 읽지 않아도 역할과 근거를 먼저 판단할 수 있는 요약. */
+    .case-summary {
+      padding-block: clamp(3.5rem, 6vw, 6rem);
+      background: var(--color-paper);
+    }
+
+    .case-summary__header {
+      display: grid;
+      grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr);
+      gap: clamp(1.5rem, 5vw, 5rem);
+      align-items: end;
+    }
+
+    .case-summary h2 {
+      max-inline-size: 18ch;
+      font-size: clamp(2rem, 4.4vw, 4.75rem);
+      line-height: 1.02;
+      letter-spacing: -.045em;
+    }
+
+    .case-summary__header > p:last-child {
+      max-inline-size: 54ch;
+      color: var(--color-ink-2);
+      line-height: 1.75;
+    }
+
+    .case-summary__facts {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-block-start: clamp(2rem, 4vw, 4rem);
+      border-block: 1px solid var(--color-rule-strong);
+    }
+
+    .case-summary__facts > div {
+      min-width: 0;
+      padding: clamp(1.25rem, 2.5vw, 2rem);
+    }
+
+    .case-summary__facts > div + div {
+      border-inline-start: 1px solid var(--color-rule-strong);
+    }
+
+    .case-summary__facts dt {
+      margin-block-end: .6rem;
+      color: var(--color-accent);
+      font-size: var(--text-sm);
+      font-weight: 700;
+    }
+
+    .case-summary__facts dd {
+      color: var(--color-ink);
+      line-height: 1.65;
+    }
+
+    .case-summary__nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem 1.5rem;
+      margin-block-start: 1.5rem;
+    }
+
+    .case-summary__nav a {
+      border-bottom: 1px solid currentColor;
+      color: var(--color-ink);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
     .section-name {
       color: currentColor;
       font-family: var(--font-accent-en);
@@ -1582,7 +1650,7 @@
     .growth-row__tail {
       flex-basis: 100%;
       display: grid;
-      grid-template-columns: auto auto minmax(0, 1fr);
+      grid-template-columns: auto minmax(0, 1fr);
       grid-template-rows: auto auto auto;
       align-items: end;
       column-gap: clamp(2rem, 5vw, 4.5rem);
@@ -1598,17 +1666,9 @@
     .growth-row__tail > p > strong { grid-row: 2; }
     .growth-row__tail > p > small { grid-row: 3; }
 
-    /* 열 배정 — 결론 1열, 화살표 2열, 문의 3열. */
+    /* 조회수 변화와 문의 건수는 같은 기간의 별도 관찰값으로 나란히 둔다. */
     .growth-row__tail > p:first-child > * { grid-column: 1; }
-    .growth-row__tail > .signal-stat > * { grid-column: 3; }
-
-    /* 화살표는 숫자 행에, 그 높이 가운데. 아래 캡션·위 라벨과 무관하게
-       두 숫자 사이에 놓여야 잇는 구실을 한다. */
-    .growth-row__tail > .tail-arrow {
-      grid-column: 2;
-      grid-row: 2;
-      align-self: center;
-    }
+    .growth-row__tail > .signal-stat > * { grid-column: 2; }
 
     /* 라벨이 3열을 통째로 늘리지 않게 묶는다. 풀어두면 라벨 한 줄 길이만큼
        열이 벌어져 숫자가 그래프 쪽으로 밀린다. */
@@ -2813,6 +2873,16 @@
     }
 
     @media (max-width: 47.99rem) {
+      .case-summary__header,
+      .case-summary__facts {
+        grid-template-columns: 1fr;
+      }
+
+      .case-summary__facts > div + div {
+        border-inline-start: 0;
+        border-block-start: 1px solid var(--color-rule-strong);
+      }
+
       .section-heading,
       .closing h2 {
         font-size: clamp(2.35rem, 11vw, 3.75rem);
@@ -2943,6 +3013,30 @@
               <path d="M4 11l8 7 8-7"/>
             </svg>
           </span>
+        </div>
+      </section>
+
+      <section class="case-summary" aria-labelledby="case-summary-title">
+        <div class="section-shell">
+          <div class="case-summary__header">
+            <div>
+              <p class="section-name" lang="en">CASE SUMMARY</p>
+              <h2 id="case-summary-title">역할과 결과를 먼저 요약했습니다.</h2>
+            </div>
+            <p>수동 AI 활용에서 시작해 반복 제작을 워크플로로 연결하고, 검수와 최종 발행 판단은 직접 맡았습니다. 필요한 구간으로 바로 이동해 세부 근거를 확인할 수 있습니다.</p>
+          </div>
+          <dl class="case-summary__facts">
+            <div><dt>기간</dt><dd>2025.03–2026.07</dd></div>
+            <div><dt>담당 범위</dt><dd>워크플로 구축·운영, 생성 원고 검수, 최종 발행 결정</dd></div>
+            <div><dt>제작 시간</dt><dd>약 4–5시간(추정)에서 약 2시간(1회 관찰)으로 변화</dd></div>
+            <div><dt>검색·유입 관찰</dt><dd>추적 키워드 10개 모두 5위 이내(2026.07) · 월간 조회수 330→702(4월·7월 비교)</dd></div>
+          </dl>
+          <nav class="case-summary__nav" aria-label="AI 프로젝트 주요 구간">
+            <a href="#manual">수동 활용·사업 문서</a>
+            <a href="#automation">블로그 자동화</a>
+            <a href="#performance">검색 성과·유입</a>
+            <a href="#workspace">현재 작업 체계</a>
+          </nav>
         </div>
       </section>
 
@@ -3157,6 +3251,7 @@
               <div><dt>10/10</dt><dd>추적 키워드 전체가 검색 5위 이내</dd></div>
               <div><dt>6/10</dt><dd>추적 키워드 중 6개가 검색 1위</dd></div>
             </dl>
+            <p class="metric-note">전체 검색어 성과가 아니라 이 페이지에서 추적한 10개 키워드의 2026.07 확인 결과입니다.</p>
 
             <!-- LONG-TAIL 카드를 여기로 합치고 없앴다. 두 장이 겹쳤다:
                    (1) 위 10/10·6/10의 "추적 키워드"는 10개이고 메인 3개와
@@ -3192,9 +3287,9 @@
               <h3 id="ai-search-results-title">검색 노출에 그치지 않고, AI 답변의 출처로도 인용됐습니다.</h3>
             </div>
             <div class="growth-row" aria-label="AI 브리핑 월간 인용수 변화">
-              <div><span>자동화 시작 월</span><strong>351</strong><small>5월 인용</small></div>
+              <div><span>2026년 5월</span><strong>351</strong><small>월간 인용</small></div>
               <i aria-hidden="true">→</i>
-              <div><span>운영 이후</span><strong>3.6K</strong><small>7월 인용</small></div>
+              <div><span>2026년 7월</span><strong>3.6K</strong><small>월간 인용</small></div>
               <!-- "약"을 라벨 자리에서 빼 숫자 안으로 넣었다. 라벨 줄은 옆의
                    "자동화 시작 월"·"운영 이후"처럼 시점을 알려주는 자리인데
                    여기만 수식어라 규칙이 깨졌고, 숫자를 72px로 키운 뒤로는
@@ -3254,7 +3349,7 @@
                  1줄로 줄면 그만큼이 그림 높이로 간다.
                  "자동화 도입 이전 콘텐츠 포함"은 6.7K가 자동화 성과로 읽히지
                  않게 하는 한정이라 남긴다. -->
-            <p class="metric-note"><em>네이버 자체 집계 기준.</em> 누적 인용수에는 자동화 도입 이전에 발행한 콘텐츠가 포함되어 있습니다.</p>
+            <p class="metric-note"><em>네이버 자체 집계 기준.</em> 5월과 7월의 인용수 변화를 관찰한 값이며 자동화만의 영향으로 단정하지 않습니다. 누적 인용수에는 자동화 도입 이전에 발행한 콘텐츠가 포함되어 있습니다.</p>
           </div>
           </article>
 
@@ -3273,7 +3368,7 @@
           <div class="block" id="traffic-growth" aria-labelledby="traffic-growth-title">
             <div class="block__head">
               <p class="section-name" lang="en">TRAFFIC</p>
-              <h3 id="traffic-growth-title">검색 접점이 넓어지면서 블로그 유입도 함께 늘었습니다.</h3>
+              <h3 id="traffic-growth-title">같은 기간 블로그 월간 조회수도 늘었습니다.</h3>
             </div>
             <div class="growth-row" aria-label="월간 조회수 변화">
               <div><span>자동화 직전 완전월</span><strong>330</strong><small>4월 조회수</small></div>
@@ -3299,12 +3394,10 @@
                      빠지면 113% 옆에 붙은 3건이 유입 증가의 결과로 읽히고,
                      그건 FACTS.md 40행이 막는 인과 주장이다. "홈페이지"도
                      남겨 블로그 지표와 구분한다. -->
-                <!-- 화살표를 유지한다(사용자 결정, 2026-08-08). 유입 증가와
-                     문의 3건을 잇는 표시다. FACTS.md 42행도 같은 날 갱신했다. -->
-                <i class="tail-arrow" aria-hidden="true">→</i>
-                <p class="signal-stat"><span>홈페이지 신규 문의 · 블로그 자동화 도입 시기</span><strong>3<span class="mult-unit">건</span></strong></p>
+                <p class="signal-stat"><span>홈페이지 신규 문의 · 같은 기간 관찰</span><strong>3<span class="mult-unit">건</span></strong></p>
               </div>
             </div>
+            <p class="metric-note">월간 조회수와 홈페이지 문의는 같은 기간에 관찰된 별도 지표이며, 두 수치 사이의 인과관계를 뜻하지 않습니다.</p>
             <dl class="ai-metrics">
               <!-- 21.4% → 1.6%은 순방문자 기준이다. 같은 자료에 조회수 기준
                    (51.3% → 1.9%)도 있어 분모를 안 밝히면 헷갈린다. 라벨에
