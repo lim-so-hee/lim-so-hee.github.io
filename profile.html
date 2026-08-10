@@ -254,7 +254,10 @@
     .hero-covers {
       position: absolute;
       z-index: 5;
-      inset: 0;
+      inset-block: 0;
+      /* .profile-hero의 좌우 page-x 안쪽에서 잘리던 레이어를 뷰포트 끝까지
+         확장한다. 상하는 이미 화면 끝과 맞으므로 좌우만 보정한다. */
+      inset-inline: calc(-1 * var(--page-x));
       overflow: hidden;
       opacity: 0;
       pointer-events: none;
