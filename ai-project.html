@@ -1666,6 +1666,25 @@
       margin-block-start: 0;
     }
 
+    /* AI CITATIONS의 누적값은 월간 변화와 배수보다 한 단계 낮은 보조 지표다.
+       숫자부터 세우면 작은 카드처럼 보이고 긴 라벨이 두 줄로 갈라진다.
+       라벨을 먼저 읽는 한 줄로 바꿔 10.3배 바로 아래에 붙인다. */
+    #ai-search-results .ai-metrics:has(> div:only-child) > div {
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+      gap: .55rem;
+    }
+
+    #ai-search-results .ai-metrics:has(> div:only-child) dt {
+      font-size: clamp(1.45rem, 2vw, 1.9rem);
+    }
+
+    #ai-search-results .ai-metrics:has(> div:only-child) dd {
+      color: rgb(255 255 255 / .7);
+      font-size: var(--text-xs);
+      white-space: nowrap;
+    }
+
     /* 7.9K가 카드에서 제일 컸는데(45.6px), 바로 아래 각주가 "자동화 도입
        이전에 발행한 콘텐츠가 포함되어 있습니다"라고 스스로 깎는 값이다.
        성격도 다르다 — 위 351·3.6K는 자동화 기간의 월별 값이고 이건 1월부터의
@@ -2289,7 +2308,7 @@
         grid-row: 2 / span 3;
         align-self: stretch;
         align-content: start;
-        gap: clamp(1.25rem, 2.4vh, 1.75rem);
+        gap: clamp(.9rem, 1.8vh, 1.35rem);
         margin-block-start: clamp(1rem, 4vh, 3rem);
       }
 
@@ -3609,7 +3628,7 @@
               <a class="evidence-open" href="assets/blog/blog-evidence-rank-main-search-0723.png" target="_blank" rel="noreferrer" aria-label="원본 크기로 열기">
                               <img src="assets/blog/blog-evidence-rank-main-search-0723.png" width="700" height="780" alt="네이버 '무인지게차' 검색창과 통합검색 비즈니스·경제 인기글 — 더프라임그룹 블로그 글이 첫 번째로 노출됨" loading="lazy">
                             </a>
-              <figcaption><span lang="en">MAIN SEARCH</span>'무인지게차' 검색창과 통합검색 비즈니스·경제 인기글 첫 번째 · 2026.07.23 캡처</figcaption>
+              <figcaption><span lang="en">MAIN SEARCH</span>'무인지게차' 검색창과 통합검색 비즈니스·경제 인기글 첫 번째</figcaption>
             </figure>
           </div>
           </article>
