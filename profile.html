@@ -256,7 +256,14 @@
       z-index: 5;
       inset: 0;
       overflow: hidden;
+      opacity: 0;
       pointer-events: none;
+    }
+
+    /* 출발 좌표가 계산되기 전 중앙에 잠깐 나타나는 것을 막는다. 좌표가 준비되면
+       레이어를 즉시 열어 알약이 뷰포트 경계에 들어오는 순간부터 보이게 한다. */
+    .profile-hero.is-motion-ready .hero-covers {
+      opacity: 1;
     }
 
     .hero-chip {
@@ -287,9 +294,9 @@
         calc(14px - 8px * var(--pe, 0))
         calc(30px - 16px * var(--pe, 0))
         rgb(13 13 13 / calc(.1 - .088 * var(--pe, 0)));
-      /* --p는 JS가 무대 진행도(0→1)로 채운다. 0이면 가장자리 바깥·투명이라
-         제목이 먼저 온전히 보이고, 스크롤을 시작해야 모여든다. */
-      opacity: clamp(0, calc(var(--p, 0) * 5), 1);
+      /* 투명도 지연을 없애야 화면 끝에서 들어오는 실제 출발점이 보인다.
+         초기 중앙 노출은 부모 레이어의 is-motion-ready 상태로 막는다. */
+      opacity: 1;
       transform:
         translate(-50%, -50%)
         translate3d(
@@ -1554,6 +1561,7 @@
       });
       setStartOffsets();
       apply();
+      hero.classList.add("is-motion-ready");
     })();
 
     /* ─ 스크롤 등장 ─ 스크롤 높이를 늘리지 않는 효과만 쓴다.
