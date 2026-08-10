@@ -331,9 +331,39 @@
   color: var(--accent);
 }
 
+/* 파란 작업 섹션에서는 액센트색이 배경과 같아 글자가 사라진다.
+   제목은 흰색으로 유지하고 작은 윗첨자 화살표로 링크 상태를 알린다. */
+.band--accent .case > a:hover .case__title,
+.band--accent .case > a:focus-visible .case__title {
+  color: var(--on-accent);
+}
+
+.band--accent .case__title::after {
+  content: "↗";
+  display: inline-block;
+  margin-inline-start: 0.28em;
+  font-size: 0.55em;
+  font-weight: 600;
+  line-height: 1;
+  vertical-align: super;
+  opacity: 0;
+  transform: translate(-0.18em, 0.18em);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.band--accent .case > a:hover .case__title::after,
+.band--accent .case > a:focus-visible .case__title::after {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
 .case > a:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 4px;
+}
+
+.band--accent .case > a:focus-visible {
+  outline-color: var(--on-accent);
 }
 
 .case__no {
