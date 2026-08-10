@@ -794,10 +794,9 @@
         grid-template-columns: minmax(0, .54fr) minmax(0, .46fr);
       }
 
-      /* 증거가 공식 현장 영상 한 장뿐이므로 한 단으로 두고
-         01 구간의 부스 시안(1369×521 전체 폭)과 같은 크기로 세운다. */
+      /* 직접 만든 상영 영상과 공식 현장 기록을 역할이 섞이지 않게 나란히 둔다. */
       .video-evidence-grid {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .comparison-grid {
@@ -1105,17 +1104,25 @@
             </div>
             <!-- 부스 상영 영상은 프레임 한 장을 싣던 자리를 없애고 문장으로만 남긴다.
                  캡션에 있던 "직접 제작·편집"과 "현장 반복 재생"은 여기로 옮겼다. -->
-            <p class="section-lede">제품과 사업 내용이 순서대로 이어지도록 정보 구조와 장면을 정리했습니다. 부스 상영 영상은 직접 제작하고 편집했으며, 완성한 영상은 KOREA MAT 현장에서 반복 상영됐습니다.</p>
+            <p class="section-lede">제품과 사업 내용이 순서대로 이어지도록 정보 구조와 장면을 정리했습니다. 부스 상영 영상은 직접 촬영하고 편집했으며, 완성한 영상은 KOREA MAT 현장에서 반복 상영됐습니다.</p>
           </div>
 
           <div class="video-evidence-grid">
             <div class="video-proof">
-              <p class="video-proof__label" lang="en">Official Event Record</p>
-              <a class="youtube-card" href="https://youtu.be/PLhEQA977EA?si=EqygK98fMF-uKi6N" target="_blank" rel="noreferrer" aria-label="KOREA MAT 공식 현장 영상 보기 — YouTube에서 열기">
-                <img src="https://i.ytimg.com/vi/PLhEQA977EA/maxresdefault.jpg" width="1280" height="720" alt="2025 물류산업대전 AMR 소개 공식 현장 영상 썸네일" loading="lazy">
+              <p class="video-proof__label" lang="en">Exhibition Screening Video</p>
+              <a class="youtube-card" href="https://youtu.be/I4ol3RALCf0?si=ZAKbW3EdeKf5H0Qs" target="_blank" rel="noreferrer" aria-label="직접 촬영·편집한 KOREA MAT 부스 상영 영상 보기 — YouTube에서 열기">
+                <img src="https://i.ytimg.com/vi/I4ol3RALCf0/maxresdefault.jpg" width="1280" height="720" alt="1.5톤급 무인 지게차 AMR의 장애물 감지와 팔레트 운반 장면을 담은 부스 상영 영상 썸네일" loading="lazy">
                 <span class="youtube-card__play" aria-hidden="true"></span>
               </a>
-              <p class="video-source">더프라임그룹 공식 YouTube에 공개된 별도의 현장 영상입니다. 직접 제작한 부스 상영 영상과는 다른 결과물입니다.</p>
+              <p class="video-source">직접 촬영하고 편집해 KOREA MAT 부스에서 반복 상영한 영상입니다.</p>
+            </div>
+            <div class="video-proof">
+              <p class="video-proof__label" lang="en">Official On-site Record</p>
+              <a class="youtube-card" href="https://youtu.be/PLhEQA977EA?si=EqygK98fMF-uKi6N" target="_blank" rel="noreferrer" aria-label="KOREA MAT 공식 현장 기록 영상 보기 — YouTube에서 열기">
+                <img src="https://i.ytimg.com/vi/PLhEQA977EA/maxresdefault.jpg" width="1280" height="720" alt="KOREA MAT 현장의 AMR 부스와 운영 모습을 담은 공식 기록 영상 썸네일" loading="lazy">
+                <span class="youtube-card__play" aria-hidden="true"></span>
+              </a>
+              <p class="video-source">부스와 AMR의 현장 운영 모습을 확인할 수 있는 더프라임그룹 공식 기록 영상입니다.</p>
             </div>
           </div>
         </div>
