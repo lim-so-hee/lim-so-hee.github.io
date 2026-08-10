@@ -687,6 +687,7 @@
     /* 왼쪽 여백이 0이라 숫자가 칸을 나누는 세로선에 붙어 있었다(실측:
        선 x=640, "약" x=645). 좌우를 같게 줘서 칸 안에 들어앉게 한다. */
     .outcome-stats > div {
+      position: relative;
       padding: 1.75rem 1.5rem 2rem;
       border-inline-end: 1px solid var(--color-rule-strong);
     }
@@ -696,6 +697,10 @@
     }
 
     .outcome-stats dt {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: clamp(1rem, 2vh, 1.5rem);
       color: var(--color-focus);
       font-family: var(--font-en);
       font-size: clamp(2.5rem, 5.4vw, 4.5rem);
@@ -704,11 +709,55 @@
       letter-spacing: -.04em;
     }
 
+    .outcome-icon {
+      display: grid;
+      place-items: center;
+      inline-size: clamp(3rem, 4vw, 3.75rem);
+      block-size: clamp(3rem, 4vw, 3.75rem);
+      border-radius: 50%;
+      background: rgb(54 99 246 / .11);
+      color: var(--color-accent);
+    }
+
+    .outcome-icon svg {
+      inline-size: 55%;
+      block-size: 55%;
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.8;
+    }
+
+    .outcome-value {
+      white-space: nowrap;
+    }
+
     .outcome-stats dd {
       margin-block-start: 1rem;
       color: var(--color-ink-2);
       font-size: var(--text-sm);
       line-height: 1.6;
+    }
+
+    .outcome-stats dd strong,
+    .outcome-stats dd span {
+      display: block;
+    }
+
+    .outcome-stats dd strong {
+      color: var(--color-ink);
+      font-size: clamp(1rem, 1.35vw, 1.2rem);
+      font-weight: 700;
+    }
+
+    .outcome-rate {
+      margin-block-start: clamp(1rem, 2vh, 1.5rem);
+      padding-block-start: clamp(.75rem, 1.5vh, 1rem);
+      border-block-start: 1px solid var(--color-rule-strong);
+      color: var(--color-accent);
+      font-size: var(--text-xs);
+      font-weight: 700;
     }
 
     /* ── 스크롤 스택 (Outcome 증거 3장) ────────────────────────
@@ -1223,9 +1272,40 @@
       }
 
       .outcome-stats > div {
-        padding-inline: 0;
+        display: grid;
+        grid-template-columns: auto minmax(5rem, auto) minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        align-items: center;
+        column-gap: 1rem;
+        padding: 1.5rem 0;
         border-inline-end: 0;
         border-block-end: 1px solid var(--color-rule-strong);
+      }
+
+      .outcome-stats dt {
+        display: contents;
+      }
+
+      .outcome-icon {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+      }
+
+      .outcome-value {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+      }
+
+      .outcome-stats dd {
+        grid-column: 3;
+        grid-row: 1 / span 2;
+        margin-block-start: 0;
+      }
+
+      .outcome-rate {
+        margin-block-start: .35rem;
+        padding-block-start: 0;
+        border-block-start: 0;
       }
 
       .outcome-stats > div:last-child {
@@ -1462,13 +1542,22 @@
             <article class="perf-stack__view">
               <div>
                 <p class="proof-label" lang="en">Results</p>
-                <h3 class="card-heading">등록과 참석, 후속 신청을 수치로 남겼습니다.</h3>
+                <h3 class="card-heading">등록에서 참석, 후속 신청까지 이어졌습니다.</h3>
                 <!-- 줄바꿈을 브라우저에 맡기지 않고 문장 경계에 고정한다. -->
-                <p class="section-lede">더프라임그룹의 사업 추진 체계와 3D 프린팅 적용 사례를 하나의 발표 섹션으로 완성해 공동 웨비나에 활용했습니다.<br>행사 후 참가자 설문을 통해 무료 출력 이벤트 신청 37건의 리드가 접수됐습니다.</p>
+                <p class="section-lede">공동 웨비나에 230명이 등록했고 약 170명이 실시간으로 참석했습니다.<br>행사 후 참가자 설문에서는 무료 출력 이벤트 신청 37건이 접수됐습니다.</p>
                 <dl class="outcome-stats">
-                  <div><dt>230</dt><dd>공동 웨비나 등록</dd></div>
-                  <div><dt>약 170</dt><dd>실시간 참석</dd></div>
-                  <div><dt>37</dt><dd>리드 접수<br>무료 출력 이벤트 신청 설문</dd></div>
+                  <div>
+                    <dt><span class="outcome-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h6"/></svg></span><span class="outcome-value">230</span></dt>
+                    <dd><strong>공동 웨비나 등록</strong><span class="outcome-rate">등록자 기준 100%</span></dd>
+                  </div>
+                  <div>
+                    <dt><span class="outcome-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><circle cx="12" cy="10.5" r="2.5"/></svg></span><span class="outcome-value">약 170</span></dt>
+                    <dd><strong>실시간 참석</strong><span class="outcome-rate">등록 대비 약 74%</span></dd>
+                  </div>
+                  <div>
+                    <dt><span class="outcome-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h8M9 2h6v4H9z"/><rect x="5" y="4" width="14" height="17" rx="2"/><path d="m9 14 2 2 4-5"/></svg></span><span class="outcome-value">37</span></dt>
+                    <dd><strong>후속 신청 접수</strong><span class="outcome-rate">참석 대비 약 22%</span></dd>
+                  </div>
                 </dl>
               </div>
             </article>
