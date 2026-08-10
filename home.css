@@ -469,10 +469,13 @@
 
 .metric__to {
   color: var(--accent);
-  font-size: clamp(4rem, 13vw, 11rem);
+  /* 텍스트 열을 넓힌 뒤 수치 열이 좁아져 '2시간'이 두 줄로 갈라졌다.
+     열 안에 들어오는 크기로 낮추고 수치 단위는 항상 한 덩어리로 둔다. */
+  font-size: clamp(4rem, 10vw, 8.5rem);
   font-weight: var(--w-display);
   line-height: 0.9;
   letter-spacing: -0.04em;
+  white-space: nowrap;
 }
 
 .flow {
