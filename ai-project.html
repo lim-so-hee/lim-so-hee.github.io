@@ -168,7 +168,7 @@
       grid-template-columns: minmax(0, 1fr);
       gap: clamp(1.5rem, 3vw, 2.5rem);
       align-items: end;
-      padding-block-start: clamp(1.25rem, 2.2vw, 2rem);
+      padding-block-start: clamp(2rem, 3.5vw, 3.5rem);
       border-block-start: 2px solid var(--color-ink);
     }
 
@@ -178,6 +178,11 @@
       font-size: clamp(2rem, 4vw, 3.4rem);
       line-height: 1.08;
       letter-spacing: -.035em;
+    }
+
+    .case-summary h2 strong {
+      color: var(--color-accent);
+      font-weight: 800;
     }
 
     .case-summary__header > p:last-child {
@@ -212,20 +217,6 @@
     .case-summary__facts dd {
       color: var(--color-ink);
       line-height: 1.65;
-    }
-
-    .case-summary__nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .75rem 1.5rem;
-      margin-block-start: 1.5rem;
-    }
-
-    .case-summary__nav a {
-      border-bottom: 1px solid currentColor;
-      color: var(--color-ink);
-      font-weight: 700;
-      text-decoration: none;
     }
 
     .section-name {
@@ -3021,14 +3012,13 @@
                  규칙 8과 참고 3·4가 공통으로 "프로젝트명·기간·역할·기여
                  범위를 먼저, 같은 자리에" 두라고 한다. 읽는 사람이 언제 한
                  일인지, 어디까지가 본인 몫인지 추론하게 두지 않는다.
-                 근거 — 2025.03: FACTS.md 20행("from March 2025 ... manually
-                 used AI for Naver Blog image generation and first-draft
-                 creation"). 2026.07: FACTS.md 33행의 최신 완전월.
+                 기간 근거 — 사용자 확인(2026-08-10): 2024.06부터 현재까지
+                 해당 업무를 계속 진행 중.
                  워크플로 구축·운영: FACTS.md 47행. 출처 확인·수정·최종 검수:
                  FACTS.md 28행("did not automatically publish; Sohee Lim made
                  the final publishing decision"). 새 주장이 아니라 흩어져
                  있던 사실을 한 줄에 모은 것이다. -->
-            <p class="hero-scope">2025.03 – 2026.07 · 워크플로 구축·운영 · 출처 확인·수정·최종 검수</p>
+            <p class="hero-scope">2024.06 – 현재 · 워크플로 구축·운영 · 출처 확인·수정·최종 검수</p>
           </div>
           <!-- 오른쪽 끝 세로쓰기 'SCROLL' 글자였다. 화면 구석에 세워두면
                읽히기 전에 지나쳐 안내 구실을 못 했다. 가운데 아래로 옮기고
@@ -3049,22 +3039,16 @@
           <div class="case-summary__header">
             <div>
               <p class="section-name" lang="en">CASE SUMMARY</p>
-              <h2 id="case-summary-title">역할과 결과를 먼저 요약했습니다.</h2>
+              <h2 id="case-summary-title"><strong>역할과 결과</strong>를 먼저 요약했습니다.</h2>
             </div>
-            <p>수동 AI 활용에서 시작해 반복 제작을 워크플로로 연결했습니다. 생성 원고는 출처와 사실관계를 대조해 수정하고 최종본을 확정했습니다. 필요한 구간으로 바로 이동해 세부 근거를 확인할 수 있습니다.</p>
+            <p>수동 AI 활용에서 시작해 반복 제작을 워크플로로 연결했습니다. 생성 원고는 출처와 사실관계를 대조해 수정하고 최종본을 확정했습니다.</p>
           </div>
           <dl class="case-summary__facts">
-            <div><dt>기간</dt><dd>2025.03–2026.07</dd></div>
+            <div><dt>기간</dt><dd>2024.06–현재</dd></div>
             <div><dt>담당 범위</dt><dd>워크플로 구축·운영, 출처 확인, 원고 수정·최종 검수</dd></div>
             <div><dt>제작 시간</dt><dd>약 4–5시간(추정)에서 약 2시간(1회 관찰)으로 변화</dd></div>
             <div><dt>검색·유입 관찰</dt><dd>추적 키워드 10개 모두 5위 이내(2026.07) · 월간 조회수 330→702(4월·7월 비교)</dd></div>
           </dl>
-          <nav class="case-summary__nav" aria-label="AI 프로젝트 주요 구간">
-            <a href="#manual">수동 활용·사업 문서</a>
-            <a href="#automation">블로그 자동화</a>
-            <a href="#performance">검색 성과·유입</a>
-            <a href="#workspace">현재 작업 체계</a>
-          </nav>
         </div>
       </section>
 
