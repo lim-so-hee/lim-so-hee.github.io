@@ -1990,7 +1990,16 @@
       background: none;
       -webkit-user-select: none;
       user-select: none;
+      cursor: grab;
       will-change: transform;
+    }
+
+    .js-stack .perf-stack.is-dragging .perf-stack__view {
+      cursor: grabbing;
+    }
+
+    .js-stack .perf-stack__view :is(a, button) {
+      cursor: pointer;
     }
 
     .js-stack .perf-stack__view img {
@@ -2305,7 +2314,7 @@
         display: grid;
         grid-column: 1;
         grid-row: 2 / span 3;
-        grid-template-rows: auto auto minmax(0, 1fr);
+        grid-template-rows: auto auto minmax(0, 1fr) auto;
         align-self: stretch;
         align-content: start;
         gap: clamp(1.15rem, 2.6vh, 2rem);
@@ -2319,6 +2328,10 @@
       .js-stack .perf-stack__view #traffic-growth > .traffic-copy > .metric-note {
         align-self: start;
         translate: none;
+      }
+
+      .js-stack .perf-stack__view #traffic-growth > .traffic-copy > .traffic-source-note {
+        align-self: end;
       }
 
       .js-stack .perf-stack__view #traffic-growth > .traffic-copy > .ai-metrics {
@@ -2705,19 +2718,19 @@
       /* 그래프 패널은 오른쪽 끝을 유지한 채 폭만 10% 줄인다. 왼쪽 경계가
          오른쪽으로 이동해 두 열 사이 간격이 분명해지고, 캡션도 같은 폭을 쓴다. */
       .js-stack .perf-stack__view #traffic-growth > .evidence-stage--chart {
-        inline-size: 90%;
+        inline-size: 82%;
         justify-self: end;
       }
 
       .js-stack .perf-stack__view #traffic-growth > .evidence-stage--chart > .traffic-chart {
-        flex: 1 1 0;
-        align-self: stretch;
+        flex: 0 1 auto;
+        align-self: end;
         inline-size: 100%;
-        block-size: 100%;
+        block-size: auto;
         max-inline-size: 100%;
-        max-block-size: none;
+        max-block-size: calc(100% - 5rem);
         margin-inline-end: 0;
-        aspect-ratio: auto;
+        aspect-ratio: 640 / 420;
         background: #f4f6fb;
       }
 
@@ -3698,6 +3711,7 @@
               <div><dt>210 → 495</dt><dd>순방문자 136% 증가 · 같은 기간</dd></div>
               <div><dt>62.2%</dt><dd>7월 네이버 통합검색 유입 비중 · PC 32.13% + 모바일 30.03%</dd></div>
             </dl>
+            <p class="metric-note traffic-source-note"><em>네이버 블로그 월간 통계 기준.</em> 시점 전후를 비교한 관찰값입니다.</p>
             </div>
             <!-- "2025년 하반기 조회수에는 서로이웃 유입이 최대 21%까지 섞여
                  있었습니다. 그 비중이 2% 아래로 내려간 구간만 놓고
@@ -3796,7 +3810,6 @@
                  cause"를 요구한다. 자동화 시작월은 330에서 266으로 오히려
                  떨어졌고 상승은 6월부터라, 113%를 인과로 읽히게 두면 사실과
                  어긋난다. "시점 전후 관찰값"이 그 조건을 최소 길이로 담는다. -->
-            <p class="metric-note"><em>네이버 블로그 월간 통계 기준.</em> 시점 전후를 비교한 관찰값입니다.</p>
           </div>
           </article>
 
@@ -4128,6 +4141,38 @@
       views.forEach((view) => {
         view.querySelectorAll("img").forEach((img) => { img.draggable = false; });
       });
+
+      /* 마우스로 카드의 빈 영역을 끌면 그 거리만큼 실제 문서 스크롤을
+         이동시킨다. 텍스트 선택·이미지 고스트는 계속 막되, 드래그 자체를
+         카드 이동 입력으로 바꾼다. 링크와 버튼은 클릭 동작을 우선한다. */
+      let drag = null;
+      const finishDrag = (event) => {
+        if (!drag || (event && event.pointerId !== drag.pointerId)) return;
+        if (stack.hasPointerCapture(drag.pointerId)) {
+          stack.releasePointerCapture(drag.pointerId);
+        }
+        drag = null;
+        stack.classList.remove("is-dragging");
+      };
+
+      stack.addEventListener("pointerdown", (event) => {
+        if (event.pointerType !== "mouse" || event.button !== 0) return;
+        if (event.target.closest("a, button, input, textarea, select")) return;
+        event.preventDefault();
+        drag = { pointerId: event.pointerId, y: event.clientY, scrollY: window.scrollY };
+        stack.setPointerCapture(event.pointerId);
+        stack.classList.add("is-dragging");
+      });
+
+      stack.addEventListener("pointermove", (event) => {
+        if (!drag || event.pointerId !== drag.pointerId) return;
+        event.preventDefault();
+        window.scrollTo({ top: drag.scrollY + drag.y - event.clientY, behavior: "auto" });
+      });
+
+      stack.addEventListener("pointerup", finishDrag);
+      stack.addEventListener("pointercancel", finishDrag);
+      stack.addEventListener("lostpointercapture", finishDrag);
 
       /* 캡션 상자를 그림과 같은 폭으로 맞춘다. 그림 폭은 남는 높이에 비율을
          곱해 나오는 값이라 CSS만으로는 캡션에 물려줄 수 없다. 그림이 실제로
