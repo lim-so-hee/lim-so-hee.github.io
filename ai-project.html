@@ -1510,6 +1510,10 @@
       display: contents;
     }
 
+    .traffic-copy {
+      display: contents;
+    }
+
     /* 결론을 아랫줄로 내린다. 같은 줄에 두면 앞 덩이와 폭을 나눠 써야 해서
        숫자를 키울 여지가 없었다. 줄을 통째로 쓰면 왼쪽 칸 499px이 전부
        이 숫자 것이 된다(실측 1536×639). 옆으로 벌리던 여백은 필요 없어져
@@ -1984,7 +1988,13 @@
       max-width: none;
       padding: 10px;
       background: none;
+      -webkit-user-select: none;
+      user-select: none;
       will-change: transform;
+    }
+
+    .js-stack .perf-stack__view img {
+      -webkit-user-drag: none;
     }
 
     .js-stack .perf-stack__view::before {
@@ -2260,6 +2270,10 @@
         grid-template-columns: minmax(0, .62fr) minmax(0, 1fr);
       }
 
+      .js-stack .perf-stack__view:has(#traffic-growth) .block {
+        grid-template-columns: minmax(26rem, .85fr) minmax(0, 1.15fr);
+      }
+
       .js-stack .perf-stack__view #ai-search-results > .citation-copy {
         display: grid;
         grid-column: 1;
@@ -2281,6 +2295,37 @@
       .js-stack .perf-stack__view #ai-search-results > .citation-copy > .metric-note {
         align-self: start;
         translate: none;
+      }
+
+      /* TRAFFIC의 왼쪽 정보는 하나의 세로 묶음으로 관리한다. 래퍼가
+         display:contents이면 그래프의 고유 크기가 바깥 격자를 밀어 제목 폭과
+         카드 높이가 함께 무너진다. 제목 아래부터 카드 바닥까지를 래퍼가 채우고,
+         세부 지표는 마지막 줄에 고정해 오른쪽 증거 카드와 높이를 맞춘다. */
+      .js-stack .perf-stack__view #traffic-growth > .traffic-copy {
+        display: grid;
+        grid-column: 1;
+        grid-row: 2 / span 3;
+        grid-template-rows: auto auto minmax(0, 1fr);
+        align-self: stretch;
+        align-content: start;
+        gap: clamp(1.15rem, 2.6vh, 2rem);
+        margin-block-start: clamp(1rem, 4vh, 3rem);
+      }
+
+      .js-stack .perf-stack__view #traffic-growth > .traffic-copy > :is(.growth-row, .metric-note, .ai-metrics) {
+        margin-block-start: 0;
+      }
+
+      .js-stack .perf-stack__view #traffic-growth > .traffic-copy > .metric-note {
+        align-self: start;
+        translate: none;
+      }
+
+      .js-stack .perf-stack__view #traffic-growth > .traffic-copy > .ai-metrics {
+        align-self: end;
+        grid-template-columns: none;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, 1fr);
       }
 
       /* 알약 줄은 자기 행을 통째로 쓰되 폭만 첫 칸에 맞춘다.
@@ -2456,7 +2501,7 @@
          위 규칙과 특이도가 같으므로(0-4-0) 반드시 뒤에 와야 한다. */
       .js-stack .perf-stack__view .block > .evidence-stage--chart > .traffic-chart {
         padding: clamp(1rem, 2vw, 1.5rem);
-        background: #10141f;
+        background: #f4f6fb;
       }
 
       /* 캡션 상자는 그림과 같은 폭이다. fit-content로 두면 글자 길이에 따라
@@ -2595,6 +2640,10 @@
        96rem 미만에서는 제목과 세부 키워드가 길어져 좌우 높이를 함께 맞출 수
        없으므로 기존 배치를 유지한다. */
     @media (min-width: 96rem) {
+      .js-stack .perf-stack__view #traffic-growth {
+        grid-template-columns: minmax(32rem, .88fr) minmax(0, 1.12fr);
+      }
+
       .js-stack .perf-stack__view #search-results {
         grid-template-rows: auto auto auto;
         align-content: center;
@@ -2622,6 +2671,59 @@
       .js-stack .perf-stack__view #search-results > .evidence-stage > figcaption {
         margin-inline-end: 0;
       }
+
+      /* RANKINGS와 같은 기준선: 제목부터 왼쪽 마지막 문장까지를 한 묶음으로
+         보고 오른쪽 증거 영역이 그 전체 높이를 함께 쓴다. */
+      .js-stack .perf-stack__view :is(#ai-search-results, #traffic-growth) {
+        grid-template-rows: auto auto;
+        align-content: center;
+      }
+
+      .js-stack .perf-stack__view :is(#ai-search-results, #traffic-growth) > .block__head {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      .js-stack .perf-stack__view #ai-search-results > .citation-copy,
+      .js-stack .perf-stack__view #traffic-growth > .traffic-copy {
+        grid-column: 1;
+        grid-row: 2;
+        align-self: start;
+      }
+
+      .js-stack .perf-stack__view #traffic-growth > .traffic-copy {
+        align-self: stretch;
+      }
+
+      .js-stack .perf-stack__view :is(#ai-search-results, #traffic-growth) > .evidence-stage {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        align-self: stretch;
+        justify-content: space-between;
+      }
+
+      /* 그래프 패널은 오른쪽 끝을 유지한 채 폭만 10% 줄인다. 왼쪽 경계가
+         오른쪽으로 이동해 두 열 사이 간격이 분명해지고, 캡션도 같은 폭을 쓴다. */
+      .js-stack .perf-stack__view #traffic-growth > .evidence-stage--chart {
+        inline-size: 90%;
+        justify-self: end;
+      }
+
+      .js-stack .perf-stack__view #traffic-growth > .evidence-stage--chart > .traffic-chart {
+        flex: 1 1 0;
+        align-self: stretch;
+        inline-size: 100%;
+        block-size: 100%;
+        max-inline-size: 100%;
+        max-block-size: none;
+        margin-inline-end: 0;
+        aspect-ratio: auto;
+        background: #f4f6fb;
+      }
+
+      .js-stack .perf-stack__view #traffic-growth > .evidence-stage--chart > figcaption {
+        margin-inline-end: 0;
+      }
     }
 
     /* 새 AI 브리핑 캡처는 검색창까지 담아 이전 크롭보다 세로 비율이 크다.
@@ -2643,7 +2745,7 @@
        SVG라 어느 크기에서도 선명하고 색을 페이지 토큰에서 받는다. */
     .evidence-stage--chart {
       padding: clamp(1rem, 2vw, 1.5rem);
-      background: #10141f;
+      background: #f4f6fb;
     }
 
     .traffic-chart {
@@ -2660,28 +2762,28 @@
     /* 서로이웃 몫. 전체 막대 바닥에 겹쳐 깔린다 — 값이 8~37이라 실 한 줄로
        보이는 것이 정확한 표현이다. 지우지 않는 것이 이 그래프의 요점이다. */
     .traffic-chart__neighbour rect {
-      fill: rgb(255 255 255 / .55);
+      fill: #aeb9d0;
     }
 
     .traffic-chart__base {
-      stroke: rgb(255 255 255 / .28);
+      stroke: #98a3b8;
       stroke-width: 1;
     }
 
     .traffic-chart__marker {
-      stroke: rgb(255 255 255 / .4);
+      stroke: #7f8aa0;
       stroke-width: 1;
       stroke-dasharray: 3 4;
     }
 
     .traffic-chart__marker-label {
-      fill: rgb(255 255 255 / .58);
+      fill: #465168;
       font-family: var(--font-ko);
       font-size: 13px;
     }
 
     .traffic-chart__value text {
-      fill: rgb(255 255 255 / .92);
+      fill: #172033;
       font-family: var(--font-en);
       font-size: 17px;
       font-weight: 700;
@@ -2689,14 +2791,14 @@
     }
 
     .traffic-chart__month text {
-      fill: rgb(255 255 255 / .6);
+      fill: #4f5a70;
       font-family: var(--font-ko);
       font-size: 13px;
       text-anchor: middle;
     }
 
     .traffic-chart__legend text {
-      fill: rgb(255 255 255 / .6);
+      fill: #4f5a70;
       font-family: var(--font-ko);
       font-size: 13px;
       dominant-baseline: middle;
@@ -2719,7 +2821,7 @@
     }
 
     .traffic-chart__legend .is-neighbour {
-      fill: rgb(255 255 255 / .55);
+      fill: #aeb9d0;
     }
 
     /* ── 04 AI WORKSPACE 블록 구분 ─────────────────────────────
@@ -3557,6 +3659,7 @@
               <p class="section-name" lang="en">TRAFFIC</p>
               <h3 id="traffic-growth-title">같은 기간 블로그 월간 조회수도 늘었습니다.</h3>
             </div>
+            <div class="traffic-copy">
             <div class="growth-row" aria-label="월간 조회수 변화">
               <div><span>자동화 직전 완전월</span><strong>330</strong><small>4월 조회수</small></div>
               <i aria-hidden="true">→</i>
@@ -3595,6 +3698,7 @@
               <div><dt>210 → 495</dt><dd>순방문자 136% 증가 · 같은 기간</dd></div>
               <div><dt>62.2%</dt><dd>7월 네이버 통합검색 유입 비중 · PC 32.13% + 모바일 30.03%</dd></div>
             </dl>
+            </div>
             <!-- "2025년 하반기 조회수에는 서로이웃 유입이 최대 21%까지 섞여
                  있었습니다. 그 비중이 2% 아래로 내려간 구간만 놓고
                  비교했습니다." 문장을 뺐다. 아래 그래프가 2025년 11월부터만
@@ -4015,6 +4119,15 @@
       stack.style.setProperty("--views", views.length);
       views.forEach((v, i) => v.style.setProperty("--z", views.length - i));
       document.documentElement.classList.add("js-stack");
+
+      /* 카드 안에서 텍스트나 이미지를 끌면 브라우저의 선택 자동 스크롤이
+         발생해 이전 카드가 다시 내려왔다. 선택·기본 드래그만 막고 클릭,
+         휠·트랙패드 스크롤과 키보드 탐색은 그대로 둔다. */
+      stack.addEventListener("dragstart", (event) => event.preventDefault());
+      stack.addEventListener("selectstart", (event) => event.preventDefault());
+      views.forEach((view) => {
+        view.querySelectorAll("img").forEach((img) => { img.draggable = false; });
+      });
 
       /* 캡션 상자를 그림과 같은 폭으로 맞춘다. 그림 폭은 남는 높이에 비율을
          곱해 나오는 값이라 CSS만으로는 캡션에 물려줄 수 없다. 그림이 실제로
