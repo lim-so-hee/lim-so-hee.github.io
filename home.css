@@ -600,14 +600,17 @@
 
 /* 다른 5장의 푸터 링크(pillnav.css .page-footer a)와 눈금을 맞춘다.
    여기만 17px에 1.6px 밑줄이라 같은 자리의 같은 링크가 달라 보였다(실측). */
-.colophon__item dd a {
+.colophon__item dd a,
+.colophon__item .email-copy {
   border-bottom: 0;
   font-size: var(--t-caption);
   font-weight: var(--w-display);
   text-decoration: none;
 }
 
-.colophon__item dd a:hover {
+.colophon__item dd a:hover,
+.colophon__item .email-copy:hover,
+.colophon__item .email-copy:focus-visible {
   color: var(--accent);
 }
 
