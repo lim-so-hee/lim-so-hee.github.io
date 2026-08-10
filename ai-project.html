@@ -2341,6 +2341,25 @@
         grid-auto-columns: minmax(0, 1fr);
       }
 
+      /* TRAFFIC는 한 화면에 수치가 많다. 공용 크기보다 한 단계 낮춰 제목,
+         핵심 변화, 보조 지표가 서로 같은 목소리로 경쟁하지 않게 한다. */
+      .js-stack .perf-stack__view #traffic-growth .block__head h3 {
+        max-inline-size: 20ch;
+        font-size: clamp(1.7rem, 2.7vw, 2.5rem);
+      }
+
+      .js-stack .perf-stack__view #traffic-growth .growth-row p strong {
+        font-size: clamp(3rem, min(7vw, 16vh), 6.75rem);
+      }
+
+      .js-stack .perf-stack__view #traffic-growth .ai-metrics dt {
+        font-size: clamp(1.35rem, 2vw, 1.9rem);
+      }
+
+      .js-stack .perf-stack__view #traffic-growth :is(.ai-metrics dd, .metric-note) {
+        font-size: var(--text-xs);
+      }
+
       /* 알약 줄은 자기 행을 통째로 쓰되 폭만 첫 칸에 맞춘다.
          26rem 상한일 때는 알약이 502에서 끝나는데 칸은 908까지라 오른쪽
          406px이 선으로 둘러싸인 빈 상자가 됐고, 그 선(908)이 아래
@@ -2715,7 +2734,7 @@
         justify-content: space-between;
       }
 
-      /* 그래프 패널은 오른쪽 끝을 유지한 채 폭만 10% 줄인다. 왼쪽 경계가
+      /* 그래프 패널은 오른쪽 끝을 유지한 채 폭만 18% 줄인다. 왼쪽 경계가
          오른쪽으로 이동해 두 열 사이 간격이 분명해지고, 캡션도 같은 폭을 쓴다. */
       .js-stack .perf-stack__view #traffic-growth > .evidence-stage--chart {
         inline-size: 82%;
@@ -2723,14 +2742,14 @@
       }
 
       .js-stack .perf-stack__view #traffic-growth > .evidence-stage--chart > .traffic-chart {
-        flex: 0 1 auto;
-        align-self: end;
+        flex: 1 1 0;
+        align-self: stretch;
         inline-size: 100%;
-        block-size: auto;
+        block-size: 100%;
         max-inline-size: 100%;
-        max-block-size: calc(100% - 5rem);
+        max-block-size: none;
         margin-inline-end: 0;
-        aspect-ratio: 640 / 420;
+        aspect-ratio: auto;
         background: #f4f6fb;
       }
 
@@ -3670,13 +3689,13 @@
           <div class="block" id="traffic-growth" aria-labelledby="traffic-growth-title">
             <div class="block__head">
               <p class="section-name" lang="en">TRAFFIC</p>
-              <h3 id="traffic-growth-title">같은 기간 블로그 월간 조회수도 늘었습니다.</h3>
+              <h3 id="traffic-growth-title">블로그 월간 조회수도 늘었습니다.</h3>
             </div>
             <div class="traffic-copy">
             <div class="growth-row" aria-label="월간 조회수 변화">
-              <div><span>자동화 직전 완전월</span><strong>330</strong><small>4월 조회수</small></div>
+              <div><span>자동화 직전</span><strong>330</strong><small>4월 조회수</small></div>
               <i aria-hidden="true">→</i>
-              <div><span>최신 완전월</span><strong>702</strong><small>7월 조회수</small></div>
+              <div><span>최근 완전월</span><strong>702</strong><small>7월 조회수</small></div>
               <!-- 결론 숫자 오른쪽이 504×204px 비어 있었다(실측 1536×639).
                    문의 3건을 여기 세운다 — 카드 밖 마감 줄은 스택이 풀린 뒤와
                    다음 섹션 사이라 어느 덩이에도 안 속했다. 여기 두면 카드
@@ -3697,19 +3716,19 @@
                      빠지면 113% 옆에 붙은 3건이 유입 증가의 결과로 읽히고,
                      그건 FACTS.md 40행이 막는 인과 주장이다. "홈페이지"도
                      남겨 블로그 지표와 구분한다. -->
-                <p class="signal-stat"><span>홈페이지 신규 문의 · 같은 기간 관찰</span><strong>3<span class="mult-unit">건</span></strong></p>
+                <p class="signal-stat"><span>홈페이지 신규 문의</span><strong>3<span class="mult-unit">건</span></strong></p>
               </div>
             </div>
-            <p class="metric-note">월간 조회수와 홈페이지 문의는 같은 기간에 관찰된 별도 지표이며, 두 수치 사이의 인과관계를 뜻하지 않습니다.</p>
+            <p class="metric-note">조회수와 문의는 같은 기간의 별도 지표로, 인과관계를 뜻하지 않습니다.</p>
             <dl class="ai-metrics">
               <!-- 21.4% → 1.6%은 순방문자 기준이다. 같은 자료에 조회수 기준
                    (51.3% → 1.9%)도 있어 분모를 안 밝히면 헷갈린다. 라벨에
                    "순방문자"를 넣는다. 수치는 원본 그대로다 —
                    순방문자수_월간_…_20260801_151844.xlsx: 2025-07 257 중 55,
                    2026-07 495 중 8. -->
-              <div><dt>21.4% → 1.6%</dt><dd>서로이웃 순방문자 비중 · 2025년 7월 대비 2026년 7월</dd></div>
-              <div><dt>210 → 495</dt><dd>순방문자 136% 증가 · 같은 기간</dd></div>
-              <div><dt>62.2%</dt><dd>7월 네이버 통합검색 유입 비중 · PC 32.13% + 모바일 30.03%</dd></div>
+              <div><dt>21.4% → 1.6%</dt><dd>서로이웃 순방문자 비중 · 전년 동월 대비</dd></div>
+              <div><dt>210 → 495</dt><dd>순방문자 136% 증가</dd></div>
+              <div><dt>62.2%</dt><dd>7월 네이버 통합검색 유입 비중</dd></div>
             </dl>
             <p class="metric-note traffic-source-note"><em>네이버 블로그 월간 통계 기준.</em> 시점 전후를 비교한 관찰값입니다.</p>
             </div>
