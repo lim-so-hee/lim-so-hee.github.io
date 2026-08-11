@@ -52,6 +52,7 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 
   let bodies = [], raf = 0, rest = 0;
+  let hasBuilt = false, layoutWidth = 0;
 
   const integrate = (p, o) => {
     const vx = (p.x - o.x) * DAMP, vy = (p.y - o.y) * DAMP;
@@ -212,7 +213,7 @@
     if (rest < REST_FRAMES) raf = requestAnimationFrame(step);
   };
 
-  const build = () => {
+  const build = ({ animate = !hasBuilt } = {}) => {
     cancelAnimationFrame(raf);
     field.innerHTML = '';
     bodies = [];
@@ -231,6 +232,7 @@
       }
       return;
     }
+    layoutWidth = W;
 
     TOOLS.forEach(([file, label, hex], i) => {
       const el = document.createElement('div');
@@ -258,9 +260,11 @@
         o1: { x: p1.x - vx, y: p1.y }, o2: { x: p2.x - vx, y: p2.y } });
     });
 
-    // 모션을 끈 사용자, 그리고 탭이 안 보이는 동안은 계산만 돌려 결과만 남긴다.
-    // requestAnimationFrame은 숨은 탭에서 멈추므로 그냥 두면 알약이 공중에 걸린다.
-    if (reduce.matches || document.hidden) { settle(W, H); return; }
+    // 첫 등장에만 낙하 장면을 재생한다. 이후 화면 회전이나 실제 너비 변경으로
+    // 다시 배치할 때는 완성된 더미를 바로 보여 스크롤 중 재낙하하지 않는다.
+    const shouldAnimate = animate && !reduce.matches && !document.hidden;
+    hasBuilt = true;
+    if (!shouldAnimate) { settle(W, H); return; }
     raf = requestAnimationFrame(step);
   };
 
@@ -299,6 +303,14 @@
   else start();
 
   let t = 0;
-  addEventListener('resize', () => { clearTimeout(t); t = setTimeout(build, 200); });
-  reduce.addEventListener('change', build);
+  addEventListener('resize', () => {
+    if (!hasBuilt) return;
+    const nextWidth = field.clientWidth;
+    // 모바일 주소창이 접히고 펼쳐질 때는 높이만 달라져도 resize가 발생한다.
+    // 너비가 그대로면 현재 더미를 유지해 스크롤마다 다시 떨어지는 일을 막는다.
+    if (!nextWidth || Math.abs(nextWidth - layoutWidth) < 2) return;
+    clearTimeout(t);
+    t = setTimeout(() => build({ animate: false }), 200);
+  });
+  reduce.addEventListener('change', () => build({ animate: false }));
 })();
