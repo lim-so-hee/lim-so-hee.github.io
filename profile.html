@@ -750,7 +750,7 @@
       }
 
       .career-list {
-        grid-template-rows: auto repeat(4, auto);
+        grid-template-rows: auto repeat(4, auto) auto;
       }
 
 
@@ -784,7 +784,7 @@
 
     .career-list {
       display: grid;
-      grid-template-rows: auto repeat(4, minmax(0, 1fr));
+      grid-template-rows: auto repeat(4, minmax(0, 1fr)) auto;
     }
 
     .credentials {
@@ -838,6 +838,34 @@
       color: var(--body);
       font-size: var(--t-xs);
       line-height: var(--lh-body);
+    }
+
+    .career-download {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 64px;
+      color: var(--blue);
+      font-size: var(--t-xs);
+      font-weight: var(--w-mid);
+      text-decoration: none;
+    }
+
+    .career-download__meta {
+      color: var(--muted);
+      font-size: var(--t-2xs);
+      font-weight: var(--w-body);
+    }
+
+    .career-download__arrow {
+      display: inline-block;
+      margin-left: 6px;
+      transition: transform 180ms ease;
+    }
+
+    .career-download:hover .career-download__arrow,
+    .career-download:focus-visible .career-download__arrow {
+      transform: translate(2px, -2px);
     }
 
     .credential-group {
@@ -1389,6 +1417,10 @@
                 <span class="career-role">매장 운영 · 고객 응대와 서비스 운영</span>
               </div>
             </div>
+            <a class="career-download reveal" style="--d: 460ms" href="assets/docs/임소희_콘텐츠기획운영마케터_이력서.pdf" target="_blank" rel="noreferrer" aria-label="임소희 공개 이력서 PDF 새 창에서 열기">
+              <span>Resume <span class="career-download__arrow" aria-hidden="true">↗</span></span>
+              <span class="career-download__meta">PDF · 2 pages</span>
+            </a>
           </div>
 
           <aside class="credentials" aria-label="교육과 사용 도구">
