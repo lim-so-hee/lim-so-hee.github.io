@@ -3183,6 +3183,30 @@
       }
     }
 
+    /* 카드의 좌우 열은 유지할 수 있지만 키워드 10개가 마지막 하나만 접히는
+       폭에서는 왼쪽 열을 내용 길이에 맞춰 조금 더 확보한다. 기기 종류가
+       아니라 실제 콘텐츠가 깨지는 구간을 기준으로 한 전환이다. */
+    @media (min-width: 62rem) and (max-width: 85.5rem) {
+      .js-stack .perf-stack__view #search-results {
+        grid-template-columns: minmax(clamp(33rem, 41vw, 35rem), .95fr) minmax(0, 1.05fr);
+      }
+
+      .js-stack .perf-stack__view #search-results > .longtail .keyword-list {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        gap: .1rem;
+        max-inline-size: none;
+      }
+
+      .js-stack .perf-stack__view #search-results > .longtail .keyword-list li {
+        min-inline-size: 0;
+        padding: .38rem .45rem;
+        font-size: clamp(.625rem, .86vw, .75rem);
+        white-space: nowrap;
+      }
+    }
+
     @media (max-width: 61.99rem) {
       :root {
         --section-y: clamp(4rem, 8vw, 6rem);
