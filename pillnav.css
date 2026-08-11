@@ -455,6 +455,21 @@
     margin-inline: auto;
   }
 
+  /* 가로 스크롤이 필요한 알약 안에 absolute 메뉴를 두면 overflow에 잘려
+     메뉴가 열려도 뒤쪽 본문이 눌린다. 모바일에서는 메뉴만 뷰포트 기준
+     레이어로 빼서 가로 스크롤과 독립시키고, 화면 양옆에 안전 여백을 둔다. */
+  .pillnav__menu {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 4.25rem);
+    right: max(0.75rem, env(safe-area-inset-right));
+    left: max(0.75rem, env(safe-area-inset-left));
+    z-index: 220;
+    min-width: 0;
+    max-height: calc(100dvh - 5rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
   /* 펼친 메뉴의 각 항목도 모바일 권장 터치 높이를 확보한다. */
   .pillnav__menu a,
   .pillnav__menu span {
