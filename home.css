@@ -403,7 +403,7 @@
 
 .case__result {
   margin: 0;
-  color: var(--on-accent);
+  color: #fffbd1;
   font-size: clamp(0.8125rem, 1vw, 0.9375rem);
   font-weight: var(--w-display);
   line-height: 1.45;
