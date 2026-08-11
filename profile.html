@@ -679,6 +679,10 @@
     /* 3칸·2칸 그리드에 모바일 분기가 없어 390px에서 칸 폭이 103px까지 눌렸다
        (실측 2026-07-29). 세로를 키워도 이쪽이 남으면 "좁다"는 그대로다. */
     @media (max-width: 860px) {
+      #profile-title {
+        font-size: clamp(32px, 5.7vw, 48px);
+      }
+
       .capability-grid,
       .scope-grid {
         grid-template-columns: minmax(0, 1fr);

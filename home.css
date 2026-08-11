@@ -206,6 +206,23 @@
   }
 }
 
+/* 세로형 모바일에서는 알약이 12px·36px까지 작아져 도구명이 장식처럼 보였다.
+   낙하 물리와 바닥 위치는 그대로 두고 글자·아이콘·안쪽 여백만 한 단계 키운다. */
+@media (max-width: 47.99rem) and (orientation: portrait) {
+  .chip {
+    gap: clamp(0.4rem, 1.6vw, 0.5rem);
+    padding:
+      clamp(0.5625rem, 2.4vw, 0.75rem)
+      clamp(0.875rem, 3.8vw, 1.25rem);
+    font-size: clamp(0.8125rem, 3.4vw, 1rem);
+  }
+
+  .chip img {
+    inline-size: clamp(1.125rem, 3vw, 1.375rem);
+    block-size: clamp(1.125rem, 3vw, 1.375rem);
+  }
+}
+
 @media (max-width: 61.99rem) {
   /* 반응형 화면에서는 주소창·하단 제스처 영역 때문에 히어로의 물리 바닥이 실제
      첫 화면 끝에 너무 붙는다. 더미만 3rem 위에서 받쳐 문구 다음에 쌓인
