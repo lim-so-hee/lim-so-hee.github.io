@@ -2881,6 +2881,19 @@
       .traffic-chart__legend text { font-size: 26px; }
     }
 
+    /* 스크롤 스택이 꺼지는 반응형 구간에서는 그래프와 캡션이 모두 밝은
+       figure 안에 놓인다. 데스크톱 카드용 흰 글자를 그대로 두면 설명이
+       사라지므로 밝은 면용 색으로 되돌린다. */
+    @media (max-width: 61.99rem) {
+      .performance .evidence-stage--chart figcaption {
+        color: #465168;
+      }
+
+      .performance .evidence-stage--chart figcaption span {
+        color: var(--color-accent);
+      }
+    }
+
     .traffic-chart__legend .is-total {
       fill: var(--color-accent);
     }
@@ -3843,8 +3856,8 @@
                 <g class="traffic-chart__legend">
                   <rect class="is-total" x="40" y="388" width="11" height="11"/>
                   <text x="58" y="397">전체 조회수</text>
-                  <rect class="is-neighbour" x="150" y="388" width="11" height="11"/>
-                  <text x="168" y="397">그중 서로이웃</text>
+                  <rect class="is-neighbour" x="240" y="388" width="11" height="11"/>
+                  <text x="258" y="397">그중 서로이웃</text>
                 </g>
               </svg>
               <figcaption><span lang="en">MONTHLY VIEWS</span>2025년 11월 ~ 2026년 7월 월간 조회수와 그중 서로이웃 몫 · 네이버 블로그 통계</figcaption>
