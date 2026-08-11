@@ -68,21 +68,6 @@
     b.p2.x -= dx * k; b.p2.y -= dy * k;
   };
 
-  /* 세로형 Figma 심볼은 알약이 뒤집힐 때 로고와 글자가 서로 자리를 바꾸는 듯
-     보인다. 물리 이동은 유지하되 이 알약의 중심선만 수평으로 고정한다. */
-  const keepUpright = (b, W, H) => {
-    if (!b.keepUpright) return;
-    const half = b.L / 2;
-    const minX = b.r + half;
-    const maxX = W - b.r - half;
-    const cx = Math.min(Math.max((b.p1.x + b.p2.x) / 2, minX), maxX);
-    /* y축은 절대 경계 안으로 당기지 않는다. 화면 위 대기 위치를 유지해야
-       다른 알약과 같은 순서로 자연스럽게 떨어진다. 바닥 충돌은 bound가 맡는다. */
-    const cy = (b.p1.y + b.p2.y) / 2;
-    b.p1.x = cx - half; b.p1.y = cy;
-    b.p2.x = cx + half; b.p2.y = cy;
-  };
-
   // 알약이 회전하면 캡 중심만으로는 모서리가 벽을 넘는다. 반지름만큼 더 물린다.
   const bound = (p, r, W, H) => {
     if (p.y > H - r) p.y = H - r;
@@ -191,10 +176,9 @@
 
   const solve = (W, H) => {
     for (let k = 0; k < ITER; k++) {
-      for (const b of bodies) { constrain(b); keepUpright(b, W, H); }
+      for (const b of bodies) constrain(b);
       collide();
       for (const b of bodies) { bound(b.p1, b.r, W, H); bound(b.p2, b.r, W, H); }
-      for (const b of bodies) keepUpright(b, W, H);
     }
   };
 
@@ -205,8 +189,13 @@
       /* 알약은 좌우 대칭이라 180도 돌아도 같은 모양이다. 하지만 안의 글자는
          거꾸로 선다 — 실측에서 한 개가 180도로 뒤집혀 이름이 뒤집혀 보였다.
          -90~90으로 접어 글자가 항상 바로 서게 한다. */
-      if (a > 90) a -= 180;
-      else if (a < -90) a += 180;
+      /* Figma는 세로형 로고라 180도 접는 순간 알약은 그대로인데 내부 로고와
+         글자만 반대편으로 튀어 보인다. Figma만 실제 물리 각도를 연속적으로
+         사용하고, 나머지는 기존처럼 글자가 거꾸로 서지 않게 접는다. */
+      if (!b.stableContent) {
+        if (a > 90) a -= 180;
+        else if (a < -90) a += 180;
+      }
       b.el.style.transform =
         `translate(${cx - b.w / 2}px, ${cy - b.h / 2}px) rotate(${a}deg)`;
       /* 더 아래에 놓인 알약이 앞에 온다. 위에서 떨어진 알약이 아래 더미의
@@ -272,7 +261,7 @@
       const p1 = { x: cx - Math.cos(a) * L / 2, y: cy - Math.sin(a) * L / 2 };
       const p2 = { x: cx + Math.cos(a) * L / 2, y: cy + Math.sin(a) * L / 2 };
       const vx = (i % 3 - 1) * 1.1;
-      bodies.push({ el, r, L, w, h, p1, p2, keepUpright: file === 'figma',
+      bodies.push({ el, r, L, w, h, p1, p2, stableContent: file === 'figma',
         o1: { x: p1.x - vx, y: p1.y }, o2: { x: p2.x - vx, y: p2.y } });
     });
 
