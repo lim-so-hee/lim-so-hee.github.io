@@ -76,7 +76,9 @@
     const minX = b.r + half;
     const maxX = W - b.r - half;
     const cx = Math.min(Math.max((b.p1.x + b.p2.x) / 2, minX), maxX);
-    const cy = Math.min(Math.max((b.p1.y + b.p2.y) / 2, b.r), H - b.r);
+    /* y축은 절대 경계 안으로 당기지 않는다. 화면 위 대기 위치를 유지해야
+       다른 알약과 같은 순서로 자연스럽게 떨어진다. 바닥 충돌은 bound가 맡는다. */
+    const cy = (b.p1.y + b.p2.y) / 2;
     b.p1.x = cx - half; b.p1.y = cy;
     b.p2.x = cx + half; b.p2.y = cy;
   };
