@@ -476,3 +476,23 @@
     min-height: 2.75rem;
   }
 }
+
+/* 320px급 화면에서도 세 항목을 한 번에 확인할 수 있게, 가장 좁은 구간에서만
+   알약 안쪽 여백을 줄인다. 보이지 않는 ::after 터치 영역은 44px로 유지한다. */
+@media (max-width: 22rem) {
+  .pillnav__list {
+    gap: 0;
+    padding: 3px 2px;
+    overflow-x: visible;
+  }
+
+  .pillnav__home {
+    padding-inline: 8px !important;
+  }
+
+  .pillnav__list > li > a,
+  .pillnav__toggle {
+    padding-inline: 10px;
+    font-size: .75rem;
+  }
+}
