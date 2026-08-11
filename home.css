@@ -114,6 +114,14 @@
   font-weight: inherit;
 }
 
+/* 아이패드 폭에서는 데스크톱용 7.2vw가 59~74px까지 커져 제목이 화면을
+   과도하게 차지했다. 모바일·데스크톱 값은 유지하고 태블릿 구간만 낮춘다. */
+@media (min-width: 48rem) and (max-width: 68.75rem) {
+  .hero__title {
+    font-size: clamp(2.75rem, 5.2vw, 3.5rem);
+  }
+}
+
 .hero__lede {
   max-width: 34em;
   margin: var(--space-xl) auto 0;
