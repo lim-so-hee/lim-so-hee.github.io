@@ -66,8 +66,9 @@
     :root {
       --stage-x: clamp(1.25rem, 5vw, 4.75rem);
       /* 1536px에서 9vw = 138.24px이 상하로 붙어, 섹션이 맞물리는 자리마다
-         276px가 쌓였다(실측). 6.5vw = 99.8px로 낮춘다. */
-      --section-y: clamp(3.5rem, 6.5vw, 8rem);
+         276px가 쌓였다(실측). 문구 압축 뒤 남은 빈 여백까지 줄이기 위해
+         5vw = 76.8px로 낮춘다. */
+      --section-y: clamp(3rem, 5vw, 6rem);
       --content-wide: 100rem;
       --ai-night: #10131d;
       --ai-mist: #eef1fa;
@@ -173,7 +174,7 @@
 
     /* 긴 사례를 끝까지 읽지 않아도 역할과 근거를 먼저 판단할 수 있는 요약. */
     .case-summary {
-      padding-block: clamp(3.5rem, 6vw, 6rem);
+      padding-block: clamp(3rem, 4.5vw, 4.5rem);
       background: var(--color-paper);
     }
 
@@ -182,7 +183,7 @@
       grid-template-columns: minmax(0, 1fr);
       gap: clamp(1.5rem, 3vw, 2.5rem);
       align-items: end;
-      padding-block-start: clamp(2rem, 3.5vw, 3.5rem);
+      padding-block-start: clamp(1.5rem, 2.5vw, 2.5rem);
       border-block-start: 2px solid var(--color-ink);
     }
 
@@ -208,7 +209,7 @@
     .case-summary__facts {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      margin-block-start: clamp(2.5rem, 5vw, 4rem);
+      margin-block-start: clamp(2rem, 3.5vw, 3rem);
       border-block: 1px solid var(--color-rule-strong);
     }
 
@@ -375,10 +376,11 @@
     }
 
     /* 밴드 안의 작은 묶음. 카라반의 research-proof / render-proof와 같은 역할. */
-    /* 블록 사이가 96px이라 한 섹션 안에서도 흐름이 끊겼다(실측). 5vw로 줄인다. */
+    /* 블록 사이가 96px이라 한 섹션 안에서도 흐름이 끊겼다(실측).
+       문구 압축 뒤에도 빈 구간이 남아 3.5vw로 한 번 더 줄인다. */
     .block {
-      margin-block-start: clamp(2.5rem, 5vw, 4.5rem);
-      padding-block-start: clamp(1.75rem, 3vw, 2.75rem);
+      margin-block-start: clamp(2rem, 3.5vw, 3rem);
+      padding-block-start: clamp(1.25rem, 2.2vw, 2rem);
       border-block-start: 1px solid var(--color-rule-strong);
     }
 
@@ -1929,13 +1931,13 @@
     }
 
     /* ── Scroll stack (03 밴드 성과 패널) ─────────────────────
-       제톤 실측값: 래퍼 높이 3×100vh, 슬롯 sticky top 10px /
+       제톤 실측값을 바탕으로 슬롯 sticky top 10px /
        height calc(100vh - 20px) / radius 20px / overflow hidden,
        패널 absolute + z-index 역순, JS가 translateY를 넣는다.
        스택이 꺼진 환경(모바일·모션 축소)에서는 아래 기본값 그대로
        평범한 세로 흐름이다. */
     .perf-stack .block {
-      margin-block-start: clamp(3.5rem, 7vw, 6rem);
+      margin-block-start: clamp(2.25rem, 4.5vw, 4rem);
       padding-inline: var(--stage-x);
     }
 
@@ -1944,10 +1946,10 @@
       margin-inline: auto;
     }
 
-    /* 스크롤 구간 = 카드 수 × 카드 높이. 카드가 한 화면을 통째로 쓰므로
-       래퍼도 화면 높이 배수다. */
+    /* 카드는 한 화면 높이를 유지하되, 카드 사이의 정지 구간을 줄여
+       첫 카드 100vh + 이후 카드당 80vh만 스크롤한다. */
     .js-stack .perf-stack {
-      height: calc(var(--views, 3) * 100vh);
+      height: calc(var(--views, 3) * 80vh + 20vh);
     }
 
     /* 도입부와 첫 카드 사이 숨통. 전에는 사이에 KEYWORD MAP 블록이 있어
@@ -1956,14 +1958,13 @@
        제목을 물고 올라오는 것처럼 보였다. 72px은 넓어서 절반으로 줄인다 —
        줄인 만큼이 아래 카드 몫이 된다. */
     .perf-stack {
-      margin-block-start: clamp(1.5rem, 2.6vw, 2.25rem);
+      margin-block-start: clamp(1.25rem, 2vw, 1.75rem);
     }
 
-    /* 03 밴드만 위아래 여백을 줄인다. 섹션 패딩이 위아래 100px씩인데 이
-       밴드는 카드가 화면을 통째로 쓰는 구조라 도입부가 자리를 많이 차지할
-       이유가 없다. 줄인 만큼 카드가 커진다. */
+    /* 03 밴드는 카드가 화면을 통째로 쓰는 구조라 도입부가 큰 여백을 가질
+       이유가 없다. 4vh로 줄여 카드 진입 전 스크롤을 압축한다. */
     .performance {
-      padding-block: clamp(2.5rem, 5vh, 4rem);
+      padding-block: clamp(2rem, 4vh, 3rem);
     }
 
     /* 제목 위 가로선을 뺀다. 아래 카드가 자기 면을 갖고 있어 경계가 이미
@@ -3209,7 +3210,7 @@
 
     @media (max-width: 61.99rem) {
       :root {
-        --section-y: clamp(4rem, 8vw, 6rem);
+        --section-y: clamp(3.25rem, 6vw, 4.5rem);
       }
 
       .case-summary__facts {
