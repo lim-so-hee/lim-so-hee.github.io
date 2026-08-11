@@ -183,7 +183,7 @@
 
 @media (max-width: 61.99rem) {
   .hero {
-    min-height: calc(100svh - var(--masthead-h));
+    min-height: calc(100svh - var(--masthead-h) - 3rem);
   }
 
   /* 좁은 화면에서는 알약이 제목을 스쳐도 본문을 가리지 않는다.
@@ -211,7 +211,7 @@
      첫 화면 끝에 너무 붙는다. 더미만 3rem 위에서 받쳐 문구 다음에 쌓인
      전체 알약이 스크롤 없이 보이게 하고, 다음 섹션의 위치는 바꾸지 않는다. */
   .field {
-    inset-block-end: max(3rem, env(safe-area-inset-bottom));
+    inset-block-end: 0;
   }
 }
 

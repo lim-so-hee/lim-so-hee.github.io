@@ -3256,6 +3256,47 @@
       :is(.process-row, .automation-flow, .responsibility-flow) > li:nth-child(2n + 1) {
         padding-inline-start: 0;
       }
+
+      /* 앞 단계표의 하단선이 다음 영역 경계를 이미 만든다. 모바일에서는
+         시작선을 겹쳐 그리지 않고 설명과 수치도 모두 왼쪽에 맞춘다. */
+      .channel-row {
+        padding-block-start: 0;
+        border-block-start: 0;
+      }
+
+      .channel-row__head {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+
+      .channel-row__head > p:last-child {
+        justify-self: start;
+        text-align: left;
+      }
+
+      .time-comparison {
+        inline-size: 100%;
+        justify-content: flex-start;
+      }
+
+      #automation-workflow .metric-note {
+        margin-inline-start: 0;
+        text-align: left;
+      }
+
+      /* 바로 앞 표가 하단선을 가진 묶음은 다음 block의 시작선을 생략한다.
+         여백과 제목은 유지해 섹션 구분은 흐려지지 않게 한다. */
+      #export-voucher,
+      #automation-record,
+      #workspace-setup,
+      #principles {
+        padding-block-start: 0;
+        border-block-start: 0;
+      }
+
+      #principles .principle-list {
+        border-block-start: 0;
+      }
     }
 
     @media (max-width: 47.99rem) {

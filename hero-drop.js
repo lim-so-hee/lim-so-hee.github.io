@@ -68,6 +68,19 @@
     b.p2.x -= dx * k; b.p2.y -= dy * k;
   };
 
+  /* 세로형 Figma 심볼은 알약이 뒤집힐 때 로고와 글자가 서로 자리를 바꾸는 듯
+     보인다. 물리 이동은 유지하되 이 알약의 중심선만 수평으로 고정한다. */
+  const keepUpright = (b, W, H) => {
+    if (!b.keepUpright) return;
+    const half = b.L / 2;
+    const minX = b.r + half;
+    const maxX = W - b.r - half;
+    const cx = Math.min(Math.max((b.p1.x + b.p2.x) / 2, minX), maxX);
+    const cy = Math.min(Math.max((b.p1.y + b.p2.y) / 2, b.r), H - b.r);
+    b.p1.x = cx - half; b.p1.y = cy;
+    b.p2.x = cx + half; b.p2.y = cy;
+  };
+
   // 알약이 회전하면 캡 중심만으로는 모서리가 벽을 넘는다. 반지름만큼 더 물린다.
   const bound = (p, r, W, H) => {
     if (p.y > H - r) p.y = H - r;
@@ -176,9 +189,10 @@
 
   const solve = (W, H) => {
     for (let k = 0; k < ITER; k++) {
-      for (const b of bodies) constrain(b);
+      for (const b of bodies) { constrain(b); keepUpright(b, W, H); }
       collide();
       for (const b of bodies) { bound(b.p1, b.r, W, H); bound(b.p2, b.r, W, H); }
+      for (const b of bodies) keepUpright(b, W, H);
     }
   };
 
@@ -256,7 +270,7 @@
       const p1 = { x: cx - Math.cos(a) * L / 2, y: cy - Math.sin(a) * L / 2 };
       const p2 = { x: cx + Math.cos(a) * L / 2, y: cy + Math.sin(a) * L / 2 };
       const vx = (i % 3 - 1) * 1.1;
-      bodies.push({ el, r, L, w, h, p1, p2,
+      bodies.push({ el, r, L, w, h, p1, p2, keepUpright: file === 'figma',
         o1: { x: p1.x - vx, y: p1.y }, o2: { x: p2.x - vx, y: p2.y } });
     });
 
