@@ -550,6 +550,19 @@
       }
     }
 
+    /* 아이패드 가로 폭에서는 150px 라벨 칸보다 Experience & Background가 길어
+       옆 제목 영역을 침범했다. 경력 섹션만 라벨을 제목 위로 올려 두 문장을 분리한다. */
+    @media (max-width: 1100px) {
+      .experience-section .section-heading {
+        grid-template-columns: minmax(0, 1fr);
+        gap: clamp(12px, 2vw, 20px);
+      }
+
+      .experience-section .section-name {
+        margin-block-start: 0;
+      }
+    }
+
     /* ─ 역량과 역할, 한 격자 ────────────────────────────────────────
        위 3칸(역량) + 아래 2칸(책임 범위)이 하나의 표처럼 이어진다.
        원래 아래 2칸은 자체 제목을 단 별도 파란 패널(.scope-panel)이었다.
