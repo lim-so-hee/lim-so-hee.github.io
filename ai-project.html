@@ -4159,7 +4159,9 @@
       const detail = hero && hero.querySelector(".hero-detail");
       if (!stage || !lines.length) return;
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      if (!matchMedia("(hover: hover) and (pointer: fine) and (min-width: 62rem)").matches) return;
+      /* 터치 기반 아이패드는 hover/pointer 조건을 통과하지 못해 충분한 화면에서도
+         활주로가 꺼졌다. 휴대폰만 제외하고 768px 이상에서는 입력 방식과 무관하게 켠다. */
+      if (!matchMedia("(min-width: 48rem)").matches) return;
 
       document.documentElement.classList.add("js-actions");
       const clamp01 = (v) => Math.min(Math.max(v, 0), 1);
