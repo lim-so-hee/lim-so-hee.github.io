@@ -1307,6 +1307,35 @@
       }
     }
 
+    /* 설명과 세로 문서 두 장을 한 줄에 두면 서로 가리는 폭에서는
+       설명을 위 전체 폭, 문서를 아래 2열로 둔다. */
+    @media (min-width: 62rem) and (max-width: 85.5rem) {
+      .js-stack .perf-stack__view .study-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: auto minmax(0, 1fr);
+        align-items: start;
+        gap: clamp(1rem, 2vw, 1.5rem);
+      }
+
+      .js-stack .perf-stack__view .study-intro {
+        grid-column: 1 / -1;
+      }
+
+      .js-stack .perf-stack__view .study-intro .card-heading {
+        max-inline-size: none;
+      }
+
+      .js-stack .perf-stack__view .study-intro .section-lede {
+        max-inline-size: none;
+      }
+
+      .js-stack .perf-stack__view .study-row img {
+        width: 100%;
+        height: min(48vh, 30rem);
+        object-fit: contain;
+      }
+    }
+
     @media (max-width: 61.99rem) {
       .case-summary__facts {
         grid-template-columns: repeat(2, minmax(0, 1fr));
