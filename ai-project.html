@@ -3402,6 +3402,14 @@
         transform: none;
       }
     }
+
+    /* RANKINGS의 가로·세로 구분선은 화면 크기나 스택 활성화 여부와 관계없이
+       표시하지 않는다. 태블릿 가로 화면에서 데스크톱 격자 규칙이 다시 선을
+       그리던 문제를 마지막 캐스케이드에서 확실히 막는다. */
+    #search-results .rank-grid,
+    #search-results .rank-grid > div {
+      border: 0;
+    }
   </style>
 </head>
 <body>
