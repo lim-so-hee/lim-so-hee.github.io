@@ -213,20 +213,20 @@
 }
 
 /* 1920px 폭의 노트북에서도 기존 2.1vw·2.7vw 계산은 글자 36px, 좌우
-   패딩 48px까지 커졌다. 제목과 같은 높이 조건에서 알약도 vh를 함께 보고
-   줄여 문구 위로 더미가 올라오지 않게 한다. */
+   패딩 48px까지 커졌다. 첫 보정의 23.5px은 반대로 너무 작았으므로,
+   원래 값과 첫 보정의 중간인 글자 약 29px·높이 약 88px로 맞춘다. */
 @media (min-width: 62rem) and (max-height: 56.25rem) {
   .chip {
-    gap: clamp(0.4rem, min(0.8vw, 1.6vh), 0.6rem);
+    gap: clamp(0.5rem, min(1vw, 2vh), 0.7rem);
     padding:
-      clamp(0.75rem, min(1vw, 1.8vh), 1rem)
-      clamp(1rem, min(1.75vw, 3.4vh), 2rem);
-    font-size: clamp(1rem, min(1.4vw, 2.7vh), 1.5rem);
+      clamp(0.875rem, min(1.25vw, 2.3vh), 1.25rem)
+      clamp(1.25rem, min(2.1vw, 4.2vh), 2.5rem);
+    font-size: clamp(1.25rem, min(1.7vw, 3.4vh), 1.875rem);
   }
 
   .chip img {
-    inline-size: clamp(1.25rem, min(1.6vw, 3.1vh), 1.75rem);
-    block-size: clamp(1.25rem, min(1.6vw, 3.1vh), 1.75rem);
+    inline-size: clamp(1.5rem, min(1.9vw, 3.8vh), 2.125rem);
+    block-size: clamp(1.5rem, min(1.9vw, 3.8vh), 2.125rem);
   }
 }
 
