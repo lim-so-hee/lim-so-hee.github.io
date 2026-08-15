@@ -122,6 +122,23 @@
   }
 }
 
+/* 노트북은 가로 폭만 보면 대형 데스크톱으로 분류되지만 브라우저 UI를 뺀
+   실제 높이는 900px 안팎이다. vw만 따르던 제목이 이 구간에서 82px 상한까지
+   커졌으므로 높이도 함께 보고 64px 안쪽으로 제한한다. */
+@media (min-width: 68.76rem) and (max-height: 56.25rem) {
+  .hero__title {
+    font-size: clamp(3.25rem, min(4.4vw, 7.5vh), 4rem);
+  }
+}
+
+/* 작은 화면에서는 44px 고정 하한이 세 줄 제목에 과했다. 읽을 수 있는
+   34px을 하한으로 두고 화면 폭에 따라 천천히 키운다. */
+@media (max-width: 47.99rem) {
+  .hero__title {
+    font-size: clamp(2.125rem, 8.8vw, 2.75rem);
+  }
+}
+
 .hero__lede {
   max-width: 34em;
   margin: var(--space-xl) auto 0;
@@ -129,6 +146,12 @@
   font-size: var(--t-lead);
   line-height: var(--lh-body-long);
   text-wrap: pretty;
+}
+
+@media (min-width: 68.76rem) and (max-height: 56.25rem) {
+  .hero__lede {
+    margin-top: clamp(1.25rem, 3vh, 2rem);
+  }
 }
 
 @media (min-width: 62rem) {
@@ -189,6 +212,24 @@
   block-size: clamp(1.125rem, 2.5vw, 2.75rem);
 }
 
+/* 1920px 폭의 노트북에서도 기존 2.1vw·2.7vw 계산은 글자 36px, 좌우
+   패딩 48px까지 커졌다. 제목과 같은 높이 조건에서 알약도 vh를 함께 보고
+   줄여 문구 위로 더미가 올라오지 않게 한다. */
+@media (min-width: 62rem) and (max-height: 56.25rem) {
+  .chip {
+    gap: clamp(0.4rem, min(0.8vw, 1.6vh), 0.6rem);
+    padding:
+      clamp(0.75rem, min(1vw, 1.8vh), 1rem)
+      clamp(1rem, min(1.75vw, 3.4vh), 2rem);
+    font-size: clamp(1rem, min(1.4vw, 2.7vh), 1.5rem);
+  }
+
+  .chip img {
+    inline-size: clamp(1.25rem, min(1.6vw, 3.1vh), 1.75rem);
+    block-size: clamp(1.25rem, min(1.6vw, 3.1vh), 1.75rem);
+  }
+}
+
 @media (max-width: 61.99rem) {
   .hero {
     min-height: calc(100svh - var(--masthead-h) - 3rem);
@@ -218,16 +259,16 @@
    낙하 물리와 바닥 위치는 그대로 두고 글자·아이콘·안쪽 여백만 한 단계 키운다. */
 @media (max-width: 47.99rem) and (orientation: portrait) {
   .chip {
-    gap: clamp(0.4rem, 1.6vw, 0.5rem);
+    gap: clamp(0.45rem, 1.8vw, 0.6rem);
     padding:
-      clamp(0.5625rem, 2.4vw, 0.75rem)
-      clamp(0.875rem, 3.8vw, 1.25rem);
-    font-size: clamp(0.8125rem, 3.4vw, 1rem);
+      clamp(0.625rem, 2.8vw, 0.875rem)
+      clamp(1rem, 4.2vw, 1.5rem);
+    font-size: clamp(0.95rem, 4vw, 1.125rem);
   }
 
   .chip img {
-    inline-size: clamp(1.125rem, 3vw, 1.375rem);
-    block-size: clamp(1.125rem, 3vw, 1.375rem);
+    inline-size: clamp(1.25rem, 5vw, 1.625rem);
+    block-size: clamp(1.25rem, 5vw, 1.625rem);
   }
 }
 

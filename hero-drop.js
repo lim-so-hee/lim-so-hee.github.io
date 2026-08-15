@@ -186,16 +186,12 @@
     for (const b of bodies) {
       const cx = (b.p1.x + b.p2.x) / 2, cy = (b.p1.y + b.p2.y) / 2;
       let a = Math.atan2(b.p2.y - b.p1.y, b.p2.x - b.p1.x) * 180 / Math.PI;
-      /* 알약은 좌우 대칭이라 180도 돌아도 같은 모양이다. 하지만 안의 글자는
-         거꾸로 선다 — 실측에서 한 개가 180도로 뒤집혀 이름이 뒤집혀 보였다.
-         -90~90으로 접어 글자가 항상 바로 서게 한다. */
-      /* Figma는 세로형 로고라 180도 접는 순간 알약은 그대로인데 내부 로고와
-         글자만 반대편으로 튀어 보인다. Figma만 실제 물리 각도를 연속적으로
-         사용하고, 나머지는 기존처럼 글자가 거꾸로 서지 않게 접는다. */
-      if (!b.stableContent) {
-        if (a > 90) a -= 180;
-        else if (a < -90) a += 180;
-      }
+      /* 알약은 좌우 대칭이라 180도 돌아도 외곽은 같지만, 안의 로고와 글자는
+         거꾸로 선다. 모든 도구의 각도를 -90~90도로 접어 내용이 항상 바로
+         서게 한다. Figma만 예외로 두면 낮은 노트북 화면에서 180도에 가까운
+         자세로 멈출 때 실제로 뒤집혀 보인다. */
+      if (a > 90) a -= 180;
+      else if (a < -90) a += 180;
       b.el.style.transform =
         `translate(${cx - b.w / 2}px, ${cy - b.h / 2}px) rotate(${a}deg)`;
       /* 더 아래에 놓인 알약이 앞에 온다. 위에서 떨어진 알약이 아래 더미의
@@ -261,7 +257,7 @@
       const p1 = { x: cx - Math.cos(a) * L / 2, y: cy - Math.sin(a) * L / 2 };
       const p2 = { x: cx + Math.cos(a) * L / 2, y: cy + Math.sin(a) * L / 2 };
       const vx = (i % 3 - 1) * 1.1;
-      bodies.push({ el, r, L, w, h, p1, p2, stableContent: file === 'figma',
+      bodies.push({ el, r, L, w, h, p1, p2,
         o1: { x: p1.x - vx, y: p1.y }, o2: { x: p2.x - vx, y: p2.y } });
     });
 
