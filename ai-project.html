@@ -517,22 +517,6 @@
       color: var(--color-ink);
     }
 
-    /* 제톤 실측(1881px 기준): 이미지 폭이 화면의 22.6%, 히어로는 정확히 한 화면.
-       열 비율과 여백을 그 비율에 맞춰 잡는다. */
-    .hero-stage {
-      display: grid;
-      grid-template-columns: minmax(0, 1.42fr) minmax(14rem, .58fr);
-      grid-template-rows: auto 1fr auto;
-      gap: clamp(1.5rem, 3vw, 2.5rem) clamp(2rem, 5vw, 5.5rem);
-      width: min(100%, var(--content-wide));
-      min-height: 100vh;
-      min-height: 100svh;
-      margin-inline: auto;
-      /* 아래 여백을 48px → 112px로 키워 제목과 요약을 화면 바닥에서 띄운다.
-         제목이 3줄로 줄어든 뒤 생긴 여유를 여기에 쓴다. */
-      padding: calc(var(--header-height) + 1.25rem) var(--stage-x) clamp(4rem, 8vw, 7rem);
-    }
-
     .hero-kicker {
       grid-column: 1;
       grid-row: 1;
@@ -3219,11 +3203,6 @@
 
       .case-summary__facts > div:nth-child(n + 3) {
         border-block-start: 1px solid var(--color-rule-strong);
-      }
-
-      .hero-stage {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto 1fr auto;
       }
 
       .hero-kicker {
