@@ -27,11 +27,20 @@
      --color-on-ink  #ffffff = --on-accent #ffffff  같음
      --text-sm       0.875rem = --t-caption 0.875rem 같음
      --text-xs       0.75rem  = --t-label   0.75rem  같음
-   토큰 재정의가 아니라 이름만 잇는 것이라 홈의 다른 규칙은 건드리지 않는다. */
+   토큰 재정의가 아니라 이름만 잇는 것이라 홈의 다른 규칙은 건드리지 않는다.
+
+   2026-08-21 추가: --color-ink·--color-paper·--color-rule-strong 세 개가
+   빠져 있었다. pillnav.css의 .page-footer 글자색·.back-to-top 배경·테두리가
+   이 세 이름을 그대로 쓰는데(246·297·366·368·369행), 여기 없어서 정의되지
+   않은 값으로 렌더되고 있었다 — 배경이 흰색이라 우연히 안 티가 났을 뿐이다
+   (exhibition.html을 tokens-v8로 옮기며 발견). */
 :root {
   --color-accent: var(--accent);
   --color-on-ink: var(--on-accent);
   --color-ink-2: var(--muted);
+  --color-ink: var(--ink);
+  --color-paper: var(--ground);
+  --color-rule-strong: var(--rule-strong);
   --text-sm: var(--t-caption);
   --text-xs: var(--t-label);
   --font-en: "Space Grotesk", "Pretendard", sans-serif;
