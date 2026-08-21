@@ -19,7 +19,7 @@
   <meta property="og:image:alt" content="짙은 녹색 바탕 위에 Making Complex Ideas Clear 문구가 적힌 임소희 포트폴리오 공유 이미지">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://lim-so-hee.github.io/assets/og/portfolio-og.png">
-  <link rel="stylesheet" href="tokens.css?v=2">
+  <link rel="stylesheet" href="tokens-v8.css">
   <link rel="stylesheet" href="pillnav.css?v=11">
   <style>
     /* 전시회·경주와 같은 어휘를 쓴다. 클래스 이름과 값은 exhibition.html의
@@ -31,6 +31,26 @@
       --content-wide: 100rem;
       --content-copy: 75rem;
       --ease-jeton: cubic-bezier(.16, 1, .3, 1);
+
+      /* ─ tokens-v8 브리지 ──────────────────────────────────────────
+         exhibition.html과 같은 이유·같은 방식(2026-08-21). --color-focus는
+         라벨 색으로만 쓰여 v8의 --focus(포커스 링용 네이비)로 이어도 톤이
+         맞는다. --color-paper-2는 v8에 중립 회색 대응 토큰이 없어(있는 건
+         파란기 도는 --accent-tint) 원래 값을 그대로 상수로 남긴다. */
+      --color-accent: var(--accent);
+      --color-ink: var(--ink);
+      --color-ink-2: var(--muted);
+      --color-on-ink: var(--on-accent);
+      --color-paper: var(--ground);
+      --color-paper-2: #f4f4f4;
+      --color-rule-strong: var(--rule-strong);
+      --color-media: var(--ink);
+      --color-focus: var(--focus);
+      --text-sm: var(--t-caption);
+      --text-xs: var(--t-label);
+      --font-en: "Space Grotesk", "Pretendard", sans-serif;
+      --font-accent-en: "Newsreader", Georgia, serif;
+      --header-height: 5.25rem;
     }
 
     *,
