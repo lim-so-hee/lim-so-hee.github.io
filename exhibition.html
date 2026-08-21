@@ -608,19 +608,6 @@
       text-transform: uppercase;
     }
 
-    .loop-video-still {
-      margin: 0;
-    }
-
-    .loop-video-still img {
-      display: block;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      object-fit: cover;
-      background: var(--color-media);
-    }
-
-    .loop-video-still figcaption,
     .video-source {
       padding-block-start: 1rem;
       color: var(--color-ink-2);
@@ -827,17 +814,6 @@
       transform: translate(3px, -3px);
     }
 
-    .site-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 1.5rem;
-      padding: 1.5rem var(--stage-x);
-      border-block-start: 1px solid var(--color-rule-strong);
-      color: var(--color-muted);
-      font-family: var(--font-en);
-      font-size: var(--text-sm);
-    }
-
     @media (min-width: 62rem) {
       .challenge-intro,
       .evidence-heading,
@@ -972,10 +948,6 @@
         height: clamp(18rem, 72vw, 29rem);
       }
 
-      .site-footer {
-        justify-content: flex-start;
-        flex-wrap: wrap;
-      }
     }
 
     @media (prefers-reduced-motion: reduce) {
