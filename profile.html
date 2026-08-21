@@ -22,6 +22,7 @@
   <!-- 알약 네비는 5장 공용이다. 이 페이지만 같은 규칙을 인라인으로 복사해 갖고
        있어서 한쪽만 고치면 어긋났다 — 실제로 모바일 블록이 여기만 빠져 있었다.
        공용 파일을 쓰고, 이름이 다른 토큰만 :root에서 이어준다. -->
+  <link rel="stylesheet" href="tokens-v8.css">
   <link rel="stylesheet" href="pillnav.css?v=11">
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&display=swap");
@@ -37,30 +38,38 @@
     }
 
     :root {
-      --paper: #ffffff;
-      --surface: #f4f4f4;
-      --ink: #0d0d0d;
-      --body: #5a5851;
-      --muted: #767369;
-      --line: rgba(13, 13, 13, 0.1);
+      /* ─ tokens-v8 브리지 (2026-08-21) ──────────────────────────────
+         이 페이지는 tokens.css도 tokens-v8.css도 안 쓰고 값을 직접
+         베껴 놓고 있었다. 이제 tokens-v8.css를 링크했으니, v8과 이름이
+         같은 --ink·--muted·--ease-out·--w-body·--w-display·--lh-body는
+         여기서 다시 선언하지 않는다 — v8 값이 그대로 흘러온다(전엔 각각
+         #0d0d0d·#767369 등 살짝 다른 값을 손으로 들고 있었다).
+         --surface(#f4f4f4)는 아무 데도 안 쓰여 같이 지운다. */
+      --paper: var(--ground);
+      --body: var(--muted);
+      --line: var(--rule);
       /* 홈(tokens-v8.css)의 액센트로 맞춘다. 이전 하늘색 #50b4fb는
          흰 바탕 대비 2.27로 글자에 못 쓰는 색이었다. #3163f6은 4.95다.
          이름이 --lime인 건 더 옛날 팔레트의 잔재다. 참조가 7곳이라 그대로 둔다. */
-      --lime: #3163f6;
+      --lime: var(--accent);
       --page-x: clamp(40px, 5vw, 76px);
-      --ease-out: cubic-bezier(.16, 1, .3, 1);
 
       /* pillnav.css가 쓰는 이름으로 이어준다. 이 페이지의 토큰 이름이 홈·케이스
-         페이지와 달라서, 공용 파일을 그대로 쓰려면 다리를 놓아야 한다. */
+         페이지와 달라서, 공용 파일을 그대로 쓰려면 다리를 놓아야 한다.
+         --color-paper·--color-rule-strong 두 개가 빠져 있어서 pillnav.css의
+         상단으로 버튼 배경·테두리가 정의되지 않은 값으로 빠지고 있었다
+         (다른 4장과 같은 문제, 여기서 같이 고친다). */
       --color-accent: var(--lime);
       --color-ink: var(--ink);
       --color-ink-2: var(--body);
       --color-on-ink: var(--paper);
+      --color-paper: var(--paper);
+      --color-rule-strong: var(--rule-strong);
       --font-en: "Pretendard", sans-serif;
       --font-accent-en: "Source Serif 4";
       --page-gutter: var(--page-x);
-      --text-sm: 14px;
-      --text-xs: 12px;
+      --text-sm: var(--t-caption);
+      --text-xs: var(--t-label);
 
       /* ─ 타입 사다리 ─────────────────────────────────────────────
          이전에는 크기 17단·굵기 10단·행간 11단이었다. 계단이 1~3px씩이라
@@ -73,9 +82,7 @@
          여기서는 홈(tokens-v8.css)의 사다리에 이 비율을 얹는다. */
       /* 홈과 같은 역할별 굵기다. 본문 400, 제목·라벨 600을 기본으로 쓰고
          히어로의 핵심 문장만 800으로 벌려 첫 화면의 위계를 분명히 한다. */
-      --w-body: 400;
       --w-mid: 600;
-      --w-display: 600;
 
       --t-2xs: 12px;
       --t-xs: 14px;
@@ -98,7 +105,6 @@
          1.1로 올렸더니 글자는 안 닿지만(여유 6.9px) 여전히 답답했다. 1.2면
          84px에서 여유 15.4px다. 한글 제목은 라틴보다 행간이 더 필요하다. */
       --lh-tight: 1.2;
-      --lh-body: 1.5;     /* 본문 — Jeton과 동일 */
     }
 
     * {
