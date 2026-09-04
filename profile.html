@@ -908,6 +908,16 @@
       line-height: var(--lh-body);
     }
 
+    /* 인증서 이름과 발급번호를 <br>로 끊어 두 줄로 세웠더니 두 정보가 같은
+       무게로 읽혔다. 번호는 확인하려는 사람만 보는 값이라 한 줄에 이어 붙이고
+       굵기와 색을 낮춰 이름 뒤로 물러나게 한다. */
+    .credential-id {
+      margin-inline-start: .35em;
+      color: var(--muted);
+      font-weight: var(--w-body);
+      font-variant-numeric: tabular-nums;
+    }
+
     .tool-group-label {
       margin: 0 0 12px;
       color: var(--muted);
@@ -1442,11 +1452,11 @@
               <h3 lang="en">Certifications</h3>
               <div class="credential-item">
                 <span class="credential-period">2025.11</span>
-                <p>Google Ads 검색 인증 · Google Skillshop<br>Credential ID 167621074</p>
+                <p>Google Ads 검색 인증 · Google Skillshop <span class="credential-id">Credential ID 167621074</span></p>
               </div>
               <div class="credential-item">
                 <span class="credential-period">2025.11</span>
-                <p>Google 애널리틱스 인증 · Google Skillshop<br>Credential ID 167517043</p>
+                <p>Google 애널리틱스 인증 · Google Skillshop <span class="credential-id">Credential ID 167517043</span></p>
               </div>
             </div>
             <!-- 도구 10개를 한 줄로 나열만 하고 있었다. 나열은 근거가 아니다.

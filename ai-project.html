@@ -399,10 +399,11 @@
     /* 밴드 안의 작은 묶음. 카라반의 research-proof / render-proof와 같은 역할. */
     /* 블록 사이가 96px이라 한 섹션 안에서도 흐름이 끊겼다(실측).
        문구 압축 뒤에도 빈 구간이 남아 3.5vw로 한 번 더 줄인다. */
+    /* 라벨 위 구분선을 전부 걷는다(사용자 지정 2026-09-04). 여백만으로
+       장을 가른다. */
     .block {
       margin-block-start: clamp(2rem, 3.5vw, 3rem);
       padding-block-start: clamp(1.25rem, 2.2vw, 2rem);
-      border-block-start: 1px solid var(--color-rule-strong);
     }
 
     .block__head h3 {
@@ -856,7 +857,6 @@
     .channel-row {
       margin-block-start: clamp(2.5rem, 5vw, 4rem);
       padding-block-start: clamp(1.5rem, 3vw, 2.25rem);
-      border-block-start: 1px solid var(--color-rule-strong);
     }
 
     /* 설명은 소제목 옆에 붙인다. 아래에 두면 링크 줄과 나란히 서서
@@ -1695,6 +1695,15 @@
        전체 누적이다. 가장 큰 활자가 가장 조건 붙은 숫자에 가 있으면 카드가
        주장하려는 것과 보이는 것이 어긋난다. 배수 아래로 내려 곁다리 자리에
        둔다(45.6px → 36px @1536). */
+    /* 세 칸이 균등 폭이라 가장 긴 "21.4% → 1.6%"만 줄이 접혀 혼자 두 줄이
+       됐다. 한 칸만 두 줄이면 세 값이 같은 층에 서지 않아 표로 안 읽힌다.
+       세 칸일 때만 활자를 한 단 내리고 줄바꿈을 막아 한 줄에 세운다.
+       한 칸짜리(AI CITATIONS)는 접힐 일이 없으므로 그대로 둔다. */
+    .ai-metrics:has(> div:nth-child(3)) dt {
+      font-size: clamp(1.15rem, 1.65vw, 1.5rem);
+      white-space: nowrap;
+    }
+
     .ai-metrics dt {
       font-family: var(--font-en);
       font-size: clamp(1.5rem, 2.4vw, 2.25rem);
@@ -4214,13 +4223,12 @@
         stage.style.setProperty("--anchor-y", `${anchor - vh / 2}px`);
         stage.style.setProperty("--block-top", `${anchor - span - up - vh / 2}px`);
         stage.style.setProperty("--block-bottom", `${anchor + down - vh / 2}px`);
-        /* 첫 줄은 스크럽에서 뺀다. 전에는 세 줄 모두 `.14 + i * seg`부터
-           나타나서 p=0일 때 셋 다 0이었다 — 즉 열자마자 제목이 없었다.
-           0번은 1로 고정해 처음부터 서 있고, 나머지 두 줄만 순서대로 올라온다.
-           그만큼 구간이 하나 비므로 1·2번 시작점을 한 칸씩 당긴다
-           (1번 .14~.34, 2번 .34~.54). 쌓이는 동작과 총 길이는 그대로다. */
+        /* 첫 화면에는 킥커만 세운다(사용자 지정 2026-09-04). 제목 세 줄은
+           스크롤을 시작해야 차례로 도착한다. 직전에는 0번 줄을 1로 고정해
+           열자마자 서 있게 했는데, 그 줄도 같은 규칙으로 돌려 셋이 함께
+           올라오도록 되돌린다(1번 .14~.34, 2번 .34~.54, 3번 .54~.74). */
         const locals = lines.map((_, i) =>
-          i === 0 ? 1 : clamp01((p - (.14 + (i - 1) * seg)) / seg)
+          clamp01((p - (.14 + i * seg)) / seg)
         );
         lines.forEach((line, i) => {
           const approach = (1 - locals[i]) * window.innerHeight * .7;
