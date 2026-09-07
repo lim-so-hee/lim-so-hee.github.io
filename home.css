@@ -725,14 +725,4 @@
   color: var(--accent);
 }
 
-.colophon__meta {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-md);
-  margin: var(--space-2xl) 0 0;
-  padding-top: var(--space-md);
-  border-top: var(--rule-hair) solid var(--rule);
-  color: var(--muted);
-  font-size: var(--t-caption);
-}
+/* 저작권 줄은 걷어냈다(2026-09-07). 구분선도 그 줄에만 붙어 있었다. */
