@@ -163,10 +163,13 @@
   }
 }
 
+/* 알약은 히어로 바닥부터 쌓여 올라온다. 문구를 정가운데 두면 네비 아래는
+   비고 문구 밑은 알약이 바짝 붙어 아래로 몰려 보인다. 아래 여백을 키워
+   문구를 위로 올린다 — 여백 +5rem이 문구를 40px 올린다(가운데 정렬이라 절반만 이동). */
 @media (min-width: 62rem) {
   .hero {
     min-height: calc(100svh - var(--masthead-h));
-    padding-block: 0 var(--space-4xl);
+    padding-block: 0 calc(var(--space-4xl) + 5rem);
   }
 }
 
@@ -366,6 +369,13 @@
 .section__title b {
   color: var(--accent);
   font-weight: inherit;
+}
+
+/* ch은 숫자 0의 폭이라 한글에는 절반만 들어간다. 20ch에 "눈에 보이는
+   결과물로 만들었습니다"(15자)가 안 담겨 셋째 줄이 생겼다. 이 제목만
+   글자 폭(em) 기준으로 다시 잡아 두 줄로 세운다. */
+#work-title {
+  max-width: 18em;
 }
 
 .prose {
