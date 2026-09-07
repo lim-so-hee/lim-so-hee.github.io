@@ -94,7 +94,11 @@
    80px 실측: 800의 필요 최소 행간 1.025로 현재 1.08을 통과한다.
    앞서 "700 이상은 획이 뭉친다"고 본 것은 64px 기준이었고 큰 크기에서는 뒤집힌다. */
 .hero__title {
-  max-width: 22ch;
+  /* ch은 숫자 0의 폭이라 한글에는 절반만 들어간다. 22ch에서는 둘째 줄
+     제목은 세 줄로 직접 끊는다. 가장 긴 줄이 "이해하기 쉬운 콘텐츠로"(10자)라
+     본문 폭에 여유가 생겨 크기는 원래 값으로 되돌린다(2026-09-07).
+     ch은 숫자 0의 폭이라 한글에는 절반만 들어간다 — 폭도 글자 기준으로 잡는다. */
+  max-width: 12em;
   margin-inline: auto;
   font-size: var(--t-display);
   line-height: var(--lh-display);
@@ -148,18 +152,21 @@
   }
 }
 
+/* 첫 화면 글이 제목 한 덩어리로 줄면서 아래 두 줄이 작고 멀어 보였다.
+   17px 고정에서 18~22px으로 키우고, 제목과의 간격을 40px에서 24px으로
+   좁혀 제목에 붙인다(2026-09-07). */
 .hero__lede {
   max-width: 34em;
-  margin: var(--space-xl) auto 0;
+  margin: var(--space-lg) auto 0;
   color: var(--muted);
-  font-size: var(--t-lead);
+  font-size: clamp(1.125rem, 1.5vw, 1.375rem);
   line-height: var(--lh-body-long);
   text-wrap: pretty;
 }
 
 @media (min-width: 68.76rem) and (max-height: 56.25rem) {
   .hero__lede {
-    margin-top: clamp(1.25rem, 3vh, 2rem);
+    margin-top: clamp(0.875rem, 2vh, 1.25rem);
   }
 }
 
