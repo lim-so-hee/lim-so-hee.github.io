@@ -1230,6 +1230,9 @@
         filter: none;
       }
     }
+      .career-achievements li::marker { content: "- "; }
+    .career-achievements { margin: 10px 0 0; padding-left: 1.1em; color: var(--body); font-size: var(--t-xs); line-height: var(--lh-body); }
+    .career-achievements li + li { margin-top: 4px; }
   </style>
 </head>
 <body id="top">
@@ -1324,8 +1327,8 @@
         <div class="section-heading">
           <p class="section-name" lang="en">How I Work</p>
           <div class="section-copy">
-            <h2 id="capabilities-title">할 일과 책임 범위를 먼저 나눕니다.</h2>
-            <p class="single-line-desktop">직접 만드는 일과 외부 제작이 필요한 일을 구분하고, 각 단계의 기준과 일정을 정합니다.</p>
+            <h2 id="capabilities-title">전달할 목적에 맞춰 내용을 구성하고, 제작과 운영으로 이어갑니다.</h2>
+            <p class="single-line-desktop">기술 콘텐츠는 고객이 겪는 문제와 적용 사례를, 사업 문서는 판단에 필요한 근거를 중심으로 구성합니다. 글·발표·영상·전시의 전달 방식에 맞춰 내용을 다듬고, 직접 제작과 외부 협업을 조율해 발행·제출·현장 구현까지 맡습니다.</p>
           </div>
         </div>
         <!-- 단어 스택(sticky 100vh × 3)을 넣으려던 자리다. 단어 여섯 개를 읽히는 데
@@ -1339,25 +1342,25 @@
             <svg class="capability-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <g transform="scale(1.33333)"><path d="M3.83549 10.25H3.25C2.422 10.25 1.75 10.922 1.75 11.75C1.75 12.578 2.422 13.25 3.25 13.25H14.75C15.578 13.25 16.25 13.922 16.25 14.75C16.25 15.578 15.578 16.25 14.75 16.25H12.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.75 10.25C6.75 10.25 9.0838 10.1662 9.909 9.34101L14.784 4.46601C15.4053 3.84471 15.4053 2.83731 14.784 2.21601C14.1627 1.59471 13.1553 1.59471 12.534 2.21601L7.659 7.09101C6.8809 7.86911 6.75 10.25 6.75 10.25Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></g>
             </svg>
-            <h3>내용을 정리합니다</h3>
+            <h3>리서치·정보 분석</h3>
             <!-- <br>이 "이미지와 / 발행 흐름"을 갈라 의미 단위를 끊었다.
                  강제 줄바꿈을 빼고 word-break: keep-all에 맡긴다 — 낱말은 안 쪼개지고
                  칸에 맞으면 한 줄로 간다. -->
-            <p>자료를 확인하고 독자에게 필요한 정보와 순서를 정합니다.</p>
+            <p>시장과 고객, 제품·서비스에 관한 자료를 검토해 기획에 필요한 정보를 선별합니다. 출처와 근거를 확인하고, 전달 목적에 맞게 핵심 내용과 보완할 부분을 정리합니다.</p>
           </article>
           <article class="capability-item reveal" style="--d: 150ms">
             <svg class="capability-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M21 7V17C21 20 19.5 22 16 22H8C4.5 22 3 20 3 17V7C3 4 4.5 2 8 2H16C19.5 2 21 4 21 7Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.5 4.5V6.5C14.5 7.6 15.4 8.5 16.5 8.5H18.5" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 13H12" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 17H16" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <h3>형식에 맞춰 만듭니다</h3>
-            <p>콘텐츠, 사업계획서·제안서, 영상, 전시에 맞게 내용과 제작 단계를 구성합니다.</p>
+            <h3>콘텐츠 기획·메시지 설계</h3>
+            <p>누구에게 무엇을 전달할지 정하고, 이해와 설득에 필요한 설명 순서를 구성합니다. 글과 시각 자료를 함께 다루며 콘텐츠의 형식에 맞게 메시지와 표현을 구체화합니다.</p>
           </article>
           <article class="capability-item reveal" style="--d: 300ms">
             <svg class="capability-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M17.29 4.13999L17.22 7.92997C17.21 8.44997 17.54 9.13999 17.96 9.44999L20.44 11.33C22.03 12.53 21.77 14 19.87 14.6L16.64 15.61C16.1 15.78 15.53 16.37 15.39 16.92L14.62 19.86C14.01 22.18 12.49 22.41 11.23 20.37L9.46999 17.52C9.14999 17 8.39 16.61 7.79 16.64L4.45003 16.81C2.06003 16.93 1.38002 15.55 2.94002 13.73L4.92 11.43C5.29 11 5.46 10.2 5.29 9.65998L4.28005 6.42997C3.69005 4.52997 4.75004 3.47999 6.64004 4.09999L9.59005 5.06999C10.09 5.22999 10.84 5.11998 11.26 4.80998L14.34 2.58998C16 1.38998 17.33 2.08999 17.29 4.13999Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M21.91 22L18.88 18.97" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <h3>검수하고 결정합니다</h3>
-            <p>AI 결과와 외부 제작물은 그대로 쓰지 않고 출처와 최종 내용을 확인합니다.</p>
+            <h3>제작·운영 개선</h3>
+            <p>기획한 내용을 결과물로 만들고, 검토·수정·발행과 이후 보완까지 이어갑니다. AI로 조사와 초안 작성, 반복 작업을 보조하고, 결과물과 운영 과정에서 발견한 문제를 제작 방식과 검수 기준에 반영합니다.</p>
           </article>
         </div>
         <!-- 같은 격자의 마지막 행. 별도 제목을 단 패널이었던 것을 행으로 내렸다. -->
@@ -1367,8 +1370,8 @@
               <path d="M12 3L14.1 7.9L19 10L14.1 12.1L12 17L9.9 12.1L5 10L9.9 7.9L12 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
               <path d="M18.5 16L19.4 18.1L21.5 19L19.4 19.9L18.5 22L17.6 19.9L15.5 19L17.6 18.1L18.5 16Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
             </svg>
-            <h3>직접 하는 일</h3>
-            <p class="single-line-desktop">기획, 카피, 사업계획서·제안서 작성, 이미지·영상 편집, 최종 발행 판단을 맡습니다.</p>
+            <h3>콘텐츠 제작 역량</h3>
+            <p class="single-line-desktop">카피와 원고 작성, 발표 자료 구성·디자인, 이미지·영상 제작을 직접 수행합니다. 내용과 시각적 표현을 함께 조정하며 기획 의도가 최종 결과물에 드러나도록 다듬습니다.</p>
           </article>
           <article class="scope-item reveal" style="--d: 230ms">
             <svg class="capability-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -1377,8 +1380,8 @@
               <path d="M3 19C3.6 15.9 5.433 14.35 8.5 14.35C11.567 14.35 13.4 15.9 14 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
               <path d="M15.2 14.4C17.9 14.65 19.5 16.183 20 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
-            <h3>함께 만드는 일</h3>
-            <p>3D, 인쇄, 전시 제작은 외부 파트너와 진행하고 일정과 결과물을 확인합니다.</p>
+            <h3>협업·프로젝트 조율</h3>
+            <p>외주를 맡길 때는 작업 목적과 필요한 결과물, 일정과 제작 기준을 정리해 전달합니다. 진행 상황과 시안을 검토하며 수정 사항을 조율하고, 최종 결과물이 요청한 내용에 맞는지 확인합니다.</p>
           </article>
         </div>
       </section>
@@ -1395,7 +1398,7 @@
                  "앞뒤"가 시간 순서인지 공정인지 안 드러나 뜻이 통하지 않았고,
                  아래 경력 목록(서비스→웹디자인→콘텐츠 마케팅)과도 연결되지 않았다.
                  무엇에서 무엇으로 왔는지를 그대로 쓴다. -->
-            <h2 id="experience-title">서비스와 디자인 경험을 콘텐츠 기획에 활용합니다.</h2>
+            <h2 id="experience-title">서비스 운영과 웹디자인을 거쳐, 콘텐츠 기획·제작·운영으로 경험을 넓혀 왔습니다.</h2>
           </div>
         </div>
         <div class="experience-layout">
@@ -1405,7 +1408,12 @@
               <span class="career-period">2024.06–현재</span>
               <div>
                 <strong class="career-company">주식회사 더프라임그룹</strong>
-                <span class="career-role">콘텐츠 마케팅 · SNS·SEO 콘텐츠, 영상, 전시, 사업 문서</span>
+                <span class="career-role">콘텐츠 기획·제작·운영 · 사업계획서·제안서 작성 · 발표 자료·영상 제작 · 전시 기획 및 외주 협업</span>
+                <ul class="career-achievements">
+                  <li>콘텐츠 제작 체계 개선: 블로그 반복 제작 자동화 구축·운영 및 검수 기준 보완</li>
+                  <li>콘텐츠 운영 성과: 추적 키워드 10개 모두 검색 노출(5개 1위) · 월간 조회수 330→702 · AI 브리핑 누적 인용 8.7K</li>
+                  <li>사업 문서 작성: 수출바우처 사업계획서·현장평가 자료 작성 · 유망기업 선정, 협약 바우처 총액 4,500만 원</li>
+                </ul>
               </div>
             </div>
             <div class="career-row reveal" style="--d: 130ms">
@@ -1500,8 +1508,8 @@
         <!-- "다음 작업을 확인해 보세요."였다. 안내문이지 결론이 아니라
              REFERENCE_GUIDE 규칙 2(서술형 목차보다 결론이 드러나는 제목)에 걸렸다.
              다음 장에서 무엇을 보게 되는지를 제목이 말하게 한다. -->
-        <h2 id="next-title" class="reveal" style="--d: 80ms"><span class="next-l1"><span class="next-line">대표 프로젝트와</span><span class="next-line">AI 활용 과정을</span></span><span class="next-l2"><span class="next-line">이어서 볼 수</span><span class="next-line">있습니다.</span></span></h2>
-        <p class="next-lede reveal" style="--d: 160ms">Home에는 대표 프로젝트를, AI Project에는 콘텐츠 자동화 과정과 검수 기준을 정리했습니다.</p>
+        <h2 id="next-title" class="reveal" style="--d: 80ms"><span class="next-l1"><span class="next-line">기획과 제작,</span><span class="next-line">운영의 과정을</span></span><span class="next-l2"><span class="next-line">프로젝트에서</span><span class="next-line">확인해 보세요.</span></span></h2>
+        <p class="next-lede reveal" style="--d: 160ms">Home에서는 대표 프로젝트와 주요 결과를, AI Project에서는 AI를 업무에 활용하고 제작 과정을 개선한 경험을 볼 수 있습니다.</p>
         <div class="next-actions reveal" style="--d: 240ms">
           <a class="next-btn next-btn--solid" href="ai-project.html">
             <span lang="en">AI Project</span>
