@@ -1147,7 +1147,7 @@
 
     .automation-flow {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       margin-block-start: clamp(2.5rem, 5vw, 4rem);
       padding: 0;
       border-block: 1px solid var(--color-rule-strong);
@@ -3387,8 +3387,23 @@
 
     /* Combined tool names; setup entries use the shared context layout. */
     #workspace .ai-setup-combined { display: block; border: 0; }
-    #workspace .ai-setup-combined h4 { flex-wrap: wrap; }
+    #workspace .ai-setup-combined h4 {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: .7rem;
+    }
     #workspace .ai-tool-name { display: inline-flex; align-items: center; gap: .65rem; }
+    #workspace .workspace-intro-copy { display: grid; justify-items: start; align-content: end; }
+    #workspace .workspace-intro-copy .ai-setup-combined { margin: 0 0 1.1rem; }
+    #workspace .section-shell > .block + .block {
+      margin-block-start: clamp(3rem, 5vw, 5rem);
+    }
+    #workspace .band-intro + .block {
+      margin-block-start: clamp(3rem, 5vw, 5rem);
+    }
+    @media (max-width: 47.99rem) {
+      #workspace .workspace-intro-copy { justify-items: start; }
+    }
 
     /* Shared workspace headings and definition rows. */
     #workspace .block__head h3 {
@@ -3654,7 +3669,7 @@
             <p class="metric-note">※ 1회 관찰 기준</p>
             <ol class="automation-flow" aria-label="블로그 자동화 흐름">
               <li><span lang="en">INPUT</span><strong>주제·키워드</strong><p>사실 자료와 기존 발행 이력을 함께 입력합니다.</p></li>
-              <li><span lang="en">AUTOMATED</span><strong>자료 확인·원고 생성</strong><p>자료를 확인해 원고를 생성하고, 중복과 사실관계를 1차 점검합니다.</p></li>
+              <li><span lang="en">AUTOMATED</span><strong>자료 확인·원고 생성</strong><p>자료를 확인해 원고를 생성하고,<br>중복과 사실관계를 1차 점검합니다.</p></li>
               <li><span lang="en">HUMAN GATE</span><strong>검토·수정·판단</strong><p>키워드 방향과 내용, 최종 발행 여부를 직접 결정합니다.</p></li>
               <li><span lang="en">OUTPUT</span><strong>검토 가능한 원고</strong><p>자동화는 발행 직전 단계에서 종료됩니다.</p></li>
             </ol>
@@ -4012,16 +4027,20 @@
               <p class="section-name" lang="en">AI WORKSPACE</p>
               <h2 class="section-heading" data-split id="automation-title"><span>업무 기준과 작업 기록을 연결해</span><strong>AI와 이어서 일할 환경을 구성했습니다</strong></h2>
             </div>
-            <p class="section-lede reveal"><span>Claude Code와 Codex에 프로젝트 지침과 작업별 스킬을 연결했습니다.</span><span>참고 자료와 확정 내용, 피드백을 기록해 다음 작업에서도 활용하도록 구성했습니다.</span></p>
+            <div class="workspace-intro-copy">
+              <div class="tool-roles ai-setup-combined">
+                <h4><span class="ai-tool-name"><img class="tool-logo" src="icons/openai.svg" alt="" width="26" height="26" loading="lazy">Codex</span><span class="ai-tool-name"><img class="tool-logo" src="icons/claude.svg" alt="" width="26" height="26" loading="lazy">Claude Code</span></h4>
+              </div>
+              <p class="section-lede reveal"><span>Claude Code와 Codex에 프로젝트 지침과 작업별 스킬을 연결했습니다.</span><span>참고 자료와 확정 내용, 피드백을 기록해 다음 작업에서도 활용하도록 구성했습니다.</span></p>
+            </div>
           </div>
 
           <div class="block reveal" id="tool-roles" aria-labelledby="tool-roles-title">
             <div class="block__head">
-              <p class="section-name" lang="en">AI SETUP</p>
-              <h3 id="tool-roles-title">업무 기준과 참고 자료를<br>작업 전에 연결했습니다</h3>
-            </div>
-            <div class="tool-roles ai-setup-combined">
-              <h4><span class="ai-tool-name"><img class="tool-logo" src="icons/claude.svg" alt="" width="26" height="26" loading="lazy">Claude Code</span><span aria-hidden="true">+</span><span class="ai-tool-name"><img class="tool-logo" src="icons/openai.svg" alt="" width="26" height="26" loading="lazy">Codex</span></h4>
+              <div>
+                <p class="section-name" lang="en">AI SETUP</p>
+                <h3 id="tool-roles-title">업무 기준과 참고 자료를 연결했습니다</h3>
+              </div>
             </div>
             <dl class="setup-grid">
               <div><dt>프로젝트 지침</dt><dd>작업 목적·범위·진행 단계와 승인 기준 설정</dd></div>
@@ -4033,7 +4052,7 @@
           <div class="block reveal" id="workspace-setup" aria-labelledby="workspace-setup-title">
             <div class="block__head">
               <p class="section-name" lang="en">WORKFLOW &amp; REVIEW</p>
-              <h3 id="workspace-setup-title">작성과 점검 절차를 나눠<br>결과물을 검토했습니다</h3>
+              <h3 id="workspace-setup-title">작성과 점검 절차를 나눠 결과물을 검토했습니다</h3>
             </div>
             <dl class="setup-grid">
               <div><dt>근거 대조</dt><dd>주장과 수치를 원문·공식 자료와 대조</dd></div>
@@ -4045,7 +4064,7 @@
           <div class="block reveal" id="principles" aria-labelledby="principles-title">
             <div class="block__head">
               <p class="section-name" lang="en">CONTEXT UPDATE</p>
-              <h3 id="principles-title">결정과 피드백을 기록해<br>다음 작업의 기준으로 남겼습니다</h3>
+              <h3 id="principles-title">결정과 피드백을 기록해 반영했습니다</h3>
             </div>
 <dl class="setup-grid">
               <div><dt>결정 기록</dt><dd>확정·보류 사항과 변경 이유를 기록</dd></div>
