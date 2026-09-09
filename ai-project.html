@@ -3405,6 +3405,21 @@
       #workspace .workspace-intro-copy { justify-items: start; }
     }
 
+    /* 누적 인용수는 보조 라벨과 분리해 작은 지표 카드처럼 강조한다. */
+    #ai-search-results .ai-metrics:has(> div:only-child) {
+      gap: .8rem;
+    }
+    #ai-search-results .ai-metrics:has(> div:only-child) dt {
+      color: var(--ai-accent-soft);
+      font-size: clamp(2rem, 3vw, 2.8rem);
+      line-height: 1;
+    }
+    #ai-search-results .ai-metrics:has(> div:only-child) dd {
+      color: var(--ai-accent-soft);
+      font-size: clamp(1rem, 1.4vw, 1.2rem);
+      font-weight: 600;
+    }
+
     /* Shared workspace headings and definition rows. */
     #workspace .block__head h3 {
       max-inline-size: none;
@@ -3840,9 +3855,9 @@
                  출처 6건 패널과 더프라임그룹 글 2건이 한 화면에 함께 보인다. -->
             <figure class="evidence-stage">
               <a class="evidence-open" href="assets/blog/blog-evidence-ai-cite-0810.png" target="_blank" rel="noreferrer" aria-label="원본 크기로 열기">
-                              <img src="assets/blog/blog-evidence-ai-cite-0810.png" width="1213" height="925" alt="네이버 'amr agv 차이' 검색창과 AI 브리핑 답변, 출처 6건 패널 — 더프라임그룹 네이버 블로그 글 2건이 보임" loading="lazy">
+              <img src="assets/blog/blog-evidence-ai-cite-0810.png" width="1213" height="925" alt="네이버 'amr agv 차이' 검색창과 AI 브리핑 답변, 출처 6건 패널 — 더프라임그룹 네이버 블로그 글 2건이 보임" loading="lazy">
                             </a>
-              <figcaption><span lang="en">AI BRIEFING</span>'amr agv 차이' 검색의 AI 브리핑과 출처 패널 — 출처 6건 중 더프라임그룹 블로그 글 2건 · 2026.08.10 캡처</figcaption>
+              <figcaption><span lang="en">AI BRIEFING</span>'amr agv 차이' 검색의 AI 브리핑과 출처 패널 — 출처 6건 중 더프라임그룹 블로그 글 2건</figcaption>
             </figure>
             <!-- "AI 브리핑 인용수는 콘텐츠가 생성형 AI 검색 답변의 출처로
                  사용된 횟수입니다."를 뺐다 — 바로 위 6.7K에 "AI 브리핑 누적
