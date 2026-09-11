@@ -561,9 +561,12 @@
       margin-block-start: clamp(4rem, 8vw, 7rem);
     }
 
-    .comparison-grid--single { grid-template-columns: minmax(0, 1fr); }
+    .comparison-grid--single {
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+    }
     .comparison-grid--single .comparison-item {
-      width: min(100%, 90rem);
+      width: min(92vw, 90rem);
       margin-inline: auto;
     }
     .comparison-grid--single .comparison-item img {
