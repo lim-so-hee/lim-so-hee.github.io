@@ -562,6 +562,10 @@
     }
 
     .comparison-grid--single { grid-template-columns: minmax(0, 1fr); }
+    .comparison-grid--single .comparison-item {
+      width: min(100%, 90rem);
+      margin-inline: auto;
+    }
     .comparison-grid--single .comparison-item img {
       height: auto;
       aspect-ratio: auto;
