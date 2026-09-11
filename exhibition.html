@@ -561,6 +561,14 @@
       margin-block-start: clamp(4rem, 8vw, 7rem);
     }
 
+    .comparison-grid--single { grid-template-columns: minmax(0, 1fr); }
+    .comparison-grid--single .comparison-item img {
+      height: auto;
+      aspect-ratio: auto;
+      object-fit: contain;
+      background: transparent;
+    }
+
     .comparison-item {
       min-width: 0;
     }
@@ -1184,11 +1192,7 @@
             <p class="section-lede">부스 기획안을 사내에서 발표해 시연·상담 공간 구성에 대한 승인을 받았습니다. 승인된 구성은 KOREA MAT 현장 부스에 적용됐으며, 설치 후 기획안의 공간 구분이 실제로 반영됐는지 직접 확인했습니다.</p>
           </div>
 
-          <div class="comparison-grid">
-            <figure class="comparison-item comparison-item--plan">
-              <img src="assets/exhibition/evidence-approved.png" width="965" height="572" alt="시연 구역과 상담 구역이 반영된 KOREA MAT 부스 사선 방향 구성 시안" loading="lazy">
-              <figcaption><strong>01 LAYOUT</strong><span>시연 구역과 상담 구역을 나눈 공간 구성 시안</span></figcaption>
-            </figure>
+          <div class="comparison-grid comparison-grid--single">
             <figure class="comparison-item">
               <img src="assets/exhibition/booth-plan.jpg?v=20260911-onsite" width="3722" height="2064" alt="KOREA MAT 현장에 구현된 AMR 시연·상담 부스 전경" loading="lazy">
               <figcaption><strong>02 ON SITE</strong><span>AMR 두 기종과 제품 안내가 배치된 시연 구역</span></figcaption>
