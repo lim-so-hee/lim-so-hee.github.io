@@ -239,7 +239,7 @@ body {
 }
 
 /* ─ 링크 ─────────────────────────────────────────────────────────────
-   링크는 액센트를 쓰지 않는다. 검정 + 밑줄이다.
+   링크는 본문 색을 따르며 밑줄 없이 표시한다.
    액센트가 "여기가 핵심"을 뜻하므로, 누를 수 있는 것과 겹치면 안 된다. */
 a {
   color: inherit;
@@ -247,7 +247,7 @@ a {
 }
 
 :where(a[href]) {
-  border-bottom: 2px solid var(--ink);
+  border-bottom: 0;
   padding-bottom: 1px;
   font-weight: var(--w-display);
   transition: border-color var(--dur-hover) var(--ease-out);
