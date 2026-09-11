@@ -454,6 +454,24 @@
       line-height: 1.7;
     }
 
+    .role-group ul {
+      display: grid;
+      gap: .65rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .role-group li {
+      padding-inline-start: 1.1rem;
+      text-indent: -1.1rem;
+    }
+
+    .role-group li::before {
+      color: #83a1ff;
+      content: "— ";
+    }
+
     /* 벽돌 쌓기. 격자를 쓰면 같은 줄의 칸 높이가 같아야 해서, 세로 사진(0.75·0.86)과
        가로 사진(1.33~2.00)이 한 줄에 섞이는 순간 한쪽에 빈자리가 남는다
        (실측: 3칸일 때 03 아래 279px, 4칸일 때 01·02 아래 152·200px).
@@ -1106,7 +1124,13 @@
             </div>
             <div class="role-group">
               <dt>Coordination</dt>
-              <dd>AMR팀과 부스 구성안을 협의했습니다. 증정품 제작 업체에 요청사항을 전달하고, 전시 일정에 맞춰 제작 일정과 납품을 조율했습니다.</dd>
+              <dd>
+                <ul>
+                  <li>AMR팀과 부스 구성안 협의</li>
+                  <li>증정품 제작 업체 요청사항 전달</li>
+                  <li>전시 일정에 맞춘 제작 일정·납품 조율</li>
+                </ul>
+              </dd>
             </div>
             <div class="role-group">
               <dt>Outsourced</dt>
