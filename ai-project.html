@@ -799,8 +799,9 @@
     }
 
     .time-card {
-      grid-column: 2;
-      justify-self: start;
+      grid-column: 1 / -1;
+      justify-self: stretch;
+      inline-size: 100%;
       padding: clamp(1.5rem, 3vw, 2.25rem);
       background: var(--ai-mist);
     }
