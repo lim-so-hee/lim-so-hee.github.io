@@ -791,6 +791,7 @@
        남았다. 바닥을 맞추면 두 덩어리가 한 줄로 읽힌다. */
     .figure-row {
       display: grid;
+      grid-template-columns: minmax(0, 1.57fr) minmax(0, 1fr);
       gap: clamp(1.5rem, 4vw, 3.5rem);
       align-items: end;
       /* 제목과의 간격이 48px이라 그 사이가 비어 보였다(실측). 32px로 낮춘다. */
@@ -798,7 +799,7 @@
     }
 
     .time-card {
-      grid-column: 1;
+      grid-column: 2;
       justify-self: start;
       padding: clamp(1.5rem, 3vw, 2.25rem);
       background: var(--ai-mist);
@@ -820,6 +821,16 @@
       color: var(--color-ink-2);
       font-size: var(--text-sm);
       line-height: 1.55;
+    }
+
+    @media (max-width: 47.99rem) {
+      .figure-row {
+        grid-template-columns: 1fr;
+      }
+
+      .figure-row .time-card {
+        grid-column: 1;
+      }
     }
 
     .process-row {
@@ -3093,7 +3104,11 @@
       }
 
       .figure-row {
-        grid-template-columns: minmax(0, 1.35fr) minmax(15rem, .65fr);
+        grid-template-columns: minmax(0, 1.57fr) minmax(15rem, 1fr);
+      }
+
+      .figure-row .time-card {
+        grid-column: 2;
       }
 
       /* 설명이 소제목 옆으로 올라가 이 자리에는 링크 줄만 남는다.
