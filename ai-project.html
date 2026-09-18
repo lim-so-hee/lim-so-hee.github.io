@@ -798,10 +798,20 @@
     }
 
     .time-card {
-      grid-column: 1;
+      grid-column: 2;
       justify-self: start;
       padding: clamp(1.5rem, 3vw, 2.25rem);
       background: var(--ai-mist);
+    }
+
+    .section-lede-wrap {
+      grid-column: 2;
+    }
+
+    .section-lede-wrap .time-card {
+      grid-column: auto;
+      inline-size: min(100%, 32rem);
+      margin-block-start: clamp(2rem, 4vw, 3.5rem);
     }
 
     .time-card strong {
@@ -3598,7 +3608,13 @@
             </div>
             <!-- 이 페이지에서 "직접"이 본문에만 열 번 넘게 나와 신중함이 아니라
                  방어처럼 읽혔다. 뜻은 남기고 표현을 바꾼다. -->
-            <p class="section-lede reveal"><span>자료 정리와 초안 작성, 이미지 제작에 AI를 사용하며 요청 방식과 결과물을 비교했습니다.</span><span>필요한 내용을 얻기 위해 자료와 지시를 보완하고, 반복할 작업과 직접 판단할 부분을 구분했습니다.</span></p>
+            <div class="section-lede-wrap">
+              <p class="section-lede reveal"><span>자료 정리와 초안 작성, 이미지 제작에 AI를 사용하며 요청 방식과 결과물을 비교했습니다.</span><span>필요한 내용을 얻기 위해 자료와 지시를 보완하고, 반복할 작업과 직접 판단할 부분을 구분했습니다.</span></p>
+              <div class="time-card">
+                <strong>약 4–5시간</strong>
+                <span>초기 AI 활용 당시 블로그 게시물 한 건의 제작 시간 · 추정</span>
+              </div>
+            </div>
           </div>
 
           <div class="block reveal" id="manual-ai" aria-labelledby="manual-ai-title">
@@ -3608,10 +3624,6 @@
             </div>
             <div class="figure-row">
               <p class="block-copy">필요한 작업을 하나씩 요청하고, 결과를 확인하며 추가 요청과 수정을 반복했습니다. 자료를 정리하고 초안과 이미지를 만든 뒤, 내용을 직접 검토해 완성했습니다.</p>
-              <div class="time-card">
-                <strong>약 4–5시간</strong>
-                <span>초기 AI 활용 당시 블로그 게시물 한 건의 제작 시간 · 추정</span>
-              </div>
             </div>
             <ol class="process-row" aria-label="수동 콘텐츠 제작 과정" style="counter-reset: step">
               <li>자료 정리</li>
