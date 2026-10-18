@@ -545,12 +545,16 @@
     }
 
     .section-copy p {
-      max-width: none;
+      max-width: 68ch;
       margin: 18px 0 0;
       color: var(--muted);
       font-size: var(--t-sm);
       line-height: var(--lh-body);
       text-wrap: pretty;
+    }
+
+    #experience-title {
+      scroll-margin-block-start: 100px;
     }
 
     .experience-section .section-copy {
@@ -579,9 +583,6 @@
     @media (min-width: 1180px) {
       .introduction { font-size: min(18px, 1.4vw); }
       .introduction .intro-line { white-space: nowrap; }
-      .section-copy .single-line-desktop {
-        white-space: nowrap;
-      }
     }
 
     /* 아이패드 가로 폭에서는 150px 라벨 칸보다 Experience & Background가 길어
@@ -1338,7 +1339,7 @@
           <p class="section-name" lang="en">How I Work</p>
           <div class="section-copy">
             <h2 id="capabilities-title">목적에 맞게 구성하고 제작과 운영까지 맡습니다</h2>
-            <p class="single-line-desktop">기술 콘텐츠는 고객의 문제와 적용 사례를, 사업 문서는 판단에 필요한 근거를 중심으로 구성합니다. 직접 제작하거나 외주를 조율하며 발행까지 맡습니다.</p>
+            <p>기술 콘텐츠는 고객의 문제와 적용 사례를, 사업 문서는 판단에 필요한 근거를 중심으로 구성합니다. 직접 제작하거나 외주를 조율하며 발행까지 맡습니다.</p>
           </div>
         </div>
         <!-- 단어 스택(sticky 100vh × 3)을 넣으려던 자리다. 단어 여섯 개를 읽히는 데
@@ -1381,7 +1382,7 @@
               <path d="M18.5 16L19.4 18.1L21.5 19L19.4 19.9L18.5 22L17.6 19.9L15.5 19L17.6 18.1L18.5 16Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
             </svg>
             <h3>콘텐츠 제작 역량</h3>
-            <p class="single-line-desktop">카피·원고를 쓰고 발표 자료와 이미지·영상을 직접 만듭니다. 전달할 내용에 맞춰 글과 디자인을 함께 다듬습니다.</p>
+            <p>카피·원고를 쓰고 발표 자료와 이미지·영상을 직접 만듭니다. 전달할 내용에 맞춰 글과 디자인을 함께 다듬습니다.</p>
           </article>
           <article class="scope-item reveal" style="--d: 230ms">
             <svg class="capability-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
