@@ -47,6 +47,10 @@
   };
 
   const GRAV = 0.55, DAMP = 0.988, ITER = 8, REST_FRAMES = 30;
+  // 좁고 낮은 노트북 화면에서는 충돌 뒤 한 알약이 세로로 잠기면 한 줄을
+  // 차지해 다른 도구의 두 번째 층을 밀어낸다. 알약은 정보 라벨이므로
+  // 기울기는 장식으로만 남기고, 내용이 읽히는 범위에서만 쌓이게 한다.
+  const MAX_TILT = 24 * Math.PI / 180;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 
   let bodies = [], raf = 0, rest = 0;
@@ -64,6 +68,20 @@
     const k = (d - b.L) / d * 0.5;
     b.p1.x += dx * k; b.p1.y += dy * k;
     b.p2.x -= dx * k; b.p2.y -= dy * k;
+
+    // 180° 회전한 알약은 글자를 거꾸로 보이게 하지 않도록 이미 접어 쓴다.
+    // 같은 기준으로 물리 몸체도 ±24° 안에 되돌려, Premiere Pro처럼 긴
+    // 알약 하나가 세로로 서서 바닥의 두 번째 줄을 가로막지 않게 한다.
+    let angle = Math.atan2(b.p2.y - b.p1.y, b.p2.x - b.p1.x);
+    if (angle > Math.PI / 2) angle -= Math.PI;
+    else if (angle < -Math.PI / 2) angle += Math.PI;
+    const limited = Math.max(-MAX_TILT, Math.min(MAX_TILT, angle));
+    if (limited === angle) return;
+
+    const cx = (b.p1.x + b.p2.x) / 2, cy = (b.p1.y + b.p2.y) / 2;
+    const hx = Math.cos(limited) * b.L / 2, hy = Math.sin(limited) * b.L / 2;
+    b.p1.x = cx - hx; b.p1.y = cy - hy;
+    b.p2.x = cx + hx; b.p2.y = cy + hy;
   };
 
   // 알약이 회전하면 캡 중심만으로는 모서리가 벽을 넘는다. 반지름만큼 더 물린다.
