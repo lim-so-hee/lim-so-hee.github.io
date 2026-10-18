@@ -1007,7 +1007,9 @@
       max-width: none;
       margin: 0;
       color: var(--ink);
-      font-size: clamp(36px, 6.3vw, 88px);
+      /* 다른 사례 페이지의 Next 제목과 같은 3.8rem 상한을 쓴다. 프로필만
+         88px까지 커지면 마지막 안내가 본문보다 더 크게 읽혔다. */
+      font-size: clamp(32px, 5.35vw, 3.8rem);
       font-weight: var(--w-body);
       line-height: 1.08;
       letter-spacing: -.04em;

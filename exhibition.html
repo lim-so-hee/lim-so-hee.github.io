@@ -211,7 +211,9 @@
     .hero-copy h1 {
       max-inline-size: 12ch;
       margin: 0;
-      font-size: clamp(3rem, 5.7vw, 5.5rem);
+      /* 웨비나 히어로와 같은 크기. 두 줄 제목이 첫 화면을 과하게 차지하지
+         않으면서도 섹션 제목보다 한 단계 크게 읽히게 한다. */
+      font-size: clamp(3rem, 5.3vw, 5.125rem);
       font-weight: 400;
       line-height: 1.05;
       letter-spacing: -.04em;
@@ -1115,7 +1117,7 @@
             </div>
             <div class="planning-step">
               <dt>On-site</dt>
-              <dd>설치 전날 로고 스티커가 잘못 인쇄된 것을 발견해 행사장 근처 인쇄소를 찾아 그날&nbsp;바로 다시 제작했습니다. 다음 날에는 공유기를 새로 마련해 시연 장비의 연결 문제를 해결했습니다.</dd>
+              <dd>설치 전날 로고 스티커가 잘못 인쇄된 것을 발견했습니다. 방문객이 부스를 알아보고 안내물을 확인할 수 있도록 행사장 근처 인쇄소에서 그날&nbsp;바로 다시 제작했습니다. 다음 날에는 시연 장비가 끊기지 않도록 공유기를 새로 마련해 연결 문제를 해결했습니다.</dd>
             </div>
           </dl>
 
@@ -1212,8 +1214,8 @@
               <h2 class="section-heading" id="evidence-title">직접 제안한 공간 구성이 <strong>실제 부스에 적용됐습니다.</strong></h2>
             </div>
             <div class="evidence-copy">
-              <p class="section-lede">부스 기획안을 발표해 시연·상담 공간 구성을 승인받고, 설치 뒤 계획대로 구현됐는지 확인했습니다. 현장에서는 브로슈어가 부족할 만큼 방문이 이어졌습니다. 전시 후에는 방문한 물류 자동화 기업과 AMR·3D 프린팅 관련 협의를 이어갔고, 직접 만든 영상은 영업 담당자의 고객사&nbsp;미팅에도 활용됐습니다.</p>
-              <p class="section-lede evidence-context">같은 해 회사 전체 AMR&nbsp;납품은 전년 4대에서 16대로 늘었습니다. 이는 회사 전체 실적으로, 전시만의 기여를 분리해 측정한 수치는 아닙니다.</p>
+              <p class="section-lede">부스 기획안을 발표해 시연·상담 공간 구성을 승인받고, 설치 뒤 계획대로 구현됐는지 확인했습니다. 현장에서는 브로슈어가 부족할 만큼 방문이 이어졌고, 전시 후에는 부스를 찾은 물류 자동화 기업과 AMR 도입 협의를 이어갔습니다. 직접 제작한 영상은 영업 담당자의 고객사&nbsp;미팅에도 활용됐습니다.</p>
+              <p class="section-lede evidence-context">현장 사진과 공식 기록 영상을 통해 기획안이 실제 부스에 적용된 모습을 확인할 수 있습니다.</p>
             </div>
           </div>
 
@@ -1235,7 +1237,7 @@
             </div>
             <!-- 부스 상영 영상은 프레임 한 장을 싣던 자리를 없애고 문장으로만 남긴다.
                  캡션에 있던 "직접 제작·편집"과 "현장 반복 재생"은 여기로 옮겼다. -->
-            <p class="section-lede">현장 담당자와 구도를 상의하며 5시간 동안 촬영하고, 기존 영상에 장면을 더해 제품과 사업 소개 영상으로 편집했습니다. 공동 참가사와 더프라임그룹이 요청한 내용을 담아 KOREA MAT 부스에서 반복 상영했습니다.</p>
+            <p class="section-lede">현장 담당자와 구도를 상의해 촬영하고, 제품과 사업 소개 영상으로 직접 편집했습니다. 공동 참가사와 더프라임그룹이 요청한 내용을 담아 KOREA MAT 부스에서 반복 상영했습니다.</p>
           </div>
 
           <div class="video-evidence-grid">
@@ -1245,7 +1247,7 @@
                 <img src="https://i.ytimg.com/vi/I4ol3RALCf0/maxresdefault.jpg" width="1280" height="720" alt="1.5톤급 무인 지게차 AMR의 장애물 감지와 팔레트 운반 장면을 담은 부스 상영 영상 썸네일" loading="lazy">
                 <span class="youtube-card__play" aria-hidden="true"></span>
               </a>
-              <p class="video-source">직접 촬영한 장면을 더해 편집하고 KOREA MAT 부스에서 반복 상영한 영상입니다.</p>
+              <p class="video-source">직접 촬영하고 편집해 KOREA MAT 부스에서 반복 상영한 영상입니다.</p>
             </div>
             <div class="video-proof">
               <p class="video-proof__label" lang="en">Official On-site Record</p>
@@ -1269,7 +1271,7 @@
         <div class="section-shell">
           <p class="next-eyebrow" lang="en">Closing</p>
           <!-- 전시 사례에서 확인할 수 있는 기획 범위와 현장 구현 경험으로 마무리한다. -->
-          <h2 id="closing-title"><span class="next-l1"><span class="next-line">제안한</span><span class="next-line">공간 구성이</span></span><span class="next-l2"><span class="next-line">현장에 구현되는 것까지</span><span class="next-line">확인했습니다.</span></span></h2>
+          <h2 id="closing-title"><span class="next-l1"><span class="next-line">제안한 공간 구성이</span></span><span class="next-l2"><span class="next-line">현장에 구현되는 것까지</span><span class="next-line">확인했습니다.</span></span></h2>
           <p class="next-lede">현장 조사를 바탕으로 부스를 기획·발표하고 상영 영상을 제작했습니다.<br>전시가 끝난 뒤에는 부스를 찾은 기업과 후속 협의가 이어졌습니다.</p>
           <div class="next-actions">
             <a class="next-btn next-btn--solid" href="profile.html">
