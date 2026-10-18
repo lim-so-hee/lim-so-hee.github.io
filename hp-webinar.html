@@ -1123,6 +1123,7 @@
     .study-intro {
       display: flex;
       flex-direction: column;
+      min-width: 0;
     }
 
     .study-intro .section-lede {
@@ -1321,14 +1322,19 @@
          (실측: 칸 472px에 이미지 262px). 이미지 칸은 내용 폭에 맞추고 남는
          자리는 설명 칸이 가져가게 해서, 간격이 곧 두 장 사이 거리가 되게 한다. */
       .study-row {
-        grid-template-columns: minmax(0, 1fr) auto auto;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         column-gap: clamp(1rem, 2vw, 1.75rem);
+      }
+
+      .js-stack .study-row {
+        grid-template-columns: minmax(0, 1fr) auto auto;
       }
     }
 
     /* 설명과 세로 문서 두 장을 한 줄에 두면 서로 가리는 폭에서는
        설명을 위 전체 폭, 문서를 아래 2열로 둔다. */
     @media (min-width: 62rem) and (max-width: 85.5rem) {
+      .study-row,
       .js-stack .perf-stack__view .study-row {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         grid-template-rows: auto minmax(0, 1fr);
@@ -1336,14 +1342,17 @@
         gap: clamp(1rem, 2vw, 1.5rem);
       }
 
+      .study-intro,
       .js-stack .perf-stack__view .study-intro {
         grid-column: 1 / -1;
       }
 
+      .study-intro .card-heading,
       .js-stack .perf-stack__view .study-intro .card-heading {
         max-inline-size: none;
       }
 
+      .study-intro .section-lede,
       .js-stack .perf-stack__view .study-intro .section-lede {
         max-inline-size: none;
       }
