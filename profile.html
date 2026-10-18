@@ -562,7 +562,9 @@
     }
 
     .experience-section .experience-intro {
-      max-inline-size: 58rem;
+      /* 경력 소개의 세 문장은 각자 하나의 판단 단위다. 넓은 화면에서는
+         문장 하나가 한 줄에 읽히도록 본문 폭을 제목보다 넉넉하게 쓴다. */
+      max-inline-size: 62rem;
       margin-block-start: clamp(24px, 2.5vw, 36px);
       display: flex;
       flex-direction: column;
@@ -571,7 +573,8 @@
 
     .experience-section .experience-intro p {
       margin: 0;
-      max-inline-size: 68ch;
+      max-inline-size: none;
+      letter-spacing: -0.02em;
       word-break: keep-all;
       overflow-wrap: anywhere;
     }
