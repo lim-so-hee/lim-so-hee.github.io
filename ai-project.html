@@ -3528,6 +3528,132 @@
         overflow-x: auto;
       }
     }
+    @media (min-width: 48rem) {
+      #editorial-review > .block-copy {
+        width: calc(50% - 1.5rem);
+        max-width: none;
+        margin-inline-start: auto;
+      }
+      #editorial-review .setup-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        width: 100%;
+      }
+      #editorial-review .setup-grid > div {
+        min-width: 0;
+        padding-inline: 1.5rem;
+        border-block-end: 0;
+        border-inline-end: 1px solid var(--color-rule-strong);
+      }
+      #editorial-review .setup-grid > div:first-child { padding-inline-start: 1.5rem; }
+      #editorial-review .setup-grid > div:last-child { border-inline-end: 0; }
+      #editorial-review .setup-grid > div > :is(dt, dd) {
+        width: 100%;
+        max-width: 28rem;
+        margin-inline: auto;
+        text-align: left;
+      }
+    }
+    .case-evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-block-start: 2rem;
+      border-block-start: 1px solid var(--color-rule-strong);
+    }
+    .case-evidence-grid > div {
+      min-width: 0;
+      padding: 1.5rem;
+      border-inline-end: 1px solid var(--color-rule-strong);
+    }
+    .case-evidence-grid > div:last-child { border-inline-end: 0; }
+    .case-evidence-grid dt { color: var(--color-accent); font-weight: 800; line-height: 1.4; }
+    .case-evidence-grid dd { margin: .75rem 0 0; color: var(--color-ink-2); line-height: 1.7; }
+    @media (max-width: 47.99rem) {
+      .case-evidence-grid { grid-template-columns: 1fr; }
+      .case-evidence-grid > div { border-inline-end: 0; border-block-end: 1px solid var(--color-rule-strong); }
+    }
+    #automation .automation-heading-copy .block-copy {
+      max-inline-size: none;
+      text-align: left;
+      text-wrap: wrap;
+    }
+    @media (min-width: 62rem) {
+      #automation .band-intro,
+      #automation .automation-heading {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 3rem;
+        row-gap: 1.25rem;
+        align-items: start;
+      }
+      #automation .band-intro > div,
+      #automation .automation-heading > .block__head {
+        display: contents;
+      }
+      #automation .band-intro .section-name,
+      #automation .automation-heading .section-name {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        margin: 0;
+      }
+      #automation .band-intro .section-heading,
+      #automation .automation-heading h3 {
+        grid-column: 1;
+        grid-row: 2;
+        margin-block-start: 0;
+        max-inline-size: none;
+      }
+      #automation .band-intro > .section-lede,
+      #automation .automation-heading-copy {
+        grid-column: 2;
+        grid-row: 2;
+        align-self: start;
+        width: 100%;
+        max-inline-size: none;
+        margin: 0;
+        text-align: left;
+      }
+      #automation .automation-heading-copy > .block-copy:first-child {
+        margin-block-start: 0;
+      }
+      #automation .band-intro > .section-lede,
+      #automation .automation-heading-copy {
+        max-inline-size: 32rem;
+        justify-self: end;
+        margin-inline-start: auto;
+        text-wrap: wrap;
+      }
+    }
+    @media (min-width: 62rem) {
+      #performance .band-intro {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr);
+        column-gap: 3rem;
+        row-gap: 1.25rem;
+        align-items: start;
+      }
+      #performance .band-intro > div { display: contents; }
+      #performance .band-intro .section-name {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        margin: 0;
+      }
+      #performance .band-intro .section-heading {
+        grid-column: 1;
+        grid-row: 2;
+        margin-block-start: 0;
+      }
+      #performance .band-intro > .section-lede {
+        grid-column: 2;
+        grid-row: 2;
+        align-self: start;
+        margin-block-start: 0;
+        text-align: left;
+      }
+    }
+    #search-feedback :is(.section-name, .block-copy, .case-evidence-grid dd, .metric-note) {
+      color: #fff;
+    }
+    #search-feedback .metric-note { max-inline-size: none; }
   </style>
 </head>
 <body>
@@ -3700,7 +3826,7 @@
               <p class="section-name" lang="en">BLOG AUTOMATION</p>
               <h2 class="section-heading" data-split id="system-title"><span>자료 확인부터 1차 검수까지 자동화하고</span><strong>발행 전에는 원고를 직접 검토했습니다</strong></h2>
             </div>
-            <p class="section-lede reveal"><span>주제와 키워드를 입력하면 자료 확인부터 원고 생성, 1차 검수까지 이어지도록 자동화했습니다. 발행 전에는 원고 전체를 직접 읽고 최종 확인했습니다.</span><span>검토 중 이전 글과 거의 같은 초안을 발견해 발행을 보류한 적이 있습니다. 이를 계기로 최근 발행 글 10건과 새 원고를 자동 비교하고, 같은 주제는 3주 안에 반복하지 않도록 했습니다. 이후 중복 원고 2건을 발행 전에 걸렀습니다. 다만 검수에서 걸러내지 못한 중복 사례도 있어, 주제와 관점까지 함께 비교하도록 검수 방식을 보완했습니다.</span></p>
+            <p class="section-lede reveal"><span>주제와 키워드를 입력하면 자료 확인부터 원고 생성, 1차 검수까지 이어지도록 자동화했습니다. 발행 전에는 원고 전체를 직접 읽고 최종 확인했습니다.</span><span>자동 검수 결과와 함께 기존 글도 대조하며, 새 원고가 독자에게 다른 정보를 제공하는지 검토했습니다.</span></p>
           </div>
 
           <!-- 블록 라벨은 부모 밴드 이름의 확장 문자열을 피한다.
@@ -3740,12 +3866,14 @@
                비율이 2.46 / 1.78 / 1.38 / 2.33으로 섞여 있어 캡션은
                .evidence-grid 규칙에서 행 바닥으로 정렬한다. -->
           <div class="block reveal" id="automation-record" aria-labelledby="automation-record-title">
-            <div class="block__head">
+            <div class="automation-heading">
+<div class="block__head">
               <p class="section-name" lang="en">RUN RECORD</p>
               <h3 id="automation-record-title">반복 작업을 예약하고 실행 과정을 기록했습니다</h3>
             </div>
-            <p class="block-copy">키워드 수집과 원고 생성을 매주 화·수·목 오전에 예약해 실행했습니다. 실행할 때마다 날짜별 폴더에 로그와 초안·검수·최종본을 남겨 진행 과정과 결과를 확인했습니다.</p>
-            <div class="evidence-grid">
+            <div class="automation-heading-copy"><p class="block-copy">키워드 수집과 원고 생성을 매주 화·수·목 오전에 예약해 실행했습니다. 실행할 때마다 날짜별 폴더에 로그와 초안·검수·최종본을 남겨 진행 과정과 결과를 확인했습니다.</p>
+            </div></div>
+<div class="evidence-grid">
               <figure class="evidence-stage">
                 <!-- 캡처에 RankTracking(금 09:30)도 보이지만 FACTS.md 미등록이라
                      alt와 캡션에서 언급하지 않는다(EVIDENCE_MAP.md:98). -->
@@ -3775,6 +3903,38 @@
             </div>
           </div>
 
+          <div class="block reveal" id="review-history" aria-labelledby="review-history-title">
+            <div class="automation-heading">
+<div class="block__head">
+              <p class="section-name" lang="en">QUALITY TRACKING · 2026.07</p>
+              <h3 id="review-history-title">회차별 수정 기록으로 재발하는 문제를 추적했습니다</h3>
+            </div>
+            <div class="automation-heading-copy"><p class="block-copy">제작 시간뿐 아니라 검수에서 발견한 문제와 수정 내용을 회차별로 기록했습니다. 문장 중간에 빈 줄이 들어가는 문제가 반복되자, 원고를 고치는 데서 끝내지 않고 생성 지침과 최종 점검 항목을 보완했습니다.</p>
+            </div></div>
+<dl class="case-evidence-grid">
+              <div><dt>7월 22~23일 · 2곳 → 3곳</dt><dd>문장 중간 빈 줄이 다시 발생했습니다. 긴 나열형 문장이 원인인 것을 확인하고, 나열이 끝나는 지점에서 문장을 나누도록 지침을 추가했습니다.</dd></div>
+              <div><dt>7월 28일 · 1곳</dt><dd>95자 문장에서 같은 문제가 발생했습니다. 문장을 둘로 나누고, 초안·확장 단계의 출력 전 점검에 문장 길이 확인을 추가했습니다.</dd></div>
+              <div><dt>7월 29일 · 6곳 재발</dt><dd>문장 길이 제한이 지켜지지 않는 사례를 확인해 생성 지침의 상한을 90자에서 70자로 강화했습니다. 실제 모바일 화면을 확인한 뒤 줄 길이 검수 기준도 조정했습니다.</dd></div>
+            </dl>
+            <p class="metric-note">검수 수정 로그의 ‘문장 중간 빈 줄’ 기록 기준이며, 전체 수정 건수와는 다릅니다. 회차별 발생량에 변동이 있어 지속적인 오류 감소율이나 평균 시간 절감률로 환산하지 않았습니다.</p>
+          </div>
+
+          <div class="block reveal" id="editorial-review" aria-labelledby="editorial-review-title">
+            <div class="automation-heading">
+<div class="block__head">
+              <p class="section-name" lang="en">REVIEW &amp; REVISION · 2026.09.16</p>
+              <h3 id="editorial-review-title">자동 검수를 통과한 원고도,<br>기존 글과 같은 질문에 답하면<br>다시 구성했습니다</h3>
+            </div>
+            <div class="automation-heading-copy"><p class="block-copy">건설 현장 관련 원고가 자동 중복검사를 통과했지만, 기존 글과 비교하니<br>‘AGV의 한계 → AMR의 장점 → 차량 타입 → 도입 전 확인’이라는<br>설명 구조를 반복하고 있었습니다.</p>
+            <p class="block-copy">AI와 기존 글을 대조한 뒤, 표현만 바꾸는 대신<br>글의 관점을 재조정하기로 결정했습니다.<br>정지 정밀도와 제동 거리, 현장 내 구간 분리, 공정 변경 시 재매핑 등<br>다른 판단 질문으로 원고를 다시 구성했습니다.</p>
+            </div></div>
+<dl class="setup-grid">
+              <div><dt>장점 설명 → 구간별 적용 판단</dt><dd>수정 전: AMR이 건설 현장에서 유리한 조건<br>수정 후: 한 현장 안에서 AGV 구간과 AMR 구간 나누기</dd></div>
+              <div><dt>한계 설명 → 정지·제동 기준 비교</dt><dd>수정 전: 건설 현장에서 AGV의 한계<br>수정 후: 정지 정밀도와 제동 거리, 건설 현장에서 갈리는 지점</dd></div>
+              <div><dt>다음 원고의 생성 지침에 반영</dt><dd>소제목의 문구가 아니라 각 섹션이 답하는 질문을 비교하고, 같은 질문에 답하는 섹션은 다시 구성하도록 기준을 추가했습니다.</dd></div>
+            </dl>
+          </div>
+
         </div>
       </section>
 
@@ -3799,6 +3959,22 @@
                        안 담겼다(실측 2026-08-01). 지금은 도입부가 리드까지만
                        남아 295px이다. -->
             <p class="section-lede reveal"><span>AMR·AGV·무인지게차를 핵심 키워드로 삼아 장비 비교, 도입 비용, 안전 기준, 도입 전 체크리스트를 주제로 글을 작성했습니다.</span><span>업체 선정과 도입 방법 등 실제 도입을 검토할 때 검색하는 내용도 포함했습니다.</span><span>매주 금요일에는 검색 순위와 조회수를 확인해 반응이 좋은 주제와 키워드를 다음 글에 반영했습니다.</span></p>
+          </div>
+        </div>
+
+        <div class="section-shell">
+          <div class="block reveal" id="search-feedback" aria-labelledby="search-feedback-title">
+            <div class="block__head">
+              <p class="section-name" lang="en">DATA TO CONTENT · 2026.09.16</p>
+              <h3 id="search-feedback-title">검색 피드백을 키워드 배치와 관련 글 연결에 반영했습니다</h3>
+            </div>
+            <p class="block-copy">검색 순위와 조회수 기록을 다음 원고의 후보 분석에 연결했습니다. 9월 16일 건설 현장 콘텐츠에서는 노출이 약한 키워드를 보강하고, 기존 글과 다른 질문을 다루도록 구성했습니다.</p>
+            <dl class="case-evidence-grid">
+              <div><dt>확인한 반응</dt><dd>9월 11일 자동 추적에서 AMR은 미노출, AGV·무인지게차는 보강 대상으로 분류됐습니다. 도입 체크리스트·안전 기준은 안정권으로 분류됐습니다.</dd></div>
+              <div><dt>기획에 반영</dt><dd>안정권 주제를 같은 관점으로 반복하기보다 건설 현장의 비교 질문을 선택했습니다. 제목과 도입부에 AMR·AGV를 배치하는 방향을 후보 분석에 반영했습니다.</dd></div>
+              <div><dt>최종 원고에서 확인</dt><dd>‘건설 현장 무인지게차, AGV·AMR 어떻게 다를까’로 원고를 완성했습니다. 조회수 기록이 낮고 주제가 연결되는 건설 현장·유도 방식 글도 내부링크에 포함했습니다.</dd></div>
+            </dl>
+            <p class="metric-note">자동 순위 추적은 같은 블로그의 게시물을 하나로 묶는 방식으로, 개별 게시물의 통합검색 순위와 다를 수 있습니다.<br>후보 분석과 최종 원고에서 반영 여부를 확인했으며, 이 변경만의 순위·조회수 상승 효과는 별도로 측정하지 않았습니다.</p>
           </div>
         </div>
 
@@ -3927,7 +4103,7 @@
                 <p class="signal-stat"><span>AMR 신규 문의</span><strong>4<span class="mult-unit">건</span></strong></p>
               </div>
             </div>
-            <p class="metric-note">유입 경로는 미팅 과정에서 직접 확인했습니다.</p>
+            <p class="metric-note">AMR 신규 문의 4건은 메일이나 홈페이지 문의 글로 접수됐으며, 블로그 유입 경로는 미팅 과정에서 직접 확인했습니다.</p>
             <dl class="ai-metrics">
               <div><dt>210 → 495</dt><dd>순방문자 136% 증가</dd></div>
               <div><dt>62.2%</dt><dd>네이버 통합검색 유입 비중 · PC 32.13% + 모바일 30.03%</dd></div>
@@ -4043,53 +4219,30 @@
           <div class="band-intro">
             <div>
               <p class="section-name" lang="en">AI WORKSPACE</p>
-              <h2 class="section-heading" data-split id="automation-title"><span>업무 기준과 작업 기록을 연결해</span><strong>다음 작업에도 이어서 활용했습니다</strong></h2>
+              <h2 class="section-heading" data-split id="automation-title"><span>원고에서 발견한 문제를</span><strong>다음 작업의 작성 기준에 반영했습니다</strong></h2>
             </div>
             <div class="workspace-intro-copy">
               <div class="tool-roles ai-setup-combined">
                 <h4><span class="ai-tool-name"><img class="tool-logo" src="icons/openai.svg" alt="" width="26" height="26" loading="lazy">Codex</span><span class="ai-tool-name"><img class="tool-logo" src="icons/claude.svg" alt="" width="26" height="26" loading="lazy">Claude Code</span></h4>
               </div>
-              <p class="section-lede reveal"><span>Claude Code와 Codex에서 활용할 프로젝트 지침과 작업별 절차를 정리했습니다.</span><span>참고 자료와 결정 사항, 피드백도 함께 기록해 작업을 이어갈 때 확인했습니다.</span></p>
+              <p class="section-lede reveal"><span>AI와 원고를 검토하며 제공된 자료에 없는 장치 설명을 확인했습니다. 해당 표현을 자료로 확인할 수 있는 범위로 수정했습니다.</span><span>같은 유형을 다시 점검할 수 있도록 사실카드에 기준을 추가하고, 다음 원고 작성에 활용했습니다.</span></p>
             </div>
           </div>
 
           <div class="block reveal" id="tool-roles" aria-labelledby="tool-roles-title">
             <div class="block__head">
               <div>
-                <p class="section-name" lang="en">AI SETUP</p>
-                <h3 id="tool-roles-title">업무 기준과 참고 자료를 연결했습니다</h3>
+                <p class="section-name" lang="en">EVIDENCE REVIEW · 2026.09.17</p>
+                <h3 id="tool-roles-title">자료에서 확인되지 않는 장치 설명을 수정했습니다</h3>
               </div>
             </div>
             <dl class="setup-grid">
-              <div><dt>프로젝트 지침</dt><dd>작업 목적·범위·진행 단계와 승인 기준 설정</dd></div>
-              <div><dt>참고 자료</dt><dd>사실 자료와 출처, 확정 내용을 구분해 제공</dd></div>
-              <div><dt>작업별 절차</dt><dd>조사·작성·검증에 필요한 절차를 선택해 활용</dd></div>
+              <div><dt>발견한 표현</dt><dd>“반사판 또는 가이드 설치 상태를 점검합니다.”</dd></div>
+              <div><dt>검토 후 수정</dt><dd>“설치 상태와 인식 여부를 점검합니다.”</dd></div>
+              <div><dt>다음 작업에 반영</dt><dd>자료에 없는 장치·작동 원리를 임의로 덧붙이지 않도록 사실카드에 명시했습니다.</dd></div>
             </dl>
           </div>
 
-          <div class="block reveal" id="workspace-setup" aria-labelledby="workspace-setup-title">
-            <div class="block__head">
-              <p class="section-name" lang="en">WORKFLOW &amp; REVIEW</p>
-              <h3 id="workspace-setup-title">작성과 점검 절차를 나눠 결과물을 검토했습니다</h3>
-            </div>
-            <dl class="setup-grid">
-              <div><dt>근거 대조</dt><dd>주장과 수치를 원문·공식 자료와 대조</dd></div>
-              <div><dt>내용 일관성</dt><dd>문서 간 중복·불일치와 기준 원본 확인</dd></div>
-              <div><dt>결과 검토</dt><dd>제안과 결과물을 검토하고 수정 방향·최종본 결정</dd></div>
-            </dl>
-          </div>
-
-          <div class="block reveal" id="principles" aria-labelledby="principles-title">
-            <div class="block__head">
-              <p class="section-name" lang="en">CONTEXT UPDATE</p>
-              <h3 id="principles-title">결정과 피드백을 기록해 반영했습니다</h3>
-            </div>
-<dl class="setup-grid">
-              <div><dt>결정 기록</dt><dd>확정·보류 사항과 변경 이유를 기록</dd></div>
-              <div><dt>피드백 반영</dt><dd>반복된 수정 요청을 작업 지침과 기록에 반영</dd></div>
-              <div><dt>작업 재개</dt><dd>이전 결정과 진행 상태를 확인해 후속 작업에 연결</dd></div>
-            </dl>
-          </div>
         </div>
       </section>
 
