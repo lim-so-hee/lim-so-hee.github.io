@@ -3650,10 +3650,18 @@
         text-align: left;
       }
     }
-    #search-feedback :is(.section-name, .block-copy, .case-evidence-grid dd, .metric-note) {
+    #search-feedback :is(.section-name, .block-copy, .case-evidence-grid dd) {
       color: #fff;
     }
-    #search-feedback .metric-note { max-inline-size: none; }
+    #search-feedback .block-copy {
+      inline-size: fit-content;
+      margin-inline-start: auto;
+      text-align: left;
+    }
+    #search-feedback .metric-note {
+      max-inline-size: none;
+      color: rgb(255 255 255 / .72);
+    }
   </style>
 </head>
 <body>
